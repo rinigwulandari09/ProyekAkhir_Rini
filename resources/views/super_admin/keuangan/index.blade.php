@@ -15,7 +15,7 @@
             {{-- Card Pemasukan --}}
             <div class="bg-white p-3 px-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
                 <div class="bg-green-100 p-2 rounded-lg text-green-600 flex">
-                    <iconify-icon icon="mdi:trending-up" class="text-2xl"></iconify-icon>
+                    <x-heroicon-o-arrow-trending-up class="w-7 h-7" />
                 </div>
                 <div>
                     <p class="text-[10px] font-bold text-gray-400 uppercase">Total Pemasukan</p>
@@ -25,7 +25,7 @@
             {{-- Card Pengeluaran --}}
             <div class="bg-white p-3 px-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
                 <div class="bg-red-100 p-2 rounded-lg text-red-400 flex">
-                    <iconify-icon icon="mdi:trending-down" class="text-2xl"></iconify-icon>
+                    <x-heroicon-o-arrow-trending-down class="w-7 h-7" />
                 </div>
                 <div>
                     <p class="text-[10px] font-bold text-gray-400 uppercase">Total Pengeluaran</p>
@@ -39,25 +39,25 @@
     <div class="bg-white p-4 rounded-t-2xl border border-gray-200 border-b-0 flex flex-wrap justify-between items-center gap-4">
         <div class="flex items-center gap-3">
             <div class="relative">
-                <iconify-icon icon="mdi:magnify" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></iconify-icon>
+                <x-heroicon-o-magnifying-glass class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input type="text" placeholder="Cari nama petani..." class="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-1 focus:ring-green-700 outline-none w-64">
             </div>
             <div class="relative">
-                <iconify-icon icon="mdi:calendar-range" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></iconify-icon>
+                <x-heroicon-o-calendar-days class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input type="text" value="Januari 2024 s/d Desember 2024" class="pl-10 pr-10 py-2 border border-gray-200 rounded-lg text-sm outline-none w-72 bg-gray-50 cursor-default" readonly>
-                <iconify-icon icon="mdi:chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"></iconify-icon>
+                <x-heroicon-o-chevron-down class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             </div>
-            <button class="bg-[#214122] text-white px-6 py-2 rounded-lg text-sm font-bold flex items-center gap-2">
-                <iconify-icon icon="mdi:filter-variant"></iconify-icon> Cari
+            <button class="bg-[#214122] text-white px-6 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-[#325a33] transition">
+                <x-heroicon-o-funnel class="w-4 h-4" /> Cari
             </button>
         </div>
 
         <div class="flex items-center gap-2">
-            <button class="border border-green-200 text-green-700 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-green-50">
-                <iconify-icon icon="mdi:file-excel-outline" class="text-lg"></iconify-icon> Export ke Excel
+            <button class="border border-green-200 text-green-700 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-green-50 transition">
+                <x-heroicon-o-document-arrow-down class="w-5 h-5" /> Export ke Excel
             </button>
-            <button class="border border-red-200 text-red-600 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-red-50">
-                <iconify-icon icon="mdi:file-pdf-box" class="text-lg"></iconify-icon> Export ke PDF
+            <button class="border border-red-200 text-red-600 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-red-50 transition">
+                <x-heroicon-o-document-text class="w-5 h-5" /> Export ke PDF
             </button>
         </div>
     </div>
@@ -98,16 +98,16 @@
                     <td class="p-4 text-center text-gray-600 text-xs">{{ $d['lahan'] }}</td>
                     <td class="p-4">
                         <div class="flex justify-center gap-4 text-gray-400">
-                            {{-- Link ke Halaman Detail Keuangan --}}
+                            {{-- Link ke Halaman Detail/Edit --}}
                             <a href="{{ route('keuangan.show', $d['id'] ?? 1) }}" 
                             class="hover:text-blue-600 transition flex items-center" 
                             title="Lihat Detail">
-                                <iconify-icon icon="mdi:pencil-outline" class="text-lg"></iconify-icon>
+                                <x-heroicon-o-pencil-square class="w-5 h-5" />
                             </a>
 
                             {{-- Tombol Hapus --}}
                             <button class="hover:text-red-500 transition flex items-center" title="Hapus">
-                                <iconify-icon icon="mdi:trash-can-outline" class="text-lg"></iconify-icon>
+                                <x-heroicon-o-trash class="w-5 h-5" />
                             </button>
                         </div>
                     </td>
@@ -120,13 +120,17 @@
         <div class="p-4 flex justify-between items-center bg-white border-t border-gray-100">
             <p class="text-xs text-gray-400">Menampilkan 1 - 5 dari 1.240 data petani</p>
             <div class="flex gap-1">
-                <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-200 text-gray-400"><iconify-icon icon="mdi:chevron-left"></iconify-icon></button>
-                <button class="w-8 h-8 flex items-center justify-center rounded bg-[#214122] text-white text-xs font-bold">1</button>
-                <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-200 text-xs font-bold text-gray-600">2</button>
-                <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-200 text-xs font-bold text-gray-600">3</button>
-                <span class="px-2 text-gray-400">...</span>
-                <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-200 text-xs font-bold text-gray-600">248</button>
-                <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-200 text-gray-400"><iconify-icon icon="mdi:chevron-right"></iconify-icon></button>
+                <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-200 text-gray-400 hover:bg-gray-50 transition">
+                    <x-heroicon-o-chevron-left class="w-4 h-4" />
+                </button>
+                <button class="w-8 h-8 flex items-center justify-center rounded bg-[#214122] text-white text-xs font-bold shadow-sm">1</button>
+                <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-200 text-xs font-bold text-gray-600 hover:bg-gray-50 transition">2</button>
+                <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-200 text-xs font-bold text-gray-600 hover:bg-gray-50 transition">3</button>
+                <span class="px-2 text-gray-400 flex items-center">...</span>
+                <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-200 text-xs font-bold text-gray-600 hover:bg-gray-50 transition">248</button>
+                <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-200 text-gray-400 hover:bg-gray-50 transition">
+                    <x-heroicon-o-chevron-right class="w-4 h-4" />
+                </button>
             </div>
         </div>
     </div>

@@ -8,7 +8,8 @@
 <div class="max-w-6xl mx-auto">
     <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-200">
         {{-- Header Card --}}
-        <div class="bg-[#214122] p-4 px-8">
+        <div class="bg-[#214122] p-4 px-8 flex items-center gap-3">
+            <x-heroicon-o-user-circle class="w-6 h-6 text-white" />
             <h2 class="text-xl font-bold text-white">Data Pribadi Petani</h2>
         </div>
 
@@ -57,7 +58,7 @@
                                 <option value="Aktif" selected>Aktif</option>
                                 <option value="Nonaktif">Nonaktif</option>
                             </select>
-                            <iconify-icon icon="mdi:chevron-down" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"></iconify-icon>
+                            <x-heroicon-o-chevron-down class="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
                         </div>
                     </div>
                 </div>
@@ -68,11 +69,10 @@
                 {{-- Map Placeholder --}}
                 <div class="w-full md:w-1/2">
                     <div class="w-full h-64 bg-gray-200 rounded-xl overflow-hidden relative shadow-inner">
-                        {{-- Ganti src dengan API Maps asli jika sudah ada --}}
                         <img src="https://maps.googleapis.com/maps/api/staticmap?center=-0.489,101.406&zoom=15&size=600x300&maptype=satellite&key=YOUR_KEY" 
                              class="w-full h-full object-cover" alt="Lokasi Lahan">
                         <div class="absolute inset-0 flex items-center justify-center bg-black/10">
-                            <iconify-icon icon="mdi:map-marker" class="text-red-600 text-5xl drop-shadow-md"></iconify-icon>
+                            <x-heroicon-s-map-pin class="w-12 h-12 text-red-600 drop-shadow-lg" />
                         </div>
                     </div>
                 </div>
@@ -115,8 +115,9 @@
             </div>
 
             {{-- Tombol Simpan --}}
-            <div class="flex justify-end pt-4">
-                <button type="submit" class="bg-[#214122] text-white px-10 py-2.5 rounded-xl font-bold hover:bg-green-900 transition shadow-md">
+            <div class="flex justify-end pt-4 gap-3">
+                <button type="submit" class="bg-[#214122] text-white px-10 py-2.5 rounded-xl font-bold hover:bg-green-900 transition shadow-md flex items-center gap-2">
+                    <x-heroicon-o-check-circle class="w-5 h-5" />
                     Simpan
                 </button>
             </div>

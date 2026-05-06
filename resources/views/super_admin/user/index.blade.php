@@ -7,22 +7,16 @@
     <h1 class="text-2xl font-bold text-gray-800 mb-6">Daftar User</h1>
 
     <div class="flex justify-between items-center mb-4">
-       <a href="{{ route('user.create') }}" class="bg-[#214122] text-white px-4 py-2 rounded-lg inline-flex items-center gap-2 hover:bg-green-900 transition shadow-sm font-semibold">
-            <iconify-icon icon="mdi:plus-circle" class="text-xl"></iconify-icon>
-            Tambah
+       <a href="{{ route('user.create') }}" class="bg-[#214122] text-white px-4 py-2 rounded-lg inline-flex items-center gap-2 hover:bg-green-900 transition shadow-sm font-semibold text-sm">
+            <x-heroicon-o-user-plus class="w-5 h-5" />
+            Tambah User
         </a>
-        <!-- <button 
-            onclick="window.location='{{ route('user.create') }}'" 
-            class="bg-[#214122] text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-900 transition shadow-sm font-semibold">
-            <iconify-icon icon="mdi:plus-circle" class="text-xl"></iconify-icon>
-            Tambah
-        </button> -->
 
         <div class="relative w-64">
-            <iconify-icon icon="mdi:magnify" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl"></iconify-icon>
+            <x-heroicon-o-magnifying-glass class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input 
                 type="text" 
-                placeholder="Cari nama petani..." 
+                placeholder="Cari user..." 
                 class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-700 text-sm"
             >
         </div>
@@ -60,16 +54,18 @@
                     <td class="p-4 text-sm text-gray-600 italic">{{ $user['email'] }}</td>
                     <td class="p-4 text-sm text-gray-600">{{ $user['role'] }}</td>
                     <td class="p-4 text-sm text-gray-600">{{ $user['desa'] }}</td>
-                    <td class="p-4 flex justify-center gap-2">
-                        <button class="w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition shadow-sm">
-                            <iconify-icon icon="mdi:eye-outline" class="text-xl"></iconify-icon>
-                        </button>
-                        <a href="{{ route('user.edit', 1) }}" class="text-green-700 hover:scale-110 transition">
-                            <iconify-icon icon="mdi:square-edit-outline" class="text-2xl"></iconify-icon>
-                        </a>
-                        <button class="w-8 h-8 flex items-center justify-center bg-red-100 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition shadow-sm">
-                            <iconify-icon icon="mdi:trash-can-outline" class="text-xl"></iconify-icon>
-                        </button>
+                    <td class="p-4">
+                        <div class="flex justify-center gap-2">
+                            <button class="w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition shadow-sm">
+                                <x-heroicon-o-eye class="w-5 h-5" />
+                            </button>
+                            <a href="{{ route('user.edit', 1) }}" class="w-8 h-8 flex items-center justify-center bg-green-100 text-green-700 rounded-lg hover:bg-green-700 hover:text-white transition shadow-sm">
+                                <x-heroicon-o-pencil-square class="w-5 h-5" />
+                            </a>
+                            <button class="w-8 h-8 flex items-center justify-center bg-red-100 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition shadow-sm">
+                                <x-heroicon-o-trash class="w-5 h-5" />
+                            </button>
+                        </div>
                     </td>
                 </tr>
                 @endforeach
@@ -77,17 +73,17 @@
         </table>
     </div>
 
+    {{-- Pagination --}}
     <div class="flex justify-end mt-6">
         <nav class="inline-flex shadow-sm rounded-md overflow-hidden border border-gray-300">
             <button class="px-3 py-2 bg-gray-100 text-gray-500 hover:bg-gray-200 border-r transition">
-                <iconify-icon icon="mdi:chevron-left"></iconify-icon>
+                <x-heroicon-o-chevron-left class="w-4 h-4" />
             </button>
-            <button class="px-4 py-2 bg-gray-300 text-gray-700 font-bold border-r">1</button>
-            <button class="px-4 py-2 bg-white text-gray-600 hover:bg-gray-100 border-r transition">2</button>
-            <button class="px-4 py-2 bg-white text-gray-600 hover:bg-gray-100 border-r transition">3</button>
-            <button class="px-4 py-2 bg-white text-gray-600 hover:bg-gray-100 border-r transition">4</button>
+            <button class="px-4 py-2 bg-gray-300 text-gray-700 font-bold border-r text-sm">1</button>
+            <button class="px-4 py-2 bg-white text-gray-600 hover:bg-gray-100 border-r transition text-sm">2</button>
+            <button class="px-4 py-2 bg-white text-gray-600 hover:bg-gray-100 border-r transition text-sm">3</button>
             <button class="px-3 py-2 bg-white text-gray-600 hover:bg-gray-100 transition">
-                <iconify-icon icon="mdi:chevron-right"></iconify-icon>
+                <x-heroicon-o-chevron-right class="w-4 h-4" />
             </button>
         </nav>
     </div>

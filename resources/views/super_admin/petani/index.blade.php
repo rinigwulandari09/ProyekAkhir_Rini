@@ -13,7 +13,7 @@
             <p class="text-sm text-gray-500">Daftar seluruh petani sawit yang terdaftar.</p>
         </div>
         <a href="#" class="bg-[#214122] text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-900 transition shadow-sm font-semibold text-sm">
-            <iconify-icon icon="mdi:plus" class="text-xl"></iconify-icon>
+            <x-heroicon-o-plus class="w-5 h-5" />
             Tambah Petani
         </a>
     </div>
@@ -23,7 +23,7 @@
         {{-- Search Bar --}}
         <div class="p-4 flex justify-end">
             <div class="relative w-64">
-                <iconify-icon icon="mdi:magnify" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></iconify-icon>
+                <x-heroicon-o-magnifying-glass class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input 
                     type="text" 
                     placeholder="Cari nama petani..." 
@@ -78,10 +78,10 @@
                         <td class="p-4">
                             <div class="flex justify-center gap-3">
                                 <a href="{{ route('petani.show', $p['id']) }}" class="text-green-700 hover:scale-110 transition">
-                                    <iconify-icon icon="mdi:square-edit-outline" class="text-xl"></iconify-icon>
+                                    <x-heroicon-o-pencil-square class="w-5 h-5" />
                                 </a>
                                 <button class="text-red-500 hover:scale-110 transition">
-                                    <iconify-icon icon="mdi:trash-can-outline" class="text-xl"></iconify-icon>
+                                    <x-heroicon-o-trash class="w-5 h-5" />
                                 </button>
                             </div>
                         </td>
@@ -95,14 +95,14 @@
         <div class="p-4 flex justify-end border-t border-gray-100">
             <nav class="inline-flex gap-1">
                 <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-200 text-gray-400 hover:bg-gray-50">
-                    <iconify-icon icon="mdi:chevron-left"></iconify-icon>
+                    <x-heroicon-o-chevron-left class="w-4 h-4" />
                 </button>
                 <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-200 bg-gray-200 text-gray-700 font-bold text-xs">1</button>
                 <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 text-xs">2</button>
                 <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 text-xs">3</button>
                 <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 text-xs">4</button>
                 <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-200 text-gray-400 hover:bg-gray-50">
-                    <iconify-icon icon="mdi:chevron-right"></iconify-icon>
+                    <x-heroicon-o-chevron-right class="w-4 h-4" />
                 </button>
             </nav>
         </div>

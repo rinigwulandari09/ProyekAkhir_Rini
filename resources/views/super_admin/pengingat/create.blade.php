@@ -13,7 +13,7 @@
     <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-200">
         {{-- Header Form --}}
         <div class="bg-[#214122] p-4 flex items-center gap-3">
-            <iconify-icon icon="mdi:bullhorn-variant-outline" class="text-white text-xl"></iconify-icon>
+            <x-heroicon-o-megaphone class="text-white w-5 h-5" />
             <h2 class="text-white font-bold text-sm">Tambah Pengingat</h2>
         </div>
 
@@ -34,12 +34,12 @@
                 <div class="space-y-2">
                     <label class="block text-xs font-bold text-gray-700">Nama Penerima</label>
                     <div class="relative">
-                        <select class="w-full p-3 border border-gray-200 rounded-xl text-xs text-gray-500 outline-none appearance-none focus:ring-1 focus:ring-green-700">
+                        <select class="w-full p-3 border border-gray-200 rounded-xl text-xs text-gray-500 outline-none appearance-none focus:ring-1 focus:ring-green-700 bg-white">
                             <option selected disabled>Pilih nama petani...</option>
                             <option>Bayu Winandar</option>
                             <option>Ahmad Subardjo</option>
                         </select>
-                        <iconify-icon icon="mdi:chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg pointer-events-none"></iconify-icon>
+                        <x-heroicon-o-chevron-down class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                     </div>
                 </div>
 
@@ -53,7 +53,7 @@
                     ></textarea>
                 </div>
 
-                <div class="grid grid-cols-2 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {{-- Tanggal Pengiriman --}}
                     <div class="space-y-2">
                         <label class="block text-xs font-bold text-gray-700">Tanggal Pengiriman</label>
@@ -79,7 +79,7 @@
                 {{-- Tombol Simpan --}}
                 <div class="mt-4 flex justify-end">
                     <button type="submit" class="bg-[#214122] text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-green-900 transition shadow-lg text-sm">
-                        <iconify-icon icon="mdi:content-save-outline" class="text-lg"></iconify-icon>
+                        <x-heroicon-o-cloud-arrow-up class="w-5 h-5" />
                         Simpan Pengingat
                     </button>
                 </div>

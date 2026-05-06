@@ -5,7 +5,8 @@
 @section('content')
 <div class="max-w-5xl mx-auto">
     <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100">
-        <div class="bg-[#214122] p-4 px-6">
+        <div class="bg-[#214122] p-4 px-6 flex items-center gap-3">
+            <x-heroicon-o-user-plus class="w-6 h-6 text-white" />
             <h2 class="text-xl font-bold text-white">Tambah User</h2>
         </div>
 
@@ -13,26 +14,33 @@
             @csrf
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 
+                {{-- Nama --}}
                 <div class="space-y-2">
                     <label class="block text-sm font-bold text-gray-700">Nama</label>
-                    <input 
-                        type="text" 
-                        name="name" 
-                        placeholder="Masukkan nama"
-                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-700 focus:bg-white transition shadow-sm"
-                    >
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            name="name" 
+                            placeholder="Masukkan nama"
+                            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-700 focus:bg-white transition shadow-sm"
+                        >
+                    </div>
                 </div>
 
+                {{-- Email --}}
                 <div class="space-y-2">
                     <label class="block text-sm font-bold text-gray-700">Email</label>
-                    <input 
-                        type="email" 
-                        name="email" 
-                        placeholder="Masukkan email"
-                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-700 focus:bg-white transition shadow-sm"
-                    >
+                    <div class="relative">
+                        <input 
+                            type="email" 
+                            name="email" 
+                            placeholder="Masukkan email"
+                            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-700 focus:bg-white transition shadow-sm"
+                        >
+                    </div>
                 </div>
 
+                {{-- Password --}}
                 <div class="space-y-2">
                     <label class="block text-sm font-bold text-gray-700">Password</label>
                     <div class="relative">
@@ -45,6 +53,7 @@
                     </div>
                 </div>
 
+                {{-- Role --}}
                 <div class="space-y-2">
                     <label class="block text-sm font-bold text-gray-700">Role</label>
                     <div class="relative">
@@ -52,10 +61,11 @@
                             <option value="Admin">Admin</option>
                             <option value="Super Admin">Super Admin</option>
                         </select>
-                        <iconify-icon icon="mdi:chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-xl"></iconify-icon>
+                        <x-heroicon-o-chevron-down class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                     </div>
                 </div>
 
+                {{-- Desa --}}
                 <div class="space-y-2">
                     <label class="block text-sm font-bold text-gray-700">Desa</label>
                     <div class="relative">
@@ -64,15 +74,16 @@
                             <option value="Langgam">Langgam</option>
                             <option value="Pangkalan Kerinci">Pangkalan Kerinci</option>
                         </select>
-                        <iconify-icon icon="mdi:chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-xl"></iconify-icon>
+                        <x-heroicon-o-chevron-down class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                     </div>
                 </div>
 
             </div>
 
             <div class="mt-12 flex justify-end">
-                <button type="submit" class="bg-[#214122] text-white px-10 py-3 rounded-xl font-bold hover:bg-green-900 transition shadow-lg transform hover:scale-105 active:scale-95">
-                    Simpan
+                <button type="submit" class="bg-[#214122] text-white px-10 py-3 rounded-xl font-bold hover:bg-green-900 transition shadow-lg transform hover:scale-105 active:scale-95 flex items-center gap-2">
+                    <x-heroicon-o-check-circle class="w-5 h-5" />
+                    Simpan User
                 </button>
             </div>
         </form>

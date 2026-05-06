@@ -8,7 +8,8 @@
 <div class="max-w-6xl mx-auto">
     <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-200">
         {{-- Header Card --}}
-        <div class="bg-[#214122] p-4 px-8">
+        <div class="bg-[#214122] p-4 px-8 flex items-center gap-3">
+            <x-heroicon-o-pencil-square class="w-6 h-6 text-white" />
             <h2 class="text-xl font-bold text-white text-center md:text-left">Edit User</h2>
         </div>
 
@@ -60,7 +61,7 @@
                             <option value="Admin" selected>Admin</option>
                             <option value="Super Admin">Super Admin</option>
                         </select>
-                        <iconify-icon icon="mdi:chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-xl pointer-events-none"></iconify-icon>
+                        <x-heroicon-o-chevron-down class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5 pointer-events-none" />
                     </div>
                 </div>
 
@@ -72,7 +73,7 @@
                             <option value="Sekijang" selected>Sekijang</option>
                             <option value="Langgam">Langgam</option>
                         </select>
-                        <iconify-icon icon="mdi:chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-xl pointer-events-none"></iconify-icon>
+                        <x-heroicon-o-chevron-down class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5 pointer-events-none" />
                     </div>
                 </div>
 
@@ -85,7 +86,7 @@
                             <option value="Verifikasi">Verifikasi Petani</option>
                             <option value="Audit">Audit Lahan</option>
                         </select>
-                        <iconify-icon icon="mdi:chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-xl pointer-events-none"></iconify-icon>
+                        <x-heroicon-o-chevron-down class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5 pointer-events-none" />
                     </div>
                 </div>
 
@@ -93,8 +94,9 @@
 
             {{-- Button Simpan --}}
             <div class="mt-12 flex justify-end">
-                <button type="submit" class="bg-[#214122] text-white px-12 py-3 rounded-xl font-bold hover:bg-green-900 transition shadow-lg">
-                    Simpan
+                <button type="submit" class="bg-[#214122] text-white px-12 py-3 rounded-xl font-bold hover:bg-green-900 transition shadow-lg flex items-center gap-2">
+                    <x-heroicon-o-arrow-path class="w-5 h-5" />
+                    Perbarui Data
                 </button>
             </div>
         </form>

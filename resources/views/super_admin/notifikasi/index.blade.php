@@ -3,6 +3,16 @@
 @section('title', 'Semua Notifikasi')
 
 @section('content')
+@php
+$notifs = [
+    ['nama' => 'Ahmad Subardjo', 'lokasi' => 'Blok A-12', 'waktu' => '2m ago', 'hasil' => '2.5 Ton Kelapa Sawit (TBS)'],
+    ['nama' => 'Siti Aminah', 'lokasi' => 'Blok C-05', 'waktu' => '15m ago', 'hasil' => '1.8 Ton Kelapa Sawit (TBS)'],
+    ['nama' => 'Bambang Wijaya', 'lokasi' => 'Blok B-08', 'waktu' => '1h ago', 'hasil' => '3.2 Ton Kelapa Sawit (TBS)'],
+    ['nama' => 'Bambang Wijaya', 'lokasi' => 'Blok B-08', 'waktu' => '1h ago', 'hasil' => '3.2 Ton Kelapa Sawit (TBS)'],
+    ['nama' => 'Bambang Wijaya', 'lokasi' => 'Blok B-08', 'waktu' => '1h ago', 'hasil' => '3.2 Ton Kelapa Sawit (TBS)'],
+];
+@endphp
+
 <div class="p-2">
     {{-- Header Section --}}
     <div class="flex justify-between items-center mb-6">
@@ -13,7 +23,7 @@
             </p>
         </div>
         <button class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-gray-50 transition shadow-sm">
-            <iconify-icon icon="mdi:check-all" class="text-lg text-green-600"></iconify-icon>
+            <x-heroicon-o-check-badge class="w-5 h-5 text-green-600" />
             Tandai Semua Terbaca
         </button>
     </div>
@@ -29,7 +39,7 @@
 
         {{-- Search --}}
         <div class="relative">
-            <iconify-icon icon="mdi:magnify" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></iconify-icon>
+            <x-heroicon-o-magnifying-glass class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input type="text" placeholder="Cari notifikasi..." class="pl-10 pr-4 py-2 border border-gray-200 rounded-xl text-xs outline-none w-64 focus:ring-1 focus:ring-green-700">
         </div>
     </div>
@@ -40,7 +50,7 @@
         {{-- Urgent/System Notification --}}
         <div class="relative flex items-center gap-4 p-5 bg-green-50/50 border-l-4 border-green-600 rounded-r-xl">
             <div class="w-12 h-12 bg-[#214122] rounded-xl flex items-center justify-center text-white shrink-0 shadow-sm">
-                <iconify-icon icon="mdi:file-chart-outline" class="text-2xl"></iconify-icon>
+                <x-heroicon-o-document-chart-bar class="w-7 h-7" />
             </div>
             <div class="flex-1">
                 <div class="flex justify-between items-center mb-1">
@@ -55,21 +65,10 @@
             </div>
         </div>
 
-        {{-- Regular Notifications (Petani Activity) --}}
-        @php
-        $notifs = [
-            ['nama' => 'Ahmad Subardjo', 'lokasi' => 'Blok A-12', 'waktu' => '2m ago', 'hasil' => '2.5 Ton Kelapa Sawit (TBS)'],
-            ['nama' => 'Siti Aminah', 'lokasi' => 'Blok C-05', 'waktu' => '15m ago', 'hasil' => '1.8 Ton Kelapa Sawit (TBS)'],
-            ['nama' => 'Bambang Wijaya', 'lokasi' => 'Blok B-08', 'waktu' => '1h ago', 'hasil' => '3.2 Ton Kelapa Sawit (TBS)'],
-            ['nama' => 'Bambang Wijaya', 'lokasi' => 'Blok B-08', 'waktu' => '1h ago', 'hasil' => '3.2 Ton Kelapa Sawit (TBS)'],
-            ['nama' => 'Bambang Wijaya', 'lokasi' => 'Blok B-08', 'waktu' => '1h ago', 'hasil' => '3.2 Ton Kelapa Sawit (TBS)'],
-        ];
-        @endphp
-
         @foreach($notifs as $n)
         <div class="flex items-center gap-4 p-4 hover:bg-gray-50 border border-gray-100 rounded-2xl transition group cursor-pointer">
             <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center text-blue-400 border border-blue-100 shrink-0 group-hover:bg-blue-100 transition">
-                <iconify-icon icon="mdi:account-plus-outline" class="text-xl"></iconify-icon>
+                <x-heroicon-o-user-plus class="w-5 h-5" />
             </div>
             <div class="flex-1">
                 <p class="text-xs text-gray-700 leading-normal">
@@ -77,8 +76,12 @@
                     <span class="text-green-700 font-bold ml-1">{{ $n['hasil'] }}</span>
                 </p>
                 <div class="flex items-center gap-3 mt-1 text-[10px] text-gray-400">
-                    <span class="flex items-center gap-1"><iconify-icon icon="mdi:map-marker-outline"></iconify-icon> {{ $n['lokasi'] }}</span>
-                    <span class="flex items-center gap-1"><iconify-icon icon="mdi:clock-outline"></iconify-icon> {{ $n['waktu'] }}</span>
+                    <span class="flex items-center gap-1">
+                        <x-heroicon-o-map-pin class="w-3 h-3" /> {{ $n['lokasi'] }}
+                    </span>
+                    <span class="flex items-center gap-1">
+                        <x-heroicon-o-clock class="w-3 h-3" /> {{ $n['waktu'] }}
+                    </span>
                 </div>
             </div>
         </div>
@@ -88,13 +91,17 @@
         <div class="mt-8 pt-4 border-t border-gray-100 flex justify-between items-center">
             <p class="text-[10px] text-gray-400">Menampilkan 1-10 dari 48 notifikasi</p>
             <div class="flex gap-1">
-                <button class="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 text-sm hover:bg-gray-50 transition"><iconify-icon icon="mdi:chevron-left"></iconify-icon></button>
+                <button class="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:bg-gray-50 transition">
+                    <x-heroicon-o-chevron-left class="w-4 h-4" />
+                </button>
                 <button class="w-7 h-7 flex items-center justify-center rounded-lg bg-[#214122] text-white text-[10px] font-bold">1</button>
                 <button class="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 text-[10px] font-bold hover:bg-gray-50 transition">2</button>
                 <button class="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 text-[10px] font-bold hover:bg-gray-50 transition">3</button>
                 <span class="px-2 text-gray-400 flex items-center text-[10px]">...</span>
                 <button class="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 text-[10px] font-bold hover:bg-gray-50 transition">5</button>
-                <button class="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 text-sm hover:bg-gray-50 transition"><iconify-icon icon="mdi:chevron-right"></iconify-icon></button>
+                <button class="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:bg-gray-50 transition">
+                    <x-heroicon-o-chevron-right class="w-4 h-4" />
+                </button>
             </div>
         </div>
     </div>

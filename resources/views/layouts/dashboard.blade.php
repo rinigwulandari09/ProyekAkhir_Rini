@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title') - NOTASAWIT</title>
     @vite('resources/css/app.css')
-    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    {{-- Script Iconify Dihapus --}}
 </head>
 <body class="bg-[#E5E7EB] font-sans">
 
@@ -13,36 +13,35 @@
         <aside class="w-64 bg-[#214122] text-white flex flex-col fixed h-full">
             <div class="p-6 flex items-center gap-2 text-xl font-bold border-b border-green-800">
                 <div class="bg-white p-1 rounded-full text-[#214122] flex">
-                    <iconify-icon icon="mdi:palm-tree"></iconify-icon>
+                    {{-- Icon Pohon/Palm --}}
+                    <x-heroicon-o-academic-cap class="w-6 h-6" /> 
                 </div>
                 NOTASAWIT
             </div>
 
             <nav class="flex-1 p-4 space-y-2 mt-4 text-sm">
-               <a href="{{ url('/dashboard') }}" class="flex items-center gap-3 {{ request()->is('dashboard') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition">
-                    <iconify-icon icon="mdi:home" class="text-lg"></iconify-icon> Beranda
+                <a href="{{ url('/dashboard') }}" class="flex items-center gap-3 {{ request()->is('dashboard') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition">
+                    <x-heroicon-o-home class="w-5 h-5" /> Beranda
                 </a>
                 <a href="{{ route('user.index') }}" class="flex items-center gap-3 {{ request()->routeIs('user.*') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition">
-                    <iconify-icon icon="mdi:account-group" class="text-lg"></iconify-icon> Data User
+                    <x-heroicon-o-users class="w-5 h-5" /> Data User
                 </a>
                 <a href="{{ route('petani.index') }}" class="flex items-center gap-3 {{ request()->routeIs('petani.*') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition">
-                    <iconify-icon icon="mdi:account-hard-hat" class="text-lg"></iconify-icon> Data Petani
+                    <x-heroicon-o-user-group class="w-5 h-5" /> Data Petani
                 </a>
                 <a href="{{ route('lahan.index') }}" class="flex items-center gap-3 {{ request()->routeIs('lahan.*') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition">
-                    <iconify-icon icon="mdi:map-marker-path" class="text-lg"></iconify-icon> Data Lahan
+                    <x-heroicon-o-map class="w-5 h-5" /> Data Lahan
                 </a>
                 <a href="{{ route('keuangan.index') }}" class="flex items-center gap-3 {{ request()->routeIs('keuangan.*') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition">
-                    <iconify-icon icon="mdi:finance" class="text-lg"></iconify-icon> Data Keuangan
+                    <x-heroicon-o-banknotes class="w-5 h-5" /> Data Keuangan
                 </a>
             </nav>
 
             <div class="m-4 p-4 bg-white/10 rounded-lg text-[10px] border border-white/20">
                 <div class="flex items-center gap-2 mb-2 font-bold uppercase">
-                    <iconify-icon icon="mdi:information-outline"></iconify-icon> PENGINGAT
+                    <x-heroicon-o-information-circle class="w-4 h-4 text-white" /> PENGINGAT
                 </div>
                 <p class="mb-3 leading-tight text-gray-300">Siapkan laporan mingguan untuk diserahkan kepada admin atau petani!</p>
-                
-                {{-- Mengubah button menjadi tag <a> --}}
                 <a href="{{ route('pengingat.create') }}" 
                 class="w-full bg-[#3D5A3E] py-2 rounded font-bold hover:bg-white hover:text-[#214122] transition inline-block text-center">
                     TAMBAH
@@ -56,7 +55,7 @@
                 <div class="flex items-center gap-4">
                     <div class="relative inline-block">
                         <button id="btnNotif" class="relative p-2 text-blue-400 bg-blue-50 rounded-full hover:bg-blue-100 transition">
-                            <iconify-icon icon="mdi:bell-outline" class="text-2xl"></iconify-icon>
+                            <x-heroicon-o-bell class="w-6 h-6" />
                             <span class="absolute top-1 right-1 bg-blue-500 text-white text-[8px] font-bold px-1 rounded-full border-2 border-white">21</span>
                         </button>
 
@@ -84,20 +83,16 @@
         const btnNotif = document.getElementById('btnNotif');
         const popupNotif = document.getElementById('popupNotif');
 
-        // 1. Fungsi Klik Ikon Lonceng
         btnNotif.addEventListener('click', function(event) {
-            event.stopPropagation(); // Mencegah klik tembus ke bawah
-            popupNotif.classList.toggle('hidden'); // Munculkan atau sembunyikan
+            event.stopPropagation();
+            popupNotif.classList.toggle('hidden');
         });
 
-        // 2. Klik di mana saja untuk menutup pop-up
         document.addEventListener('click', function(event) {
-            // Jika yang diklik bukan bagian dari pop-up atau tombol, maka tutup
             if (!popupNotif.contains(event.target) && event.target !== btnNotif) {
                 popupNotif.classList.add('hidden');
             }
         });
     </script>
-
 </body>
 </html>
