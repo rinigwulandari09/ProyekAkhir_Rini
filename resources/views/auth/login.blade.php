@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - NOTASAWIT</title>
-    {{-- Menghubungkan ke Vite (Tailwind) --}}
+    <!-- Menghubungkan ke Vite (Tailwind) -->
     @vite('resources/css/app.css') 
 </head>
 <body class="bg-gray-100">
@@ -25,33 +25,36 @@
                     NOTASAWIT
                 </h1>
 
-                {{-- action diubah ke '#' dulu agar tidak error Route Not Found --}}
-                <form action="#" method="POST">
+                <form action="{{ route('login.process') }}" method="POST">
                     @csrf 
 
                     <div class="mb-4">
+                        {{-- 2. Ubah type ke 'text' dan name ke 'user_username' --}}
                         <input
-                            type="email"
-                            name="email"
-                            placeholder="Masukkan email"
-                            value="{{ old('email') }}"
-                            class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-700 @error('email') border-red-500 @enderror"
+                            type="text"
+                            name="user_username" 
+                            placeholder="Masukkan username"
+                            value="{{ old('user_username') }}"
+                            class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-700 @error('user_username') border-red-500 @enderror"
                             required
                         />
-                        @error('email')
+                        {{-- 3. Update variabel error --}}
+                        @error('user_username')
                             <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
                         @enderror
                     </div>
 
                     <div class="mb-2">
+                        {{-- 4. Ubah name ke 'user_password' --}}
                         <input
                             type="password"
-                            name="password"
+                            name="user_password"
                             placeholder="Masukkan password"
-                            class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-700 @error('password') border-red-500 @enderror"
+                            class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-700 @error('user_password') border-red-500 @enderror"
                             required
                         />
-                        @error('password')
+                        {{-- 5. Update variabel error --}}
+                        @error('user_password')
                             <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
                         @enderror
                     </div>

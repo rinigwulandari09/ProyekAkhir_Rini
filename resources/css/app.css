@@ -6,6 +6,25 @@
 @source '../**/*.js';
 
 @theme {
+    /* Mendaftarkan variabel font agar bisa dipanggil dengan class font-poppins */
+    --font-poppins: 'Poppins-Regular', sans-serif;
+    --font-poppins-bold: 'Poppins-Bold', sans-serif;
+    --font-poppins-semibold: 'Poppins-SemiBold',sans-serif;
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+@font-face {
+    font-family: 'Poppins-Regular';
+    src: url('/font/poppins/Poppins-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Poppins-SemiBold';
+    src: url('/font/poppins/Poppins-SemiBold.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Poppins-Bold';
+    src: url('/font/poppins/Poppins-Bold.ttf') format('truetype');
 }

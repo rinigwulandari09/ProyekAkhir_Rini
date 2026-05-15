@@ -3,55 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title') - NOTASAWIT</title>
+    <title class="font-poppins-bold">@yield('title') - NOTASAWIT</title>
+    
     @vite('resources/css/app.css')
-    {{-- Script Iconify Dihapus --}}
+    
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="bg-[#E5E7EB] font-sans">
+<body class="bg-[#E5E7EB] font-sans h-screen overflow-hidden">
 
-    <div class="flex min-h-screen">
-        <aside class="w-64 bg-[#214122] text-white flex flex-col fixed h-full">
-            <div class="p-6 flex items-center gap-2 text-xl font-bold border-b border-green-800">
-                <div class="bg-white p-1 rounded-full text-[#214122] flex">
-                    {{-- Icon Pohon/Palm --}}
-                    <x-heroicon-o-academic-cap class="w-6 h-6" /> 
+    <div class="flex h-full">
+        <aside class="w-64 bg-[#234323] text-white flex flex-col shrink-0 h-full">
+            <div class="p-6 flex items-center gap-3 text-xl font-bold border-b border-green-800">
+                <div class="w-12 h-12 bg-white p-1 rounded-full flex items-center justify-center overflow-hidden shrink-0">
+                    <img
+                        src="{{ asset('foto/logo.png') }}"
+                        alt="Sawit"
+                        class="w-full h-full object-contain"
+                    />
                 </div>
-                NOTASAWIT
+                <span class="tracking-wider">NOTASAWIT</span>
             </div>
 
-            <nav class="flex-1 p-4 space-y-2 mt-4 text-sm">
+            <nav class="flex-1 p-4 space-y-2 mt-4 text-sm overflow-y-auto">
                 <a href="{{ url('/dashboard') }}" class="flex items-center gap-3 {{ request()->is('dashboard') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition">
-                    <x-heroicon-o-home class="w-5 h-5" /> Beranda
+                    <x-heroicon-o-home class="w-5 h-5 font-poppins" /> Beranda
                 </a>
                 <a href="{{ route('user.index') }}" class="flex items-center gap-3 {{ request()->routeIs('user.*') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition">
                     <x-heroicon-o-users class="w-5 h-5" /> Data User
                 </a>
                 <a href="{{ route('petani.index') }}" class="flex items-center gap-3 {{ request()->routeIs('petani.*') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition">
-                    <x-heroicon-o-user-group class="w-5 h-5" /> Data Petani
+                    <x-heroicon-o-user-group class="w-5 h-5 font-poppins" /> Data Petani
                 </a>
                 <a href="{{ route('lahan.index') }}" class="flex items-center gap-3 {{ request()->routeIs('lahan.*') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition">
-                    <x-heroicon-o-map class="w-5 h-5" /> Data Lahan
+                    <x-heroicon-o-map class="w-5 h-5 font-poppins" /> Data Lahan
                 </a>
                 <a href="{{ route('keuangan.index') }}" class="flex items-center gap-3 {{ request()->routeIs('keuangan.*') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition">
-                    <x-heroicon-o-banknotes class="w-5 h-5" /> Data Keuangan
+                    <x-heroicon-o-banknotes class="w-5 h-5 font-poppins" /> Data Keuangan
                 </a>
+                <form method="POST" action="{{ route('logout') }}" id="logout-form">
+                    @csrf
+                    <button type="submit" class="flex items-center gap-3 p-3 rounded-lg w-full text-left hover:bg-[#3D5A3E] transition">
+                        <x-heroicon-o-arrow-left-start-on-rectangle class="w-5 h-5" /> 
+                        <span>Keluar</span>
+                    </button>
+                </form>
             </nav>
 
-            <div class="m-4 p-4 bg-white/10 rounded-lg text-[10px] border border-white/20">
-                <div class="flex items-center gap-2 mb-2 font-bold uppercase">
-                    <x-heroicon-o-information-circle class="w-4 h-4 text-white" /> PENGINGAT
+            <div class="m-4 p-4 bg-white rounded-lg text-[10px] border border-white/20 shrink-0">
+                <div class="flex items-center gap-2 mb-2 font-bold uppercase text-black">
+                    <x-heroicon-o-information-circle class="w-4 h-4" /> <h1 class="font-poppins">PENGINGAT</h1>
                 </div>
-                <p class="mb-3 leading-tight text-gray-300">Siapkan laporan mingguan untuk diserahkan kepada admin atau petani!</p>
+                <p class="mb-3 leading-tight text-black">Tambahkan pengingat atau informasi kepada admin atau petani!</p>
                 <a href="{{ route('pengingat.create') }}" 
-                class="w-full bg-[#3D5A3E] py-2 rounded font-bold hover:bg-white hover:text-[#214122] transition inline-block text-center">
+                class="w-full bg-[#234323] py-2 rounded font-bold text-white hover:bg-[#3D5A3E] transition inline-block text-center">
                     TAMBAH
                 </a>
             </div>
         </aside>
 
-        <div class="flex-1 ml-64 flex flex-col">
-            <header class="bg-white p-4 shadow-sm flex justify-between items-center px-8">
-                <h2 class="font-bold text-gray-700">Dashboard Super Admin</h2>
+        <div class="flex-1 flex flex-col min-w-0">
+            <header class="bg-white p-4 shadow-sm flex justify-between items-center px-8 z-20 shrink-0">
+                <h2 class="font-poppins-bold text-gray-700">Dashboard Super Admin</h2>
+                
                 <div class="flex items-center gap-4">
                     <div class="relative inline-block">
                         <button id="btnNotif" class="relative p-2 text-blue-400 bg-blue-50 rounded-full hover:bg-blue-100 transition">
@@ -59,21 +72,34 @@
                             <span class="absolute top-1 right-1 bg-blue-500 text-white text-[8px] font-bold px-1 rounded-full border-2 border-white">21</span>
                         </button>
 
-                        <div id="popupNotif" class="hidden absolute right-0 mt-3 w-95 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden">
+                        <div id="popupNotif" class="hidden absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden">
                             @include('layouts.notification-popup')
                         </div>
                     </div>
-                    <div class="flex items-center gap-2 border-l pl-4">
-                        <div class="text-right">
-                            <p class="text-xs font-bold text-gray-800 uppercase leading-none">Hi, Rini Gustia!</p>
-                            <p class="text-[9px] text-gray-500 font-bold">SUPER ADMINISTRATOR</p>
+
+                    <div class="flex items-center gap-2 border-l pl-4 relative" x-data="{ open: false }">
+                        <div class="text-right hidden sm:block">
+                            <div class="text-right hidden sm:block">
+                            <p class="text-xs font-poppins-semibold text-gray-800 uppercase leading-none">
+                                Hi, {{ Auth::user()->user_nama }} </p>
+                            
+                            <p class="text-[9px] text-gray-500 font-poppins-bold uppercase">
+                                @if(Auth::user()->user_role == 'super_admin')
+                                    SUPER ADMINISTRATOR
+                                @elseif(Auth::user()->user_role == 'admin')
+                                    ADMINISTRATOR
+                                @endif
+                            </p>
                         </div>
-                        <img src="https://ui-avatars.com/api/?name=Rini+Gustia&background=random" class="w-10 h-10 rounded-full border-2 border-gray-200">
+                        
+                        <button @click="open = !open" @click.away="open = false" class="focus:outline-none transition-transform active:scale-95">
+                            <img src="{{ asset('foto/sawit.png') }}" class="w-10 h-10 rounded-full border-2 border-gray-200 object-cover" alt="User Profile">
+                        </button>
                     </div>
                 </div>
             </header>
 
-            <main class="p-6">
+            <main class="p-6 overflow-y-auto flex-1 bg-[#F3F4F6]">
                 @yield('content')
             </main>
         </div>

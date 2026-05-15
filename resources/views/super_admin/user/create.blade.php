@@ -4,86 +4,91 @@
 
 @section('content')
 <div class="max-w-5xl mx-auto">
-    <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100">
-        <div class="bg-[#214122] p-4 px-6 flex items-center gap-3">
-            <x-heroicon-o-user-plus class="w-6 h-6 text-white" />
-            <h2 class="text-xl font-bold text-white">Tambah User</h2>
+    <div class="bg-white rounded-3xl shadow-sm overflow-hidden border border-gray-100">
+        <div class="bg-[#214122] p-6 px-8 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <x-heroicon-o-user-plus class="w-6 h-6 text-white" />
+                <h2 class="text-xl font-bold text-white">Tambah Pengguna Baru</h2>
+            </div>
+            <span class="text-green-200 text-xs font-mono bg-green-900/50 px-3 py-1 rounded-full uppercase tracking-tighter">Baru</span>
         </div>
 
-        <form action="#" method="POST" class="p-8">
+        <!-- Menampilkan Error Validasi -->
+        @if ($errors->any())
+            <div class="m-6 p-4 bg-red-50 border-none rounded-2xl text-red-700 text-sm italic shadow-sm">
+                <ul class="list-disc ml-5">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form action="{{ route('user.store') }}" method="POST" class="p-8">
             @csrf
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 
-                {{-- Nama --}}
+                <!-- Nama -->
                 <div class="space-y-2">
-                    <label class="block text-sm font-bold text-gray-700">Nama</label>
+                    <label class="block text-sm font-bold text-gray-700">Nama Lengkap</label>
+                    <input 
+                        type="text" 
+                        name="user_nama" 
+                        value="{{ old('user_nama') }}" 
+                        placeholder="Masukkan nama lengkap"
+                        class="w-full px-5 py-3 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-green-700 transition"
+                        required
+                    >
+                </div>
+
+                <!-- Username -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-bold text-gray-700">Username</label>
+                    <input 
+                        type="text" 
+                        name="user_username" 
+                        value="{{ old('user_username') }}" 
+                        placeholder="Contoh: admin01"
+                        class="w-full px-5 py-3 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-green-700 transition"
+                        required
+                    >
+                </div>
+
+                <!-- Role -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-bold text-gray-700">Role Akses</label>
                     <div class="relative">
-                        <input 
-                            type="text" 
-                            name="name" 
-                            placeholder="Masukkan nama"
-                            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-700 focus:bg-white transition shadow-sm"
-                        >
+                        <select name="user_role" class="w-full px-5 py-3 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-green-700 appearance-none cursor-pointer">
+                            <option value="">-- Pilih Role --</option>
+                            <option value="admin" {{ old('user_role') == 'admin' ? 'selected' : '' }}> Admin (Petugas)</option>
+                            <option value="super_admin" {{ old('user_role') == 'super_admin' ? 'selected' : '' }}> Super Admin (Pemilik)</option>
+                        </select>
+                        <x-heroicon-o-chevron-down class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
                     </div>
                 </div>
 
-                {{-- Email --}}
-                <div class="space-y-2">
-                    <label class="block text-sm font-bold text-gray-700">Email</label>
-                    <div class="relative">
-                        <input 
-                            type="email" 
-                            name="email" 
-                            placeholder="Masukkan email"
-                            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-700 focus:bg-white transition shadow-sm"
-                        >
-                    </div>
-                </div>
-
-                {{-- Password --}}
+                <!-- Password (Wajib untuk User Baru) -->
                 <div class="space-y-2">
                     <label class="block text-sm font-bold text-gray-700">Password</label>
-                    <div class="relative">
-                        <input 
-                            type="password" 
-                            name="password" 
-                            placeholder="Masukkan password"
-                            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-700 focus:bg-white transition shadow-sm"
-                        >
-                    </div>
-                </div>
-
-                {{-- Role --}}
-                <div class="space-y-2">
-                    <label class="block text-sm font-bold text-gray-700">Role</label>
-                    <div class="relative">
-                        <select name="role" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-700 appearance-none cursor-pointer shadow-sm">
-                            <option value="Admin">Admin</option>
-                            <option value="Super Admin">Super Admin</option>
-                        </select>
-                        <x-heroicon-o-chevron-down class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-                    </div>
-                </div>
-
-                {{-- Desa --}}
-                <div class="space-y-2">
-                    <label class="block text-sm font-bold text-gray-700">Desa</label>
-                    <div class="relative">
-                        <select name="desa" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-700 appearance-none cursor-pointer shadow-sm">
-                            <option value="Sekijang">Sekijang</option>
-                            <option value="Langgam">Langgam</option>
-                            <option value="Pangkalan Kerinci">Pangkalan Kerinci</option>
-                        </select>
-                        <x-heroicon-o-chevron-down class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-                    </div>
+                    <input 
+                        type="password" 
+                        name="user_password" 
+                        placeholder="Masukkan password akun"
+                        class="w-full px-5 py-3 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-green-700 transition"
+                        required
+                    >
                 </div>
 
             </div>
 
-            <div class="mt-12 flex justify-end">
-                <button type="submit" class="bg-[#214122] text-white px-10 py-3 rounded-xl font-bold hover:bg-green-900 transition shadow-lg transform hover:scale-105 active:scale-95 flex items-center gap-2">
+            <div class="mt-12 flex items-center justify-between border-t border-gray-50 pt-8">
+                <a href="{{ route('user.index') }}" class="text-gray-400 hover:text-gray-600 font-bold flex items-center gap-2 transition">
+                    <x-heroicon-o-arrow-left class="w-5 h-5" />
+                    Kembali
+                </a>
+                <button type="submit" class="bg-[#214122] text-white px-10 py-3 rounded-2xl font-bold hover:bg-green-900 transition shadow-lg shadow-green-900/20 flex items-center gap-2 active:scale-95">
                     <x-heroicon-o-check-circle class="w-5 h-5" />
-                    Simpan User
+                    Simpan User Baru
                 </button>
             </div>
         </form>

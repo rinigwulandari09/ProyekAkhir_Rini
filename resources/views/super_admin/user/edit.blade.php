@@ -5,98 +5,95 @@
 @section('header', 'Dashboard Admin')
 
 @section('content')
-<div class="max-w-6xl mx-auto">
-    <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-200">
-        {{-- Header Card --}}
-        <div class="bg-[#214122] p-4 px-8 flex items-center gap-3">
-            <x-heroicon-o-pencil-square class="w-6 h-6 text-white" />
-            <h2 class="text-xl font-bold text-white text-center md:text-left">Edit User</h2>
+<div class="max-w-5xl mx-auto">
+    <div class="bg-white rounded-4xl shadow-xl shadow-gray-100/50 overflow-hidden border border-gray-50">
+        <!-- Header Card -->
+        <div class="bg-[#214122] p-6 px-10 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <x-heroicon-o-pencil-square class="w-6 h-6 text-white" />
+                <h2 class="text-xl font-bold text-white">Perbarui Data User</h2>
+            </div>
+            <div class="bg-green-900/30 px-4 py-1 rounded-full border border-green-700/50">
+                <span class="text-green-100 text-xs font-mono font-bold tracking-widest">UID: {{ $user->user_id }}</span>
+            </div>
         </div>
 
-        {{-- Form --}}
-        <form action="#" method="POST" class="p-8">
+        <!-- Form  -->
+        <form action="{{ route('user.update', $user->user_id) }}" method="POST" class="p-10">
             @csrf
-            @method('PUT') {{-- Standar Laravel untuk Update Data --}}
+            @method('PUT') 
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
                 
-                {{-- Nama --}}
-                <div class="space-y-2">
-                    <label class="block text-sm font-bold text-gray-700">Nama</label>
+                <!-- Nama Lengkap -->
+                <div class="space-y-3">
+                    <label class="block text-sm font-black text-gray-700 uppercase tracking-wider">Nama Lengkap</label>
                     <input 
                         type="text" 
-                        name="name" 
-                        value="Bayu Winandar" {{-- Nanti diganti {{ $user->name }} --}}
-                        class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-700 transition"
+                        name="user_nama" 
+                        value="{{ old('user_nama', $user->user_nama) }}" 
+                        class="w-full px-5 py-4 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-green-800 transition shadow-inner"
+                        placeholder="Nama lengkap user"
+                        required
                     >
                 </div>
 
-                {{-- Email --}}
-                <div class="space-y-2">
-                    <label class="block text-sm font-bold text-gray-700">Email</label>
-                    <input 
-                        type="email" 
-                        name="email" 
-                        value="bayu@gmail.com" {{-- Nanti diganti {{ $user->email }} --}}
-                        class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-700 transition"
-                    >
+                <!-- Username -->
+                <div class="space-y-3">
+                    <label class="block text-sm font-black text-gray-700 uppercase tracking-wider">Username</label>
+                    <div class="relative">
+                        <span class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 font-bold">@</span>
+                        <input 
+                            type="text" 
+                            name="user_username" 
+                            value="{{ old('user_username', $user->user_username) }}" 
+                            class="w-full pl-10 pr-5 py-4 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-green-800 transition shadow-inner"
+                            placeholder="username_baru"
+                            required
+                        >
+                    </div>
                 </div>
 
-                {{-- Password --}}
-                <div class="space-y-2">
-                    <label class="block text-sm font-bold text-gray-700">Password</label>
+                <!-- Role -->
+                <div class="space-y-3">
+                    <label class="block text-sm font-black text-gray-700 uppercase tracking-wider">Role Akses</label>
+                    <div class="relative">
+                        <select name="user_role" class="w-full px-5 py-4 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-green-800 appearance-none cursor-pointer shadow-inner">
+                            <option value="admin" {{ $user->user_role == 'admin' ? 'selected' : '' }}>Admin (Petugas)</option>
+                            <option value="super_admin" {{ $user->user_role == 'super_admin' ? 'selected' : '' }}>Super Admin (Pemilik)</option>
+                        </select>
+                        <x-heroicon-o-chevron-down class="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div class="space-y-3">
+                    <label class="block text-sm font-black text-gray-700 uppercase tracking-wider">
+                        Ganti Password 
+                        <span class="normal-case text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-lg ml-2 italic font-bold">Kosongkan jika tetap</span>
+                    </label>
                     <input 
                         type="password" 
-                        name="password" 
-                        placeholder="Ovdusk"
-                        class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-700 transition text-gray-400"
+                        name="user_password" 
+                        placeholder="••••••••"
+                        class="w-full px-5 py-4 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-green-800 transition shadow-inner"
                     >
-                </div>
-
-                {{-- Role --}}
-                <div class="space-y-2">
-                    <label class="block text-sm font-bold text-gray-700">Role</label>
-                    <div class="relative">
-                        <select name="role" class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-700 appearance-none cursor-pointer">
-                            <option value="Admin" selected>Admin</option>
-                            <option value="Super Admin">Super Admin</option>
-                        </select>
-                        <x-heroicon-o-chevron-down class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5 pointer-events-none" />
-                    </div>
-                </div>
-
-                {{-- Desa --}}
-                <div class="space-y-2">
-                    <label class="block text-sm font-bold text-gray-700">Desa</label>
-                    <div class="relative">
-                        <select name="desa" class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-700 appearance-none cursor-pointer">
-                            <option value="Sekijang" selected>Sekijang</option>
-                            <option value="Langgam">Langgam</option>
-                        </select>
-                        <x-heroicon-o-chevron-down class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5 pointer-events-none" />
-                    </div>
-                </div>
-
-                {{-- Tugas --}}
-                <div class="space-y-2">
-                    <label class="block text-sm font-bold text-gray-700">Tugas</label>
-                    <div class="relative">
-                        <select name="tugas" class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-700 appearance-none cursor-pointer">
-                            <option value="" disabled selected>Silahkan Pilih Tugas</option>
-                            <option value="Verifikasi">Verifikasi Petani</option>
-                            <option value="Audit">Audit Lahan</option>
-                        </select>
-                        <x-heroicon-o-chevron-down class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5 pointer-events-none" />
-                    </div>
                 </div>
 
             </div>
 
-            {{-- Button Simpan --}}
-            <div class="mt-12 flex justify-end">
-                <button type="submit" class="bg-[#214122] text-white px-12 py-3 rounded-xl font-bold hover:bg-green-900 transition shadow-lg flex items-center gap-2">
+            <!-- Footer Action -->
+            <div class="mt-12 flex items-center justify-between border-t border-gray-50 pt-8">
+                <a href="{{ route('user.index') }}" class="text-gray-400 hover:text-gray-800 font-bold flex items-center gap-2 transition group">
+                    <div class="p-2 rounded-xl group-hover:bg-gray-100 transition">
+                        <x-heroicon-o-arrow-left class="w-5 h-5" />
+                    </div>
+                    Kembali
+                </a>
+                
+                <button type="submit" class="bg-[#214122] text-white px-10 py-3 rounded-2xl font-bold hover:bg-green-900 transition shadow-lg shadow-green-900/20 flex items-center gap-2 active:scale-95">
                     <x-heroicon-o-arrow-path class="w-5 h-5" />
-                    Perbarui Data
+                    Perbarui Data User
                 </button>
             </div>
         </form>
