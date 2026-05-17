@@ -16,6 +16,7 @@ class Petani extends Model
     protected $fillable = [
         'petani_nama',
         'petani_username',
+        'petani_email',
         'petani_alamat',
         'petani_status',
     ];

@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PetaniController;
 use Illuminate\Support\Facades\Route;
 
 // Menampilkan halaman login
@@ -17,9 +19,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::middleware(['auth'])->group(function () {
 
     // DASHBOARD
-    Route::get('/dashboard', function () {
-        return view('super_admin.dashboard');
-    })->name('super_admin.dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('super_admin.dashboard');
 
     Route::get('/admin/dashboard', function () {
         return view('admin.dashboard'); 
@@ -46,9 +46,7 @@ Route::middleware(['auth'])->group(function () {
 
 
     // --- DATA PETANI ---
-    Route::get('/data-petani', function () {
-        return view('super_admin.petani.index');
-    })->name('petani.index');
+    Route::get('/data-petani', [PetaniController::class, 'index'])->name('petani.index');
 
     Route::get('/data-petani/{id}', function ($id) {
         return view('super_admin.petani.show', ['id' => $id]);

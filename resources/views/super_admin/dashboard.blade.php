@@ -10,21 +10,27 @@
         <div class="bg-[#A0C4E8] p-6 rounded-xl flex items-center justify-between shadow-sm border border-black/5">
             <div>
                 <p class="text-blue-900 font-bold text-sm">Jumlah Petani</p>
-                <h3 class="text-3xl font-black text-blue-900 leading-none">859</h3>
+                <h3 class="text-3xl font-black text-blue-900 leading-none">
+                    {{ number_format($jumlahPetani, 0, ',', '.') }}
+                </h3>
             </div>
             <x-heroicon-o-user-group class="w-12 h-12 text-blue-900/50" />
         </div>
         <div class="bg-[#A8D5BA] p-6 rounded-xl flex items-center justify-between shadow-sm border border-black/5">
             <div>
                 <p class="text-green-900 font-bold text-sm">Jumlah Lahan</p>
-                <h3 class="text-3xl font-black text-green-900 leading-none">1040</h3>
+                <h3 class="text-3xl font-black text-green-900 leading-none">
+                    {{ number_format($jumlahLahan, 0, ',', '.') }}
+                </h3>
             </div>
             <x-heroicon-o-map class="w-12 h-12 text-green-900/50" />
         </div>
         <div class="bg-[#E9D79E] p-6 rounded-xl flex items-center justify-between shadow-sm border border-black/5">
             <div>
                 <p class="text-yellow-900 font-bold text-sm">Pendapatan Bulan Ini</p>
-                <h3 class="text-3xl font-black text-yellow-900 leading-none">859</h3>
+                <h3 class="text-3xl font-black text-yellow-900 leading-none">
+                    Rp {{ number_format($pendapatanBulanIni, 0, ',', '.') }}
+                </h3>
             </div>
             <x-heroicon-o-banknotes class="w-12 h-12 text-yellow-900/50" />
         </div>
@@ -32,18 +38,17 @@
 
     {{-- Grafik Section --}}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="bg-white p-4 rounded-xl shadow-sm h-64 flex flex-col items-center">
-            <p class="self-start text-[10px] font-bold text-gray-500 mb-4">Pemasukan Per Bulan</p>
-            <div class="w-full h-full bg-gray-50 rounded flex flex-col items-center justify-center italic text-gray-400">
-                <x-heroicon-o-chart-bar class="w-8 h-8 mb-2" />
-                <span class="text-xs">[ Grafik Garis Pemasukan ]</span>
+        <div class="bg-white p-5 rounded-xl shadow-sm h-80 flex flex-col">
+            <p class="text-[11px] font-bold text-gray-500 mb-2 uppercase tracking-wider">Pemasukan Per Bulan</p>
+            <div class="relative flex-1 w-full h-full">
+                <canvas id="chartPemasukan"></canvas>
             </div>
         </div>
-        <div class="bg-white p-4 rounded-xl shadow-sm h-64 flex flex-col items-center">
-            <p class="self-start text-[10px] font-bold text-gray-500 mb-4">Pengeluaran Per Kategori</p>
-            <div class="w-full h-full bg-gray-50 rounded flex flex-col items-center justify-center italic text-gray-400">
-                <x-heroicon-o-chart-pie class="w-8 h-8 mb-2" />
-                <span class="text-xs">[ Grafik Pie Pengeluaran ]</span>
+        
+        <div class="bg-white p-5 rounded-xl shadow-sm h-80 flex flex-col">
+            <p class="text-[11px] font-bold text-gray-500 mb-2 uppercase tracking-wider">Pengeluaran Per Kategori</p>
+            <div class="relative flex-1 w-full h-full flex justify-center">
+                <canvas id="chartPengeluaran"></canvas>
             </div>
         </div>
     </div>
@@ -67,56 +72,44 @@
         </div>
     </div>
 
-    {{-- Tabel Verifikasi --}}
-    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-        <div class="bg-[#D9F99D] p-3 text-[10px] font-black text-gray-700 uppercase tracking-wider border-b flex items-center gap-2">
-            <x-heroicon-o-clipboard-document-check class="w-4 h-4" />
-            Petani yang perlu di verifikasi
-        </div>
-        <table class="w-full text-left text-[10px]">
-            <thead class="bg-gray-50 border-b">
-                <tr>
-                    <th class="p-3 text-center uppercase">ID</th>
-                    <th class="p-3 uppercase">Nama</th>
-                    <th class="p-3 uppercase">Email</th>
-                    <th class="p-3 text-center uppercase">Status</th>
-                    <th class="p-3 text-center uppercase">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach(['PT001' => 'Bayu Mirandar', 'PT002' => 'Siti Lestari', 'PT003' => 'Indah Vitonita', 'PT004' => 'Raya Puspita'] as $id => $nama)
-                <tr class="border-b hover:bg-gray-50">
-                    <td class="p-3 text-center text-gray-500">{{ $id }}</td>
-                    <td class="p-3 font-bold italic">{{ $nama }}</td>
-                    <td class="p-3 text-gray-400 italic">user@gmail.com</td>
-                    <td class="p-3 text-center">
-                        <span class="bg-[#FEF08A] px-4 py-1 rounded-full font-bold shadow-sm">Pending</span>
-                    </td>
-                    <td class="p-3">
-                        <div class="flex justify-center gap-3">
-                            <button title="Edit">
-                                <x-heroicon-o-pencil-square class="w-5 h-5 text-green-600" />
-                            </button>
-                            <button title="Hapus">
-                                <x-heroicon-o-trash class="w-5 h-5 text-red-500" />
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-        
-        {{-- Mini Pagination --}}
-        <div class="p-2 flex justify-end gap-1">
-            <button class="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200">
-                <x-heroicon-o-chevron-left class="w-3 h-3" />
-            </button>
-            <button class="px-2 py-1 bg-gray-300 rounded text-[9px]">1</button>
-            <button class="px-2 py-1 bg-gray-100 rounded text-[9px]">2</button>
-            <button class="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200">
-                <x-heroicon-o-chevron-right class="w-3 h-3" />
-            </button>
+  {{-- Table Card --}}
+    <div class="bg-white rounded-2xl shadow-sm p-4 border border-gray-200">
+        <div class="overflow-x-auto">
+            <table id="tabelPetani" class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-[#D9F99D] border-b border-gray-200">
+                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">No</th>
+                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Nama</th>
+                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Email</th>
+                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">Status</th>
+                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    @foreach($petaniPending as $index => $petani)
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="p-4 text-xs text-center text-gray-500 font-mono">#{{ $index + 1 }}</td>
+                        <td class="p-4 text-xs text-gray-800 font-medium">{{ $petani->petani_nama }}</td>
+                        <td class="p-4 text-xs text-gray-500">{{ $petani->petani_email ?? 'tidak ada email' }}</td>
+                        <td class="p-4 text-center">
+                            <span class="bg-[#FEF3C7] text-[#92400E] px-3 py-1 rounded-full text-[10px] font-bold">
+                                {{ $petani->petani_status }}
+                            </span>
+                        </td>
+                        <td class="p-4">
+                            <div class="flex justify-center gap-3">
+                                <button title="Edit" class="text-green-700 hover:scale-110 transition">
+                                    <x-heroicon-o-pencil-square class="w-5 h-5" />
+                                </button>
+                                <button title="Hapus" class="text-red-500 hover:scale-110 transition">
+                                    <x-heroicon-o-trash class="w-5 h-5" />
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -132,4 +125,117 @@
     </div>
 
 </div>
+
+{{-- Script Inisialisasi Chart.js & DataTables --}}
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // --- 1. CONFIG GRAFIK PEMASUKAN (LINE CHART) ---
+        const ctxPemasukan = document.getElementById('chartPemasukan').getContext('2d');
+        const dataPemasukan = @json(array_values($pemasukanGrafik)); 
+
+        new Chart(ctxPemasukan, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                datasets: [{
+                    label: 'Total Pemasukan (Rp)',
+                    data: dataPemasukan,
+                    borderColor: '#234323', 
+                    backgroundColor: 'rgba(35, 67, 35, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { callback: value => 'Rp ' + value.toLocaleString('id-ID') }
+                    }
+                }
+            }
+        });
+
+        // --- 2. CONFIG GRAFIK PENGELUARAN (PIE CHART) ---
+        const ctxPengeluaran = document.getElementById('chartPengeluaran').getContext('2d');
+        const rawPengeluaran = @json($pengeluaranGrafik);
+        const labelsPengeluaran = rawPengeluaran.map(item => item.biaya_jenis);
+        const dataPengeluaran = rawPengeluaran.map(item => item.total);
+
+        new Chart(ctxPengeluaran, {
+            type: 'pie',
+            data: {
+                labels: labelsPengeluaran.length ? labelsPengeluaran : ['Belum Ada Pengeluaran'],
+                datasets: [{
+                    data: dataPengeluaran.length ? dataPengeluaran : [1],
+                    backgroundColor: ['#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#EC4899'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { boxWidth: 12, font: { size: 10 } }
+                    }
+                }
+            }
+        });
+    });
+
+    // --- 3. INIDIALISASI DATATABLES (Hanya Boleh 1 Kali di Sini) ---
+    $(document).ready(function() {
+        $('#tabelPetani').DataTable({
+            "pageLength": 5,
+            "lengthMenu": [5, 10, 25, 50],
+            "order": [[ 0, "asc" ]], // Urutkan berdasarkan kolom No
+            "dom": '<"flex justify-between items-center mb-4"lf>rt<"flex justify-between items-center mt-4"ip>',
+            "language": {
+                "search": "Cari:",
+                "lengthMenu": "Tampilkan _MENU_ data per halaman",
+                "zeroRecords": "Tidak ada data petani pending",
+                "info": "Menampilkan halaman _PAGE_ dari _PAGES_",
+                "infoEmpty": "Tidak ada data tersedia",
+                "paginate": {
+                    "previous": "Sebelumnya",
+                    "next": "Selanjutnya"
+                }
+            },
+            "columnDefs": [
+                { "orderable": false, "targets": 4 } // Matikan sorting untuk kolom aksi (kolom ke-5)
+            ]
+        });
+    });
+</script>
+
+{{-- DataTables CSS --}}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+<style>
+    /* Kostumisasi DataTables agar cocok dengan Tailwind */
+    .dataTables_wrapper .dataTables_filter input {
+        border: 1px solid #e5e7eb !important;
+        border-radius: 9999px !important;
+        padding: 4px 12px !important;
+        margin-bottom: 10px !important;
+        outline: none !important;
+    }
+    .dataTables_wrapper .dataTables_length select {
+        border: 1px solid #e5e7eb !important;
+        border-radius: 8px !important;
+        padding: 2px 8px !important;
+    }
+    table.dataTable thead th {
+        border-bottom: 1px solid #e5e7eb !important;
+    }
+</style>
 @endsection

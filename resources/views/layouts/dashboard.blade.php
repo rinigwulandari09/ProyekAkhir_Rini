@@ -8,6 +8,11 @@
     @vite('resources/css/app.css')
     
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    {{-- KODE DATATABLES BAWAAN DI SINI SUDAH DIHAPUS AGAR TIDAK TABRAKAN --}}
 </head>
 <body class="bg-[#E5E7EB] font-sans h-screen overflow-hidden">
 
@@ -91,10 +96,11 @@
                                 @endif
                             </p>
                         </div>
+                    </div>
                         
-                        <button @click="open = !open" @click.away="open = false" class="focus:outline-none transition-transform active:scale-95">
+                        <div class="flex items-center">
                             <img src="{{ asset('foto/sawit.png') }}" class="w-10 h-10 rounded-full border-2 border-gray-200 object-cover" alt="User Profile">
-                        </button>
+                        </div>
                     </div>
                 </div>
             </header>
