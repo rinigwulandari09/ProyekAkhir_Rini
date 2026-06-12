@@ -47,11 +47,13 @@
                         </td>
                         <td class="p-4">
                             <div class="flex justify-center gap-3">
-                                <a href="{{ route('petani.show', $p->id) }}" class="text-green-700 hover:scale-110 transition">
+                                <a href="{{ route('petani.show', $p->petani_id) }}" class="text-green-700 hover:scale-110 transition">
                                     <x-heroicon-o-pencil-square class="w-5 h-5" />
                                 </a>
-                                <form action="{{ route('petani.destroy', $p->id) }}" method="POST" onsubmit="return confirm('Yakin hapus?')">
-                                    @csrf @method('DELETE')
+
+                                <form action="{{ route('petani.destroy', $p->petani_id) }}" method="POST" onsubmit="return confirm('Yakin hapus?')">
+                                    @csrf
+                                    @method('DELETE')
                                     <button type="submit" class="text-red-500 hover:scale-110 transition">
                                         <x-heroicon-o-trash class="w-5 h-5" />
                                     </button>

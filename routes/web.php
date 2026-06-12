@@ -53,6 +53,9 @@ Route::middleware(['auth'])->group(function () {
         return view('super_admin.petani.show', ['id' => $id]);
     })->name('petani.show');
 
+    Route::delete('/data-petani/{id}', [PetaniController::class, 'destroy'])
+    ->name('petani.destroy');
+
 
     // --- DATA LAHAN ---
     Route::get('/data-lahan', [LahanController::class, 'index'])->name('lahan.index');
