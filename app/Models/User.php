@@ -2,22 +2,24 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use Notifiable;
 
-    protected $table = 'users'; // Nama tabel di Supabase
-    protected $primaryKey = 'user_id'; // Primary key
+    protected $table = 'users';
+
+    protected $primaryKey = 'user_id';
 
     protected $fillable = [
         'user_nama',
         'user_username',
+        'user_email',
         'user_password',
         'user_role',
+        'user_desa',
     ];
 
     protected $hidden = [
@@ -28,12 +30,5 @@ class User extends Authenticatable
     public function getAuthPassword()
     {
         return $this->user_password;
-    }
-
-    protected function casts(): array
-    {
-        return [
-            'user_password' => 'hashed',
-        ];
     }
 }

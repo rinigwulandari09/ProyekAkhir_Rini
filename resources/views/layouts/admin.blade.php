@@ -5,117 +5,112 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Admin - NOTASAWIT</title>
     
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    @vite('resources/css/app.css')
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 </head>
-<body class="bg-gray-100">
+<body class="bg-[#E5E7EB] font-sans h-screen overflow-hidden">
 
-    <div class="flex h-screen overflow-hidden">
-        {{-- SIDEBAR KIRI --}}
-        <aside class="w-64 bg-[#214122] text-white flex flex-col flex-shrink-0 shadow-xl">
-            {{-- Logo --}}
-            <div class="p-6 flex items-center gap-3">
-                <div class="bg-white p-1 rounded-lg w-10 h-10 flex items-center justify-center flex-shrink-0">
-                    <img src="https://via.placeholder.com/40" class="w-8 h-8 object-contain" alt="Logo">
+    <div class="flex h-full">
+        <aside class="w-64 bg-[#234323] text-white flex flex-col shrink-0 h-full">
+            <div class="p-6 flex items-center gap-3 text-xl font-bold border-b border-green-800">
+                <div class="w-12 h-12 bg-white p-1 rounded-full flex items-center justify-center overflow-hidden shrink-0">
+                    <img
+                        src="{{ asset('foto/logo.png') }}"
+                        alt="Sawit"
+                        class="w-full h-full object-contain"
+                    />
                 </div>
-                <span class="text-xl font-extrabold tracking-widest text-white">NOTASAWIT</span>
+                <span class="tracking-wider">NOTASAWIT</span>
             </div>
-            
-            {{-- Navigasi Menu --}}
-            <nav class="mt-4 flex-1 px-4 space-y-2 overflow-y-auto">
-                <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 bg-white/10 p-3 rounded-xl border border-white/20 transition hover:bg-white/20">
-                    <iconify-icon icon="heroicons:home-20-solid" class="text-xl"></iconify-icon>
-                    <span class="text-sm font-semibold">Beranda</span>
-                </a>
 
-                <a href="{{ route('keuangan.index') }}" class="flex items-center gap-3 p-3 rounded-xl transition hover:bg-white/10 group">
-                    <iconify-icon icon="heroicons:banknotes-20-solid" class="text-xl text-white/50 group-hover:text-white"></iconify-icon>
-                    <span class="text-sm font-medium opacity-70 group-hover:opacity-100">Data Keuangan</span>
+            <nav class="flex-1 p-4 space-y-2 mt-4 text-sm overflow-y-auto">
+                <a href="{{ url('/admin/dashboard') }}" class="flex items-center gap-3 {{ request()->is('admin.dashboard') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition">
+                    <x-heroicon-o-home class="w-5 h-5 font-poppins" /> Beranda
                 </a>
-
-                <a href="{{ route('petani.index') }}" class="flex items-center gap-3 p-3 rounded-xl transition hover:bg-white/10 group">
-                    <iconify-icon icon="heroicons:user-group-20-solid" class="text-xl text-white/50 group-hover:text-white"></iconify-icon>
-                    <span class="text-sm font-medium opacity-70 group-hover:opacity-100">Data Petani</span>
+                <a href="#" class="flex items-center gap-3 p-3 rounded-lg hover:bg-[#3D5A3E] transition">
+                    <x-heroicon-o-user-group class="w-5 h-5 font-poppins" /> Data Petani
                 </a>
-
-                <a href="{{ route('lahan.index') }}" class="flex items-center gap-3 p-3 rounded-xl transition hover:bg-white/10 group">
-                    <iconify-icon icon="heroicons:map-20-solid" class="text-xl text-white/50 group-hover:text-white"></iconify-icon>
-                    <span class="text-sm font-medium opacity-70 group-hover:opacity-100">Data Lahan</span>
+                <a href="{{ route('admin.lahan.index') }}" class="flex items-center gap-3 {{ request()->routeIs('lahan.*') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition">
+                    <x-heroicon-o-map class="w-5 h-5 font-poppins" /> Data Lahan
                 </a>
+                <a href="#" class="flex items-center gap-3 {{ request()->routeIs('user.*') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition">
+                    <x-heroicon-o-banknotes class="w-5 h-5 font-poppins" /> Data Keuangan
+                </a>
+                <form method="POST" action="{{ route('logout') }}" id="logout-form">
+                    @csrf
+                    <button type="submit" class="flex items-center gap-3 p-3 rounded-lg w-full text-left hover:bg-[#3D5A3E] transition">
+                        <x-heroicon-o-arrow-left-start-on-rectangle class="w-5 h-5" /> 
+                        <span>Keluar</span>
+                    </button>
+                </form>
             </nav>
 
-            {{-- Widget Pengingat Bawah --}}
-            <div class="m-4 p-4 bg-white/10 rounded-2xl border border-white/10">
-                <div class="flex items-center gap-2 mb-2 font-bold text-[10px] opacity-80 uppercase tracking-widest">
-                    <iconify-icon icon="heroicons:information-circle" class="text-sm"></iconify-icon>
-                    PENGINGAT
-                </div>
-                <p class="text-[10px] text-gray-300 leading-relaxed mb-3">Silahkan tambahkan pengingat atau informasi kepada petani atau admin!</p>
-                <a href="{{ route('pengingat.create') }}" class="block w-full text-center bg-[#3D5A3E] py-2 rounded-lg text-[10px] font-bold hover:bg-white hover:text-[#214122] transition uppercase">
-                    Tambah
-                </a>
-            </div>
         </aside>
 
-        {{-- AREA KONTEN KANAN --}}
-        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-            {{-- Header --}}
-            <header class="bg-white h-20 flex items-center justify-between px-8 shadow-sm border-b border-gray-100 flex-shrink-0">
-                <h2 class="text-xl font-bold text-gray-800">Dashboard Admin</h2>
+        <div class="flex-1 flex flex-col min-w-0">
+            <header class="bg-white p-4 shadow-sm flex justify-between items-center px-8 z-20 shrink-0">
+                <h2 class="font-poppins-bold text-gray-700">Dashboard Admin</h2>
                 
-                <div class="flex items-center gap-6">
-                    {{-- Ikon Notifikasi (Pop-up yang kita buat sebelumnya) --}}
-                    <div class="relative">
-                        <button id="btnNotif" class="relative p-2.5 bg-blue-50 rounded-full text-blue-500 hover:bg-blue-100 transition">
-                            <iconify-icon icon="heroicons:bell-20-solid" class="text-2xl"></iconify-icon>
-                            <span class="absolute top-2 right-2 w-2.5 h-2.5 bg-blue-600 border-2 border-white rounded-full"></span>
+                <div class="flex items-center gap-4">
+                    <div class="relative inline-block">
+                        <button id="btnNotif" class="relative p-2 text-blue-400 bg-blue-50 rounded-full hover:bg-blue-100 transition">
+                            <x-heroicon-o-bell class="w-6 h-6" />
+                            <span class="absolute top-1 right-1 bg-blue-500 text-white text-[8px] font-bold px-1 rounded-full border-2 border-white">21</span>
                         </button>
-                        
-                        {{-- Container Pop-up Notif --}}
+
                         <div id="popupNotif" class="hidden absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden">
-                             @include('layouts.notification-popup')
+                            @include('layouts.notification-popup')
                         </div>
                     </div>
 
-                    {{-- Profil User --}}
-                    <div class="flex items-center gap-3 pl-6 border-l border-gray-100">
-                        <div class="text-right">
-                            <p class="text-xs font-bold text-gray-900 leading-none">Rini Gustia!</p>
-                            <p class="text-[9px] font-bold text-gray-400 mt-1 uppercase tracking-tighter">SUPER ADMINISTRATOR</p>
+                    <div class="flex items-center gap-2 border-l pl-4 relative" x-data="{ open: false }">
+                        <div class="text-right hidden sm:block">
+                            <div class="text-right hidden sm:block">
+                            <p class="text-xs font-poppins-semibold text-gray-800 uppercase leading-none">
+                                Hi, {{ Auth::user()->user_nama }} </p>
+                            
+                            <p class="text-[9px] text-gray-500 font-poppins-bold uppercase">
+                                @if(Auth::user()->user_role == 'super_admin')
+                                    SUPER ADMINISTRATOR
+                                @elseif(Auth::user()->user_role == 'admin')
+                                    ADMINISTRATOR
+                                @endif
+                            </p>
                         </div>
-                        <img src="https://ui-avatars.com/api/?name=Rini+Gustia&background=214122&color=fff" class="w-10 h-10 rounded-full border-2 border-gray-100 object-cover" alt="Profile">
+                    </div>
+                        
+                        <div class="flex items-center">
+                            <img src="{{ asset('foto/sawit.png') }}" class="w-10 h-10 rounded-full border-2 border-gray-200 object-cover" alt="User Profile">
+                        </div>
                     </div>
                 </div>
             </header>
 
-            {{-- Main Content --}}
-            <main class="flex-1 overflow-y-auto bg-[#F8FAFB] p-8">
+            <main class="p-6 overflow-y-auto flex-1 bg-[#F3F4F6]">
                 @yield('content')
             </main>
         </div>
     </div>
 
-    {{-- JS untuk Pop-up Notifikasi --}}
     <script>
         const btnNotif = document.getElementById('btnNotif');
         const popupNotif = document.getElementById('popupNotif');
 
-        if(btnNotif) {
-            btnNotif.onclick = (e) => {
-                e.stopPropagation();
-                popupNotif.classList.toggle('hidden');
-            };
-            window.onclick = (e) => {
-                if (!popupNotif.contains(e.target) && e.target !== btnNotif) {
-                    popupNotif.classList.add('hidden');
-                }
-            };
-        }
+        btnNotif.addEventListener('click', function(event) {
+            event.stopPropagation();
+            popupNotif.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!popupNotif.contains(event.target) && event.target !== btnNotif) {
+                popupNotif.classList.add('hidden');
+            }
+        });
     </script>
 </body>
 </html>

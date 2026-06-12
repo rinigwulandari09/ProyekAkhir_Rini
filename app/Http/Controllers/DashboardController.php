@@ -31,9 +31,9 @@ class DashboardController extends Controller
             ->get(['petani_id', 'petani_nama', 'petani_email', 'petani_status']);
 
 
-        // 3. GRAFIK (Dikirim dalam bentuk array/JSON untuk dibaca Chart.js nanti)
+        //GRAFIK (Dikirim dalam bentuk array/JSON untuk dibaca Chart.js nanti)
 
-        // 1. Ambil data Pemasukan per Bulan untuk tahun ini
+        // Ambil data Pemasukan per Bulan untuk tahun ini
         $pemasukanData = DB::table('produksi')
             ->select(DB::raw("DATE_PART('month', produksi_tanggal) as bulan"), DB::raw("SUM(total_pendapatan) as total"))
             ->whereYear('produksi_tanggal', date('Y'))
@@ -48,20 +48,28 @@ class DashboardController extends Controller
         }
 
         // Pengeluaran per Kategori biaya_jenis
-        // 2. Ambil data Pengeluaran berdasarkan biaya_jenis
+        // Ambil data Pengeluaran berdasarkan biaya_jenis
         $pengeluaranGrafik = DB::table('biaya_operasional')
             ->select('biaya_jenis', DB::raw("SUM(biaya_jumlah) as total"))
             ->groupBy('biaya_jenis')
             ->get();
 
 
-        return view('super_admin.dashboard', compact(
-            'jumlahPetani', 
-            'jumlahLahan', 
-            'pendapatanBulanIni', 
-            'petaniPending',
-            'pemasukanGrafik',
-            'pengeluaranGrafik'
-        ));
+        $user = auth()->user();
+
+        if ($user->user_role === 'super_admin') {
+            return view('super_admin.dashboard', compact(
+                'jumlahPetani', 'jumlahLahan', 'pendapatanBulanIni', 
+                'petaniPending', 'pemasukanGrafik', 'pengeluaranGrafik'
+            ));
+        } elseif ($user->user_role === 'admin') {
+            return view('admin.dashboard', compact(
+                'jumlahPetani', 'jumlahLahan', 'pendapatanBulanIni', 
+                'petaniPending', 'pemasukanGrafik', 'pengeluaranGrafik'
+            ));
+        }
+
+        // Jika ada role lain yang tidak diizinkan masuk
+        abort(403, 'Anda tidak memiliki hak akses ke halaman dashboard ini.');
     }
 }

@@ -12,7 +12,6 @@
     
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    {{-- KODE DATATABLES BAWAAN DI SINI SUDAH DIHAPUS AGAR TIDAK TABRAKAN --}}
 </head>
 <body class="bg-[#E5E7EB] font-sans h-screen overflow-hidden">
 

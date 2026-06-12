@@ -1,29 +1,30 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PetaniController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LahanController;
 
-// Menampilkan halaman login
-Route::get('/', [LoginController::class, 'index'])->name('login');
+Route::get('/', [LoginController::class,'index'])
+    ->name('login');
 
-// Proses Login (Ini yang dipanggil oleh form login.blade.php kamu)
-Route::post('/login', [LoginController::class, 'authenticate'])->name('login.process');
+Route::post('/login', [LoginController::class,'authenticate'])
+    ->name('login.process');
 
-// Proses Logout
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::post('/logout', [LoginController::class,'logout'])
+    ->name('logout');
 
-// --- SEMUA ROUTE DI BAWAH INI HARUS LOGIN ---
+    
+
+// SEMUA ROUTE DI BAWAH INI HARUS LOGIN
 Route::middleware(['auth'])->group(function () {
 
     // DASHBOARD
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('super_admin.dashboard');
 
-    Route::get('/admin/dashboard', function () {
-        return view('admin.dashboard'); 
-    })->name('admin.dashboard');
+    Route::get('/admin/dashboard', [DashboardController::class, 'index'])->middleware('auth');
 
     // --- MANAJEMEN USER (CRUD) ---
     // Menampilkan Tabel User
@@ -54,9 +55,7 @@ Route::middleware(['auth'])->group(function () {
 
 
     // --- DATA LAHAN ---
-    Route::get('/data-lahan', function () {
-        return view('super_admin.lahan.index');
-    })->name('lahan.index');
+    Route::get('/data-lahan', [LahanController::class, 'index'])->name('lahan.index');
 
     Route::get('/data-lahan/{id}', function ($id) {
         return view('super_admin.lahan.show', ['id' => $id]);
@@ -82,4 +81,9 @@ Route::middleware(['auth'])->group(function () {
         return view('super_admin.notifikasi.index');
     })->name('notifikasi.index');
 
-});
+    //Lahan Admin
+    // Route::get('/admin/lahan', [LahanController::class, 'index'])->name('admin.lahan.index');
+    // Route::get('/admin/lahan/create', [LahanController::class, 'create'])->name('admin.lahan.create');
+    // Route::post('/admin/lahan/store', [LahanController::class, 'store'])->name('admin.lahan.store');
+
+    });
