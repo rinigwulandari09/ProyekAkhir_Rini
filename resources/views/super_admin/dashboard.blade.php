@@ -128,7 +128,7 @@
 </div>
 
 {{-- Modal Edit Status --}}
-<div id="statusModal" class="fixed inset-0 z-50 hidden bg-black/50 flex items-center justify-center transition-opacity backdrop-blur-sm">
+<div id="statusModal" class="fixed inset-0 z-50 hidden bg-black/50 items-center justify-center transition-opacity backdrop-blur-sm">
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform scale-95 transition-transform" id="modalContent">
         <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
             <h3 class="text-lg font-bold text-gray-800">Ubah Status Petani</h3>

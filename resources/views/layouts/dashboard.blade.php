@@ -33,40 +33,40 @@
                 <div class="w-10 h-10 bg-white p-1 rounded-full flex items-center justify-center overflow-hidden shrink-0">
                     <img src="{{ asset('foto/logo.png') }}" alt="Sawit" class="w-full h-full object-contain" />
                 </div>
-                <span class="tracking-wider text-lg font-bold transition-opacity duration-200 md:hidden" :class="sidebarOpen && '!block'">NOTASAWIT</span>
+                <span class="tracking-wider text-lg font-bold transition-opacity duration-200 md:hidden" :class="sidebarOpen && 'block!'">NOTASAWIT</span>
             </div>
 
             <nav class="flex-1 p-3 space-y-1 mt-4 text-sm overflow-y-auto">
                 <a href="{{ url('/dashboard') }}" class="flex items-center gap-3 {{ request()->is('dashboard') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition" :class="!sidebarOpen && 'md:justify-center'" title="Beranda">
                     <x-heroicon-o-home class="w-5 h-5 shrink-0" /> 
-                    <span class="md:hidden" :class="sidebarOpen && '!inline'">Beranda</span>
+                    <span class="md:hidden" :class="sidebarOpen && 'inline!'">Beranda</span>
                 </a>
                 <a href="{{ route('user.index') }}" class="flex items-center gap-3 {{ request()->routeIs('user.*') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition" :class="!sidebarOpen && 'md:justify-center'" title="Data User">
                     <x-heroicon-o-users class="w-5 h-5 shrink-0" /> 
-                    <span class="md:hidden" :class="sidebarOpen && '!inline'">Data User</span>
+                    <span class="md:hidden" :class="sidebarOpen && 'inline!'">Data User</span>
                 </a>
                 <a href="{{ route('petani.index') }}" class="flex items-center gap-3 {{ request()->routeIs('petani.*') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition" :class="!sidebarOpen && 'md:justify-center'" title="Data Petani">
                     <x-heroicon-o-user-group class="w-5 h-5 shrink-0" /> 
-                    <span class="md:hidden" :class="sidebarOpen && '!inline'">Data Petani</span>
+                    <span class="md:hidden" :class="sidebarOpen && 'inline!'">Data Petani</span>
                 </a>
                 <a href="{{ route('lahan.index') }}" class="flex items-center gap-3 {{ request()->routeIs('lahan.*') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition" :class="!sidebarOpen && 'md:justify-center'" title="Data Lahan">
                     <x-heroicon-o-map class="w-5 h-5 shrink-0" /> 
-                    <span class="md:hidden" :class="sidebarOpen && '!inline'">Data Lahan</span>
+                    <span class="md:hidden" :class="sidebarOpen && 'inline!'">Data Lahan</span>
                 </a>
                 <a href="{{ route('keuangan.index') }}" class="flex items-center gap-3 {{ request()->routeIs('keuangan.*') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition" :class="!sidebarOpen && 'md:justify-center'" title="Data Keuangan">
                     <x-heroicon-o-banknotes class="w-5 h-5 shrink-0" /> 
-                    <span class="md:hidden" :class="sidebarOpen && '!inline'">Data Keuangan</span>
+                    <span class="md:hidden" :class="sidebarOpen && 'inline!'">Data Keuangan</span>
                 </a>
                 <form method="POST" action="{{ route('logout') }}" id="logout-form">
                     @csrf
                     <button type="submit" class="flex items-center gap-3 p-3 rounded-lg w-full text-left hover:bg-[#3D5A3E] transition" :class="!sidebarOpen && 'md:justify-center'" title="Keluar">
                         <x-heroicon-o-arrow-left-start-on-rectangle class="w-5 h-5 shrink-0" /> 
-                        <span class="md:hidden" :class="sidebarOpen && '!inline'">Keluar</span>
+                        <span class="md:hidden" :class="sidebarOpen && 'inline!'">Keluar</span>
                     </button>
                 </form>
             </nav>
 
-            <div class="m-4 p-4 bg-white rounded-xl text-[10px] border border-white/20 shrink-0 transition-all md:hidden" :class="sidebarOpen && '!block'">
+            <div class="m-4 p-4 bg-white rounded-xl text-[10px] border border-white/20 shrink-0 transition-all md:hidden" :class="sidebarOpen && 'block!'">
                 <div class="flex items-center gap-2 mb-2 font-bold uppercase text-black">
                     <x-heroicon-o-information-circle class="w-4 h-4 text-[#234323]" /> 
                     <h1 class="font-poppins">PENGINGAT</h1>
