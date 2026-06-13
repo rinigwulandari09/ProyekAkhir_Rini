@@ -88,17 +88,18 @@
                 <tbody class="divide-y divide-gray-100">
                     @foreach($petaniPending as $index => $petani)
                     <tr class="hover:bg-gray-50 transition">
-                        <td class="p-4 text-xs text-center text-gray-500 font-mono">#{{ $index + 1 }}</td>
+                        <td class="p-4 text-xs text-justify text-gray-500 font-mono">{{ $index + 1 }}</td>
                         <td class="p-4 text-xs text-gray-800 font-medium">{{ $petani->petani_nama }}</td>
                         <td class="p-4 text-xs text-gray-500">{{ $petani->petani_email ?? 'tidak ada email' }}</td>
-                        <td class="p-4 text-center">
+                        <td class="p-4 text-justify">
                             <span class="bg-[#FEF3C7] text-[#92400E] px-3 py-1 rounded-full text-[10px] font-bold">
                                 {{ $petani->petani_status }}
                             </span>
                         </td>
                         <td class="p-4">
-                            <div class="flex justify-center gap-3">
-                                <button title="Edit" class="text-green-700 hover:scale-110 transition">
+                            <div class="flex justify gap-3">
+                                <button type="button" title="Edit" class="text-green-700 hover:scale-110 transition"
+                                        onclick="openEditModal('{{ $petani->petani_id }}', '{{ addslashes($petani->petani_nama) }}', '{{ $petani->petani_status }}')">
                                     <x-heroicon-o-pencil-square class="w-5 h-5" />
                                 </button>
                                 <button title="Hapus" class="text-red-500 hover:scale-110 transition">
@@ -124,6 +125,44 @@
         </div>
     </div>
 
+</div>
+
+{{-- Modal Edit Status --}}
+<div id="statusModal" class="fixed inset-0 z-50 hidden bg-black/50 flex items-center justify-center transition-opacity backdrop-blur-sm">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform scale-95 transition-transform" id="modalContent">
+        <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+            <h3 class="text-lg font-bold text-gray-800">Ubah Status Petani</h3>
+            <button type="button" onclick="closeEditModal()" class="text-gray-400 hover:text-red-500 transition">
+                <x-heroicon-o-x-mark class="w-6 h-6" />
+            </button>
+        </div>
+        
+        <form id="formUbahStatus" method="POST" action="">
+            @csrf
+            @method('PUT') {{-- Gunakan PUT/PATCH untuk update data --}}
+            
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Nama Petani</label>
+                    <p id="modalNamaPetani" class="text-gray-900 bg-gray-100 px-3 py-2 rounded-lg font-medium"></p>
+                </div>
+                
+                <div>
+                    <label for="petani_status" class="block text-sm font-bold text-gray-700 mb-1">Status Baru</label>
+                    <select id="selectStatus" name="petani_status" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none">
+                        <option value="Pending">Pending</option>
+                        <option value="Aktif">Disetujui</option>
+                        <option value="Ditolak">Ditolak</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 flex justify-end gap-3">
+                <button type="button" onclick="closeEditModal()" class="px-4 py-2 text-sm font-bold text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">Batal</button>
+                <button type="submit" class="px-4 py-2 text-sm font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 transition shadow-sm">Simpan Perubahan</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 {{-- Script Inisialisasi Chart.js & DataTables --}}
@@ -215,6 +254,39 @@
             ]
         });
     });
+</script>
+
+{{-- untuk modal --}}
+<script>
+    // Fungsi untuk membuka modal dan mengisi data
+    function openEditModal(id, nama, status) {
+        const modal = document.getElementById('statusModal');
+        const form = document.getElementById('formUbahStatus');
+        const namaText = document.getElementById('modalNamaPetani');
+        const statusSelect = document.getElementById('selectStatus');
+        
+        // Atur action form sesuai ID petani (Pastikan route ini ada di web.php)
+        form.action = `/dashboard/petani/${id}/status`; 
+        
+        // Isi data ke dalam modal
+        namaText.innerText = nama;
+        statusSelect.value = status;
+        
+        // Tampilkan modal
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            document.getElementById('modalContent').classList.replace('scale-95', 'scale-100');
+        }, 10);
+    }
+
+    // Fungsi untuk menutup modal
+    function closeEditModal() {
+        const modal = document.getElementById('statusModal');
+        document.getElementById('modalContent').classList.replace('scale-100', 'scale-95');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 200); // Tunggu animasi selesai
+    }
 </script>
 
 {{-- DataTables CSS --}}

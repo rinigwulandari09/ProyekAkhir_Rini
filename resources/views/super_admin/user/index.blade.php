@@ -7,7 +7,7 @@
     <div class="flex justify-between items-center mb-6">
         <div>
             <h1 class="text-2xl font-bold text-gray-800">Manajemen User</h1>
-            <p class="text-sm text-gray-500">Daftar pengguna yang terdaftar di database Supabase</p>
+            <p class="text-sm text-gray-500">Daftar Pengguna yang Terdaftar</p>
         </div>
         
         <a href="{{ route('user.create') }}" class="bg-[#214122] text-white px-4 py-2.5 rounded-lg inline-flex items-center gap-2 hover:bg-green-900 transition shadow-md font-semibold text-sm">
@@ -31,29 +31,46 @@
     {{-- Table Card --}}
     <div class="bg-white rounded-2xl shadow-sm p-4 border border-gray-200">
         <div class="overflow-x-auto">
-            <table id="userTable" class="w-full text-left border-collapse">
+            <table id="userTable" class="w-full text-left border-collapse whitespace-nowrap">
                 <thead>
                     <tr class="bg-[#D9F99D] border-b border-gray-200">
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">No</th>
+                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center w-12">No</th>
                         <th class="p-4 text-xs font-bold text-gray-700 uppercase">Nama</th>
                         <th class="p-4 text-xs font-bold text-gray-700 uppercase">Username</th>
+                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Email</th>
+                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Desa Tugas</th>
                         <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">Role</th>
                         <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
-                    @forelse($users as $index => $user)
+                    @forelse($users as $user)
                     <tr class="hover:bg-gray-50 transition">
-                        <td class="p-4 text-xs text-center text-gray-500 font-mono">#{{ $index + 1 }}</td>
+                        {{-- 1. No (Kosongkan isinya karena akan diisi otomatis oleh JavaScript DataTables) --}}
+                        <td class="p-4 text-xs text-justify text-gray-500 font-mono indexColumn"></td>
+                        
+                        {{-- 2. Nama --}}
                         <td class="p-4 text-xs text-gray-800 font-medium">{{ $user->user_nama }}</td>
-                        <td class="p-4 text-xs text-gray-500">@ {{ $user->user_username }}</td>
-                        <td class="p-4 text-center">
+                        
+                        {{-- 3. Username --}}
+                        <td class="p-4 text-xs text-gray-500 font-mono">@ {{ $user->user_username }}</td>
+                        
+                        {{-- 4. Email --}}
+                        <td class="p-4 text-xs text-gray-600">{{ $user->user_email ?? '-' }}</td>
+                        
+                        {{-- 5. Desa --}}
+                        <td class="p-4 text-xs text-gray-600">{{ $user->user_desa ?? '-' }}</td>
+                        
+                        {{-- 6. Role --}}
+                        <td class="p-4 text-justify">
                             <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $user->user_role == 'super_admin' ? 'bg-purple-100 text-purple-700 border border-purple-200' : 'bg-blue-100 text-blue-700 border border-blue-200' }}">
-                                {{ $user->user_role }}
+                                {{ str_replace('_', ' ', $user->user_role) }}
                             </span>
                         </td>
+                        
+                        {{-- 7. Aksi --}}
                         <td class="p-4">
-                            <div class="flex justify-center gap-3">
+                            <div class="flex justify gap-3">
                                 <a href="{{ route('user.edit', $user->user_id) }}" class="text-green-700 hover:scale-110 transition">
                                     <x-heroicon-o-pencil-square class="w-5 h-5" />
                                 </a>
@@ -69,7 +86,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="p-10 text-center text-gray-400 italic text-xs">
+                        <td colspan="7" class="p-10 text-center text-gray-400 italic text-xs">
                             Belum ada data user di database.
                         </td>
                     </tr>
@@ -83,43 +100,37 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
 
 <script>
     $(document).ready(function() {
-        // 1. Amankan objek JSZip ke scope window browser global
         window.JSZip = jszip = JSZip;
 
-        // 2. Suntikkan paksa JSZip ke internal sistem DataTables agar sistem mendeteksi ekstensi Excel
         if ($.fn.dataTable && $.fn.dataTable.Buttons) {
             $.fn.dataTable.Buttons.jszip(window.JSZip);
         }
 
-        // 3. Bersihkan tabel jika sebelumnya sudah pernah terinisialisasi di layout utama
         if ($.fn.DataTable.isDataTable('#userTable')) {
             $('#userTable').DataTable().destroy();
         }
 
-        // 4. Bangun konfigurasi utama DataTable beserta tombol ekspornya
         var table = $('#userTable').DataTable({
             "destroy": true,
             "language": {
                 "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json"
             },
-            "pageLength": 10,
-            // Menampilkan kembali dropdown opsi jumlah entri data
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "Semua"]],
-            "order": [[ 0, "asc" ]],
+            "pageLength": 5,
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
+            "order": [[ 1, "asc" ]], // Tetap urut default berdasarkan abjad Nama (Indeks ke-1)
             "columnDefs": [
-                { "orderable": false, "targets": 4 }
+                { "orderable": false, "targets": [0, 6] },
+                { "searchable": false, "targets": [0, 6] }
             ],
             "buttons": [
                 {
@@ -128,7 +139,7 @@
                     className: 'btn-export-excel',
                     title: 'Data_User_NotaSawit',
                     exportOptions: {
-                        columns: [0, 1, 2, 3]
+                        columns: [0, 1, 2, 3, 4, 5]
                     }
                 },
                 {
@@ -137,21 +148,26 @@
                     className: 'btn-export-pdf',
                     title: 'Data_User_NotaSawit',
                     exportOptions: {
-                        columns: [0, 1, 2, 3]
+                        columns: [0, 1, 2, 3, 4, 5]
                     }
                 }
             ],
-            // Mengatur susunan DOM: "l" (length) dan "f" (filter/search) disejajarkan di kanan menggunakan Flexbox
             "dom": '<"flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-3"B <"flex items-center gap-4"lf>>rtip'
         });
 
-        // 5. Masukkan tombol ekspor ke kontainer kustom HTML di atas tabel
+        // Bagian utama penentu agar nomor index digenerate ulang secara dinamis oleh DataTables
+        table.on('order.dt search.dt', function () {
+            let i = 1;
+            table.cells(null, 0, { search: 'applied', order: 'applied' }).every(function (cell) {
+                this.data(i++);
+            });
+        }).draw();
+
         table.buttons().container().appendTo('#exportButtonsContainer');
     });
 </script>
 
 <style>
-    /* Kustomisasi Tampilan DataTables agar serasi dengan Tailwind */
     .dataTables_wrapper .dataTables_filter input {
         border: 1px solid #e5e7eb !important;
         border-radius: 9999px !important;
@@ -168,7 +184,6 @@
         border-bottom: 1px solid #e5e7eb !important;
     }
 
-    /* KUSTOMISASI TOMBOL EXCEL (HIJAU) */
     .dt-buttons .btn-export-excel {
         background-color: transparent !important;
         border: 1px solid #10B981 !important;
@@ -185,7 +200,6 @@
         transform: scale(1.02);
     }
 
-    /* KUSTOMISASI TOMBOL PDF (MERAH) */
     .dt-buttons .btn-export-pdf {
         background-color: transparent !important;
         border: 1px solid #FCA5A5 !important;

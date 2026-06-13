@@ -5,9 +5,9 @@
 @section('content')
 <div class="p-2">
     {{-- Header Section --}}
-    <div class="flex justify-between items-center mb-6">
+    <div class="flex justify-between items-start mb-6">
         <div>
-            <h1 class="text-2xl font-bold text-gray-800">Daftar Lahan</h1>
+            <h1 class="text-2xl font-bold text-[#214122]">Daftar Lahan</h1>
             <p class="text-sm text-gray-500">Daftar lahan spasial yang terdaftar di database Supabase</p>
         </div>
     </div>
@@ -27,23 +27,26 @@
     {{-- Table Card --}}
     <div class="bg-white rounded-2xl shadow-sm p-4 border border-gray-200">
         <div class="overflow-x-auto">
-            <table id="lahanTable" class="w-full text-left border-collapse">
+            <table id="lahanTable" class="w-full text-left border-collapse whitespace-nowrap">
                 <thead>
                     <tr class="bg-[#D9F99D] border-b border-gray-200">
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">No</th>
+                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center w-12">No</th>
                         <th class="p-4 text-xs font-bold text-gray-700 uppercase">Lokasi Lahan</th>
                         <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">Luas Lahan</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">Nama Pemilik/Petani</th>
+                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Nama Pemilik/Petani</th>
                         <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
-                    @forelse($lahans as $index => $lahan)
+                    {{-- Diubah menjadi @foreach biasa. Jika kosong, tbody akan bersih dan DataTables akan meng-handle tampilannya tanpa error --}}
+                    @foreach($lahans as $lahan)
                     <tr class="hover:bg-gray-50 transition">
-                        <td class="p-4 text-xs text-center text-gray-500 font-mono">#{{ $index + 1 }}</td>
+                        {{-- Kolom No sengaja dikosongkan agar dihitung dinamis oleh DataTables render --}}
+                        <td class="p-4 text-xs text-center text-gray-500 font-mono"></td>
+                        
                         <td class="p-4 text-xs text-gray-800 font-medium">{{ $lahan->lahan_lokasi }}</td>
                         <td class="p-4 text-xs text-gray-600 text-center">{{ $lahan->lahan_luas }} Ha</td>
-                        <td class="p-4 text-xs text-gray-600 text-center">
+                        <td class="p-4 text-xs text-gray-600">
                             {{ $lahan->petani ? $lahan->petani->user_nama : 'Tidak terikat petani' }}
                         </td>
                         <td class="p-4">
@@ -62,37 +65,29 @@
                                 <form action="{{ route('lahan.destroy', $lahan->lahan_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data lahan ini?')">
                                     @csrf 
                                     @method('DELETE')
-                                    <button type="submit" class="text-red-500 hover:scale-110 transition mt-1" title="Hapus Lahan">
+                                    <button type="submit" class="text-red-500 hover:scale-110 transition" title="Hapus Lahan">
                                         <x-heroicon-o-trash class="w-5 h-5" />
                                     </button>
                                 </form>
                             </div>
                         </td>
                     </tr>
-                    @empty
-                    <tr>
-                        <td colspan="6" class="p-10 text-center text-gray-400 italic text-xs">
-                            Belum ada data lahan yang tersimpan di Supabase.
-                        </td>
-                    </tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
-{{-- --- STYLESHEETS & SCRIPTS DATATABLES (ASSETS) --- --}}
+{{-- DataTables CSS & JS --}}
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
 
@@ -113,27 +108,37 @@
             "language": {
                 "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json"
             },
-            "pageLength": 10,
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "Semua"]],
-            "order": [[ 0, "asc" ]],
+            "pageLength": 5, 
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
+            "order": [[ 1, "asc" ]], 
             "columnDefs": [
-                { "orderable": false, "targets": 4 } 
+                { 
+                    "searchable": false, 
+                    "orderable": false, 
+                    "targets": 0,
+                    // Generator nomor urut anti-acak (berjalan di sisi client browser)
+                    "render": function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                },
+                { "orderable": false, "targets": [4] }, 
+                { "searchable": false, "targets": [4] }
             ],
             "buttons": [
                 {
                     extend: 'excelHtml5',
                     text: '<svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path></svg> Export ke Excel',
                     className: 'btn-export-excel',
-                    title: 'Data_Lahan',
+                    title: 'Data_Lahan_NotaSawit',
                     exportOptions: {
-                        columns: [0, 1, 2, 3]
+                        columns: [0, 1, 2, 3] 
                     }
                 },
                 {
                     extend: 'pdfHtml5',
                     text: '<svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path></svg> Export ke PDF',
                     className: 'btn-export-pdf',
-                    title: 'Data_Lahan',
+                    title: 'Data_Lahan_NotaSawit',
                     exportOptions: {
                         columns: [0, 1, 2, 3]
                     }

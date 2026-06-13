@@ -13,7 +13,6 @@
             <span class="text-green-200 text-xs font-mono bg-green-900/50 px-3 py-1 rounded-full uppercase tracking-tighter">Baru</span>
         </div>
 
-        <!-- Menampilkan Error Validasi -->
         @if ($errors->any())
             <div class="m-6 p-4 bg-red-50 border-none rounded-2xl text-red-700 text-sm italic shadow-sm">
                 <ul class="list-disc ml-5">
@@ -26,9 +25,9 @@
 
         <form action="{{ route('user.store') }}" method="POST" class="p-8">
             @csrf
+            
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 
-                <!-- Nama -->
                 <div class="space-y-2">
                     <label class="block text-sm font-bold text-gray-700">Nama Lengkap</label>
                     <input 
@@ -41,24 +40,47 @@
                     >
                 </div>
 
-                <!-- Username -->
                 <div class="space-y-2">
                     <label class="block text-sm font-bold text-gray-700">Username</label>
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            name="user_username" 
+                            value="{{ old('user_username') }}" 
+                            placeholder="Contoh: admin01"
+                            class="w-full px-5 py-3 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-green-700 transition"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-sm font-bold text-gray-700">Email</label>
                     <input 
-                        type="text" 
-                        name="user_username" 
-                        value="{{ old('user_username') }}" 
-                        placeholder="Contoh: admin01"
+                        type="email" 
+                        name="user_email" 
+                        value="{{ old('user_email') }}" 
+                        placeholder="alamat_email@domain.com"
                         class="w-full px-5 py-3 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-green-700 transition"
                         required
                     >
                 </div>
 
-                <!-- Role -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-bold text-gray-700">Desa Tugas</label>
+                    <input 
+                        type="text" 
+                        name="user_desa" 
+                        value="{{ old('user_desa') }}" 
+                        placeholder="Masukkan nama desa wilayah tugas"
+                        class="w-full px-5 py-3 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-green-700 transition"
+                    >
+                </div>
+
                 <div class="space-y-2">
                     <label class="block text-sm font-bold text-gray-700">Role Akses</label>
                     <div class="relative">
-                        <select name="user_role" class="w-full px-5 py-3 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-green-700 appearance-none cursor-pointer">
+                        <select name="user_role" class="w-full px-5 py-3 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-green-700 appearance-none cursor-pointer" required>
                             <option value="">-- Pilih Role --</option>
                             <option value="admin" {{ old('user_role') == 'admin' ? 'selected' : '' }}> Admin (Petugas)</option>
                             <option value="super_admin" {{ old('user_role') == 'super_admin' ? 'selected' : '' }}> Super Admin (Pemilik)</option>
@@ -67,7 +89,6 @@
                     </div>
                 </div>
 
-                <!-- Password (Wajib untuk User Baru) -->
                 <div class="space-y-2">
                     <label class="block text-sm font-bold text-gray-700">Password</label>
                     <input 

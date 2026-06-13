@@ -27,7 +27,7 @@ class DashboardController extends Controller
         // 2. TABEL VERIFIKASI
         // Mengambil data petani yang statusnya masih pending
         $petaniPending = DB::table('petani')
-            ->where('petani_status', 'pending')
+            ->where('petani_status', 'Pending')
             ->get(['petani_id', 'petani_nama', 'petani_email', 'petani_status']);
 
 
@@ -71,5 +71,22 @@ class DashboardController extends Controller
 
         // Jika ada role lain yang tidak diizinkan masuk
         abort(403, 'Anda tidak memiliki hak akses ke halaman dashboard ini.');
+    }
+
+
+    #Untuk update status
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'petani_status' => 'required|string',
+        ]);
+
+        DB::table('petani')
+            ->where('petani_id', $id)
+            ->update([
+                'petani_status' => $request->petani_status,
+            ]);
+
+        return redirect()->back()->with('success', 'Status petani berhasil diperbarui!');
     }
 }

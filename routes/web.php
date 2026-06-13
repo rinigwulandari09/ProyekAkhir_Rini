@@ -23,6 +23,8 @@ Route::middleware(['auth'])->group(function () {
 
     // DASHBOARD
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('super_admin.dashboard');
+    // untuk update status petani di dashboard
+    Route::put('/dashboard/petani/{id}/status', [DashboardController::class, 'updateStatus'])->name('petani.updateStatus');
 
     Route::get('/admin/dashboard', [DashboardController::class, 'index'])->middleware('auth');
 

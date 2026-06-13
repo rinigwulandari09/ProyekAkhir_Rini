@@ -7,7 +7,6 @@
 @section('content')
 <div class="max-w-5xl mx-auto">
     <div class="bg-white rounded-4xl shadow-xl shadow-gray-100/50 overflow-hidden border border-gray-50">
-        <!-- Header Card -->
         <div class="bg-[#214122] p-6 px-10 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <x-heroicon-o-pencil-square class="w-6 h-6 text-white" />
@@ -18,15 +17,13 @@
             </div>
         </div>
 
-        <!-- Form  -->
-        <form action="{{ route('user.update', $user->user_id) }}" method="POST" class="p-10">
+        <form action="{{ route('user.update', $user->user_id) }}" method="POST" class="p-8">
             @csrf
             @method('PUT') 
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 
-                <!-- Nama Lengkap -->
-                <div class="space-y-3">
+                <div class="space-y-2">
                     <label class="block text-sm font-black text-gray-700 uppercase tracking-wider">Nama Lengkap</label>
                     <input 
                         type="text" 
@@ -38,8 +35,7 @@
                     >
                 </div>
 
-                <!-- Username -->
-                <div class="space-y-3">
+                <div class="space-y-2">
                     <label class="block text-sm font-black text-gray-700 uppercase tracking-wider">Username</label>
                     <div class="relative">
                         <span class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 font-bold">@</span>
@@ -54,8 +50,30 @@
                     </div>
                 </div>
 
-                <!-- Role -->
-                <div class="space-y-3">
+                <div class="space-y-2">
+                    <label class="block text-sm font-black text-gray-700 uppercase tracking-wider">Email</label>
+                    <input 
+                        type="email" 
+                        name="user_email" 
+                        value="{{ old('user_email', $user->user_email) }}" 
+                        class="w-full px-5 py-4 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-green-800 transition shadow-inner"
+                        placeholder="alamat_email@domain.com"
+                        required
+                    >
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-sm font-black text-gray-700 uppercase tracking-wider">Desa Tugas</label>
+                    <input 
+                        type="text" 
+                        name="user_desa" 
+                        value="{{ old('user_desa', $user->user_desa) }}" 
+                        class="w-full px-5 py-4 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-green-800 transition shadow-inner"
+                        placeholder="Nama desa wilayah tugas"
+                    >
+                </div>
+
+                <div class="space-y-2">
                     <label class="block text-sm font-black text-gray-700 uppercase tracking-wider">Role Akses</label>
                     <div class="relative">
                         <select name="user_role" class="w-full px-5 py-4 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-green-800 appearance-none cursor-pointer shadow-inner">
@@ -66,8 +84,7 @@
                     </div>
                 </div>
 
-                <!-- Password -->
-                <div class="space-y-3">
+                <div class="space-y-2">
                     <label class="block text-sm font-black text-gray-700 uppercase tracking-wider">
                         Ganti Password 
                         <span class="normal-case text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-lg ml-2 italic font-bold">Kosongkan jika tetap</span>
@@ -82,7 +99,6 @@
 
             </div>
 
-            <!-- Footer Action -->
             <div class="mt-12 flex items-center justify-between border-t border-gray-50 pt-8">
                 <a href="{{ route('user.index') }}" class="text-gray-400 hover:text-gray-800 font-bold flex items-center gap-2 transition group">
                     <div class="p-2 rounded-xl group-hover:bg-gray-100 transition">
