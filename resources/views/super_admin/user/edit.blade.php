@@ -63,14 +63,25 @@
                 </div>
 
                 <div class="space-y-2">
-                    <label class="block text-sm font-black text-gray-700 uppercase tracking-wider">Desa Tugas</label>
-                    <input 
-                        type="text" 
-                        name="user_desa" 
-                        value="{{ old('user_desa', $user->user_desa) }}" 
-                        class="w-full px-5 py-4 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-green-800 transition shadow-inner"
-                        placeholder="Nama desa wilayah tugas"
+                    <label class="block text-sm font-black text-gray-700 uppercase tracking-wider">
+                        Desa Tugas
+                    </label>
+
+                    <select
+                        name="desa_id"
+                        class="w-full px-5 py-4 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-green-800"
                     >
+                        <option value="">-- Pilih Desa --</option>
+
+                        @foreach($desas as $desa)
+                            <option
+                                value="{{ $desa->desa_id }}"
+                                {{ old('desa_id', $user->desa_id) == $desa->desa_id ? 'selected' : '' }}
+                            >
+                                {{ $desa->desa_nama }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <div class="space-y-2">

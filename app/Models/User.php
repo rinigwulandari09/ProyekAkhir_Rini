@@ -19,7 +19,7 @@ class User extends Authenticatable
         'user_email',
         'user_password',
         'user_role',
-        'user_desa',
+        'desa_id',
     ];
 
     protected $hidden = [
@@ -30,5 +30,10 @@ class User extends Authenticatable
     public function getAuthPassword()
     {
         return $this->user_password;
+    }
+
+    public function desa()
+    {
+        return $this->belongsTo(Desa::class, 'desa_id', 'desa_id');
     }
 }

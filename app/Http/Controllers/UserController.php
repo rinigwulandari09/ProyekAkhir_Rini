@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Desa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -11,15 +12,17 @@ class UserController extends Controller
     // Tampilkan Semua User dari Supabase
     public function index()
     {
-        // Mengambil semua data dari tabel users
-        $users = User::all();
+        $users = User::with('desa')->get();
+
         return view('super_admin.user.index', compact('users'));
     }
 
     // Form Tambah User
     public function create()
     {
-        return view('super_admin.user.create');
+        $desas = Desa::orderBy('desa_nama')->get();
+
+        return view('super_admin.user.create', compact('desas'));
     }
 
     // Proses Simpan User Baru
@@ -31,7 +34,7 @@ class UserController extends Controller
             'user_email' => 'required|email|max:255|unique:users,user_email', // Validasi email baru & unik
             'user_password' => 'required|min:6',
             'user_role' => 'required|in:super_admin,admin',
-            'user_desa' => 'nullable|string|max:255', // Validasi desa opsional
+            'desa_id' => 'nullable|exists:desa,desa_id',
         ], [
             'user_username.unique' => 'Username ini sudah terdaftar di Supabase!',
             'user_email.required' => 'Email wajib diisi.',
@@ -44,10 +47,10 @@ class UserController extends Controller
         User::create([
             'user_nama' => $request->user_nama,
             'user_username' => $request->user_username,
-            'user_email' => $request->user_email, // Menyimpan email
+            'user_email' => $request->user_email,
             'user_password' => Hash::make($request->user_password),
             'user_role' => $request->user_role,
-            'user_desa' => $request->user_desa, // Menyimpan wilayah desa
+            'desa_id' => $request->desa_id,
         ]);
 
         return redirect()->route('user.index')->with('success', 'User ' . $request->user_nama . ' berhasil ditambahkan!');
@@ -56,9 +59,10 @@ class UserController extends Controller
     // Form Edit User
     public function edit($id)
     {
-        // Mencari berdasarkan user_id (primary key)
         $user = User::where('user_id', $id)->firstOrFail();
-        return view('super_admin.user.edit', compact('user'));
+        $desas = Desa::all();
+        // dd($desas->toArray());
+        return view('super_admin.user.edit', compact('user', 'desas'));
     }
 
     // Proses Update User
@@ -72,7 +76,7 @@ class UserController extends Controller
             'user_username' => 'required|string|unique:users,user_username,'.$id.',user_id',
             'user_email' => 'required|email|max:255|unique:users,user_email,'.$id.',user_id', // Pengecualian unique untuk email
             'user_role' => 'required|in:super_admin,admin',
-            'user_desa' => 'nullable|string|max:255',
+            'desa_id' => 'nullable|exists:desa,desa_id',
             'user_password' => 'nullable|min:6', // Validasi password jika diisi saat edit
         ], [
             'user_username.unique' => 'Username ini sudah digunakan oleh user lain!',
@@ -83,9 +87,9 @@ class UserController extends Controller
         $data = [
             'user_nama' => $request->user_nama,
             'user_username' => $request->user_username,
-            'user_email' => $request->user_email, // Update email
+            'user_email' => $request->user_email,
             'user_role' => $request->user_role,
-            'user_desa' => $request->user_desa, // Update desa tugas
+            'desa_id' => $request->desa_id,
         ];
 
         // Hanya ganti password jika diisi di form edit
@@ -95,7 +99,7 @@ class UserController extends Controller
 
         $user->update($data);
 
-        return redirect()->route('user.index')->with('success', 'Data user di Supabase berhasil diperbarui.');
+        return redirect()->route('user.index')->with('success', 'Data user berhasil diperbarui.');
     }
 
     // Proses Hapus User
@@ -104,6 +108,6 @@ class UserController extends Controller
         $user = User::where('user_id', $id)->firstOrFail();
         $user->delete();
 
-        return redirect()->route('user.index')->with('success', 'User berhasil dihapus dari Supabase.');
+        return redirect()->route('user.index')->with('success', 'User berhasil dihapus.');
     }
 }

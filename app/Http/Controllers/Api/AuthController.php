@@ -11,10 +11,15 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'petani_nama' => 'required',
-            'petani_email' => 'required',
-            'petani_pin' => 'required',
-            'petani_no_hp' => 'required'
+            'petani_nama'            => 'required|string|max:255',
+            'petani_email'           => 'required|email|max:255',
+            'petani_pin'             => 'required|min:6',
+            'petani_no_hp'           => 'required',
+            'desa_id'                => 'required|exists:desa,desa_id',
+            'petani_alamat'          => 'nullable|string',
+            'petani_jenis_kelamin'   => 'nullable|string',
+            'petani_tanggal_lahir'   => 'nullable',
+            'petani_username'        => 'nullable|string|max:255',
         ]);
 
         $petani = Petani::create([
@@ -24,10 +29,11 @@ class AuthController extends Controller
             'petani_status' => 'Pending',
             'petani_email' => $request->petani_email,
             'petani_pin' => $request->petani_pin,
-            'petani_desa' => $request->petani_desa,
             'petani_jenis_kelamin' => $request->petani_jenis_kelamin,
             'petani_tanggal_lahir' => $request->petani_tanggal_lahir,
             'petani_username' => $request->petani_username,
+            'desa_id' => $request->desa_id
+
         ]);
 
         return response()->json([

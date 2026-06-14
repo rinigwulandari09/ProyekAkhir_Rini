@@ -9,15 +9,14 @@ class PetaniController extends Controller
 {
     public function index()
     {
-        // Mengambil semua data dari tabel petani
-        $petani = Petani::all(); 
+        $petani = Petani::with('desa')->get();
         return view('super_admin.petani.index', compact('petani'));
     }    
     
     public function edit($id)
 {
-    // Mengambil data petani beserta lahannya
-    $petani = Petani::with('lahan')->findOrFail($id);
+    // Mengambil data petani beserta lahan dan desa
+    $petani = Petani::with(['lahan', 'desa'])->findOrFail($id);
 
     // Mengarah ke file resources/views/super_admin/petani/edit.blade.php
     return view('super_admin.petani.edit', compact('petani'));

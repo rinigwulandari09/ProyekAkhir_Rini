@@ -59,7 +59,7 @@
                         <td class="p-4 text-xs text-gray-600">{{ $user->user_email ?? '-' }}</td>
                         
                         {{-- 5. Desa --}}
-                        <td class="p-4 text-xs text-gray-600">{{ $user->user_desa ?? '-' }}</td>
+                        <td class="p-4 text-xs text-gray-600">{{ $user->desa->desa_nama ?? '-' }} </td>
                         
                         {{-- 6. Role --}}
                         <td class="p-4 text-justify">

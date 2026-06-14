@@ -40,7 +40,7 @@
                     @foreach($petani as $p)
                     <tr class="hover:bg-gray-50 transition">
                         {{-- 1. No --}}
-                        <td class="p-4 text-xs text-center text-gray-500 font-mono">{{ $loop->iteration }}</td>
+                        <td class="p-4 text-xs text-center text-gray-500 font-mono"></td>
                         
                         {{-- 2. Nama --}}
                         <td class="p-4 text-xs text-gray-800 font-medium">{{ $p->petani_nama }}</td>
@@ -59,12 +59,19 @@
 
                         {{-- 7. Tanggal Lahir --}}
                         <td class="p-4 text-xs text-gray-600">
-                            {{ $p->petani_tanggal_lahir ? \Carbon\Carbon::parse($p->petani_tanggal_lahir)->translatedFormat('d M Y') : '-' }}
+                            @php
+                                try {
+                                    echo \Carbon\Carbon::createFromFormat('d/m/Y', $p->petani_tanggal_lahir)
+                                            ->translatedFormat('d M Y');
+                                } catch (\Exception $e) {
+                                    echo $p->petani_tanggal_lahir ?? '-';
+                                }
+                            @endphp
                         </td>
 
                         {{-- 8. Desa --}}
-                        <td class="p-4 text-xs text-gray-800 font-medium">{{ $p->petani_desa ?? '-' }}</td>
-
+                        <td class="p-4 text-xs text-gray-800 font-medium">{{ $p->desa->desa_nama ?? '-' }}</td>
+                        
                         {{-- 9. Alamat --}}
                         <td class="p-4 text-xs text-gray-500 max-w-xs truncate">{{ $p->petani_alamat ?? '-' }}</td>
 
@@ -163,6 +170,20 @@
             ],
             "dom": '<"flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-3"B <"flex items-center gap-4"lf>>rtip'
         });
+
+        // numering
+        table.on('order.dt search.dt draw.dt', function () {
+
+            let start = table.page.info().start;
+
+            table.column(0, {
+                search: 'applied',
+                order: 'applied'
+            }).nodes().each(function(cell, i) {
+                cell.innerHTML = start + i + 1;
+            });
+
+        }).draw();
 
         table.buttons().container().appendTo('#exportButtonsContainer');
     });

@@ -68,8 +68,8 @@
                                 <p class="text-gray-800 font-medium">{{ $petani->petani_no_hp }}</p>
                             </div>
                             <div class="space-y-1">
-                                <label class="text-xs font-semibold text-gray-400 uppercase">Wilayah / Desa</label>
-                                <p class="text-gray-800">{{ $petani->petani_desa ?? '-' }}</p>
+                                <label class="text-xs font-semibold text-gray-400 uppercase">Desa</label>
+                                <p class="text-gray-800">{{ $petani->desa->desa_nama ?? '-' }}</p>
                             </div>
                             
                             {{-- Dropdown Status Akun --}}
