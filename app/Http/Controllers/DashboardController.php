@@ -31,7 +31,7 @@ class DashboardController extends Controller
             ->get(['petani_id', 'petani_nama', 'petani_email', 'petani_status']);
 
 
-        //GRAFIK (Dikirim dalam bentuk array/JSON untuk dibaca Chart.js nanti)
+        // 3. GRAFIK (Dikirim dalam bentuk array/JSON untuk dibaca Chart.js nanti)
 
         // Ambil data Pemasukan per Bulan untuk tahun ini
         $pemasukanData = DB::table('produksi')
@@ -55,17 +55,27 @@ class DashboardController extends Controller
             ->get();
 
 
+        // --- PERUBAHAN DI SINI: AMBIL SEMUA DATA POLIGON LAHAN ---
+        // Mengambil semua data lahan yang koordinatnya tidak kosong/null untuk digambar di peta
+        $semuaLahan = DB::table('lahan')
+            ->whereNotNull('area_lahan')
+            ->get(['lahan_id', 'lahan_lokasi', 'lahan_luas', 'area_lahan']);
+
+
         $user = auth()->user();
 
+        // Tambahkan 'semuaLahan' ke dalam compact() di bawah ini
         if ($user->user_role === 'super_admin') {
             return view('super_admin.dashboard', compact(
                 'jumlahPetani', 'jumlahLahan', 'pendapatanBulanIni', 
-                'petaniPending', 'pemasukanGrafik', 'pengeluaranGrafik'
+                'petaniPending', 'pemasukanGrafik', 'pengeluaranGrafik',
+                'semuaLahan' // <-- Ditambahkan di sini
             ));
         } elseif ($user->user_role === 'admin') {
             return view('admin.dashboard', compact(
                 'jumlahPetani', 'jumlahLahan', 'pendapatanBulanIni', 
-                'petaniPending', 'pemasukanGrafik', 'pengeluaranGrafik'
+                'petaniPending', 'pemasukanGrafik', 'pengeluaranGrafik',
+                'semuaLahan' // <-- Ditambahkan di sini
             ));
         }
 

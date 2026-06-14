@@ -18,6 +18,8 @@ class Lahan extends Model
     // Jika primary key Anda di Supabase bukan auto-incrementing integer (misal: UUID), ubah ke false
     public $incrementing = true; 
 
+    public $timestamps = false;
+
     // Isi kolom sesuai dengan skema di Supabase
     protected $fillable = [
         'lahan_lokasi',
@@ -29,6 +31,6 @@ class Lahan extends Model
     public function petani()
     {
         // Hubungkan ke tabel user berdasarkan kolom 'petani_id' dan primary key 'user_id'
-        return $this->belongsTo(User::class, 'petani_id', 'user_id');
+        return $this->belongsTo(Petani::class, 'petani_id', 'petani_id');
     }
 }

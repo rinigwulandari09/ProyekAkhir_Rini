@@ -63,9 +63,7 @@ Route::middleware(['auth'])->group(function () {
     // --- DATA LAHAN ---
     Route::get('/data-lahan', [LahanController::class, 'index'])->name('lahan.index');
 
-    Route::get('/data-lahan/{id}', function ($id) {
-        return view('super_admin.lahan.show', ['id' => $id]);
-    })->name('lahan.show');
+    Route::get('/data-lahan/{id}', [LahanController::class, 'show'])->name('lahan.show');
 
 
     // --- KEUANGAN ---

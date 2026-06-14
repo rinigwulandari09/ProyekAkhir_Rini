@@ -139,8 +139,8 @@
             "language": {
                 "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json"
             },
-            "pageLength": 10,
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "Semua"]],
+            "pageLength": 5,
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
             "order": [[ 1, "asc" ]], // Tetap urutkan berdasarkan Nama (Sekarang indeks ke-1)
             "columnDefs": [
                 // Matikan fitur sorting untuk kolom No (0) dan kolom Aksi (10)

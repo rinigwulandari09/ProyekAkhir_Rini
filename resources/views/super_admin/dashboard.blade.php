@@ -3,6 +3,14 @@
 @section('title', 'Beranda')
 
 @section('content')
+{{-- Include Leaflet.js Assets & Chart.js --}}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+{{-- Tambahan CSS Buttons --}}
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+
 <div class="space-y-6">
     
     {{-- Statistik Utama --}}
@@ -72,7 +80,7 @@
         </div>
     </div>
 
-  {{-- Table Card --}}
+    {{-- Table Card --}}
     <div class="bg-white rounded-2xl shadow-sm p-4 border border-gray-200">
         <div class="overflow-x-auto">
             <table id="tabelPetani" class="w-full text-left border-collapse">
@@ -88,7 +96,7 @@
                 <tbody class="divide-y divide-gray-100">
                     @foreach($petaniPending as $index => $petani)
                     <tr class="hover:bg-gray-50 transition">
-                        <td class="p-4 text-xs text-justify text-gray-500 font-mono">{{ $index + 1 }}</td>
+                        <td class="p-4 text-xs text-center text-gray-500 font-mono"></td>
                         <td class="p-4 text-xs text-gray-800 font-medium">{{ $petani->petani_nama }}</td>
                         <td class="p-4 text-xs text-gray-500">{{ $petani->petani_email ?? 'tidak ada email' }}</td>
                         <td class="p-4 text-justify">
@@ -120,9 +128,8 @@
             <x-heroicon-o-map-pin class="w-4 h-4 text-gray-500" />
             <h3 class="text-[10px] font-bold text-gray-500 uppercase">Sebaran Lahan Anggota</h3>
         </div>
-        <div class="w-full h-80 rounded-lg overflow-hidden bg-gray-200 relative">
-            <img src="https://maps.googleapis.com/maps/api/staticmap?center=-0.489,101.406&zoom=13&size=800x400&maptype=satellite&key=YOUR_KEY" class="w-full h-full object-cover">
-        </div>
+        {{-- Container Peta Sebaran --}}
+        <div id="mapSebaran" class="w-full h-96 rounded-lg bg-gray-100 relative border border-gray-200" style="z-index: 1;"></div>
     </div>
 
 </div>
@@ -139,7 +146,7 @@
         
         <form id="formUbahStatus" method="POST" action="">
             @csrf
-            @method('PUT') {{-- Gunakan PUT/PATCH untuk update data --}}
+            @method('PUT')
             
             <div class="p-6 space-y-4">
                 <div>
@@ -165,7 +172,7 @@
     </div>
 </div>
 
-{{-- Script Inisialisasi Chart.js & DataTables --}}
+{{-- Script Inisialisasi Chart.js, DataTables & Leaflet --}}
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
@@ -229,63 +236,108 @@
                 }
             }
         });
+
+        // --- 3. CONFIG LEAFLET MAPS - SEBARAN BANYAK LAHAN ---
+        const mapSebaran = L.map('mapSebaran').setView([-0.489, 101.406], 12);
+
+        // MENGGUNAKAN OPENSTREETMAP (Peta Jalanan Minimalis Bersih)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(mapSebaran);
+
+        const polygonGroup = L.featureGroup().addTo(mapSebaran);
+        const listLahan = @json($semuaLahan ?? []);
+
+        listLahan.forEach(function(lahan) {
+            if (lahan.area_lahan) {
+                try {
+                    const areaData = typeof lahan.area_lahan === 'string' ? JSON.parse(lahan.area_lahan) : lahan.area_lahan;
+                    
+                    if (Array.isArray(areaData) && areaData.length > 0) {
+                        const polyCoords = areaData.map(coord => [coord.lat, coord.lng]);
+
+                        // Menggunakan style hijau gelap elegan (#214122) agar serasi dengan web
+                        const polygon = L.polygon(polyCoords, {
+                            color: '#214122',       
+                            fillColor: '#214122',   
+                            fillOpacity: 0.4,       
+                            weight: 3               
+                        });
+
+                        polygon.bindPopup(`
+                            <div style="font-family: sans-serif; font-size: 12px; min-width: 150px;">
+                                <strong style="color: #214122; font-size: 13px;">Detail Lahan Anggota</strong><br>
+                                <hr style="margin: 4px 0; border: 0; border-top: 1px solid #eee;">
+                                <b>Lokasi:</b> ${lahan.lahan_lokasi || '-'}<br>
+                                <b>Luas Lahan:</b> ${lahan.lahan_luas || '0'} Ha
+                            </div>
+                        `);
+
+                        polygon.addTo(polygonGroup);
+                    }
+                } catch (e) {
+                    console.error("Gagal membaca koordinat lahan ID: " + lahan.lahan_id, e);
+                }
+            }
+        });
+
+        if (polygonGroup.getLayers().length > 0) {
+            mapSebaran.fitBounds(polygonGroup.getBounds(), { padding: [40, 40] });
+        }
     });
 
-    // --- 3. INIDIALISASI DATATABLES (Hanya Boleh 1 Kali di Sini) ---
-    $(document).ready(function() {
-        $('#tabelPetani').DataTable({
-            "pageLength": 5,
-            "lengthMenu": [5, 10, 25, 50],
-            "order": [[ 0, "asc" ]], // Urutkan berdasarkan kolom No
-            "dom": '<"flex justify-between items-center mb-4"lf>rt<"flex justify-between items-center mt-4"ip>',
-            "language": {
-                "search": "Cari:",
-                "lengthMenu": "Tampilkan _MENU_ data per halaman",
-                "zeroRecords": "Tidak ada data petani pending",
-                "info": "Menampilkan halaman _PAGE_ dari _PAGES_",
-                "infoEmpty": "Tidak ada data tersedia",
-                "paginate": {
-                    "previous": "Sebelumnya",
-                    "next": "Selanjutnya"
-                }
-            },
-            "columnDefs": [
-                { "orderable": false, "targets": 4 } // Matikan sorting untuk kolom aksi (kolom ke-5)
-            ]
-        });
+    // --- 4. INITIALISASI DATATABLES (AUTO NUMBER & BAHASA INDONESIA) ---
+    var table = $('#tabelPetani').DataTable({
+        "pageLength": 5,
+        "lengthMenu": [5, 10, 25, 50],
+        "order": [[ 1, "asc" ]], // Urutkan berdasarkan Nama (indeks ke-1)
+        "dom": '<"flex justify-between items-center mb-4"lf>rt<"flex justify-between items-center mt-4"ip>',
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json"
+        },
+        "columnDefs": [
+            { "orderable": false, "targets": [0, 4] } // Matikan sorting untuk kolom No (0) dan Aksi (4)
+        ]
     });
+
+    // Generasi nomor urut otomatis saat tabel di-render/pindah halaman
+    table.on('order.dt search.dt draw.dt', function () {
+        let start = table.page.info().start;
+        table.column(0, {
+            search: 'applied',
+            order: 'applied'
+        }).nodes().each(function(cell, i) {
+            cell.innerHTML = start + i + 1;
+        });
+    }).draw();
 </script>
 
-{{-- untuk modal --}}
+{{-- Script Modal Edit --}}
 <script>
-    // Fungsi untuk membuka modal dan mengisi data
     function openEditModal(id, nama, status) {
         const modal = document.getElementById('statusModal');
         const form = document.getElementById('formUbahStatus');
         const namaText = document.getElementById('modalNamaPetani');
         const statusSelect = document.getElementById('selectStatus');
         
-        // Atur action form sesuai ID petani (Pastikan route ini ada di web.php)
         form.action = `/dashboard/petani/${id}/status`; 
-        
-        // Isi data ke dalam modal
         namaText.innerText = nama;
         statusSelect.value = status;
         
-        // Tampilkan modal
         modal.classList.remove('hidden');
+        modal.classList.add('flex');
         setTimeout(() => {
             document.getElementById('modalContent').classList.replace('scale-95', 'scale-100');
         }, 10);
     }
 
-    // Fungsi untuk menutup modal
     function closeEditModal() {
         const modal = document.getElementById('statusModal');
         document.getElementById('modalContent').classList.replace('scale-100', 'scale-95');
         setTimeout(() => {
             modal.classList.add('hidden');
-        }, 200); // Tunggu animasi selesai
+            modal.classList.remove('flex');
+        }, 200);
     }
 </script>
 
@@ -293,7 +345,6 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 
 <style>
-    /* Kostumisasi DataTables agar cocok dengan Tailwind */
     .dataTables_wrapper .dataTables_filter input {
         border: 1px solid #e5e7eb !important;
         border-radius: 9999px !important;

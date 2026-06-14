@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Lahan;
-use App\Models\User;
+use App\Models\Petani;
 
 class LahanController extends Controller
 {
@@ -21,10 +21,9 @@ class LahanController extends Controller
     // 2. Menampilkan Form Input Lahan
     public function create()
     {
-        // Ambil data petani untuk pilihan dropdown di form
-        $petanis = User::where('user_role', 'petani')->get(); 
+        // PERBAIKAN: Ambil data langsung dari model Petani
+        $petanis = Petani::all(); 
         
-        // Disamakan foldernya ke super_admin agar terstruktur
         return view('super_admin.lahan.create', compact('petanis'));
     }
 
@@ -49,29 +48,25 @@ class LahanController extends Controller
         return redirect()->route('admin.lahan.index')->with('success', 'Data lahan berhasil ditambahkan!');
     }
 
-    /**
-     * Menampilkan detail satu lahan
-     */
+    // 4. Menampilkan detail satu lahan berdasarkan ID lahan
     public function show($id)
     {
+        // Mengambil data lahan spesifik beserta data relasi pemiliknya
         $lahan = Lahan::with('petani')->findOrFail($id);
         return view('super_admin.lahan.show', compact('lahan'));
     }
 
-    /**
-     * Menampilkan form edit lahan
-     */
+    // 5. Menampilkan form edit lahan
     public function edit($id)
     {
         $lahan = Lahan::findOrFail($id);
-        $petanis = User::where('user_role', 'petani')->get();
+        // PERBAIKAN: List petani diambil dari Model Petani untuk dropdown edit
+        $petanis = Petani::all();
 
         return view('super_admin.lahan.edit', compact('lahan', 'petanis'));
     }
 
-    /**
-     * Memperbarui data lahan di Supabase
-     */
+    // 6. Memperbarui data lahan
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -87,19 +82,15 @@ class LahanController extends Controller
             'petani_id'    => $request->petani_id,
         ]);
 
-        // Dialihkan kembali ke rute index admin yang terdaftar di route:list
-        return redirect()->route('admin.lahan.index')->with('success', 'Data lahan berhasil diperbarui!');
+        return redirect()->route('lahan.index')->with('success', 'Data lahan berhasil diperbarui!');
     }
 
-    /**
-     * Menghapus data lahan dari Supabase
-     */
+    // 7. Menghapus data lahan
     public function destroy($id)
     {
         $lahan = Lahan::findOrFail($id);
         $lahan->delete();
 
-        // Dialihkan kembali ke rute index admin yang terdaftar di route:list
-        return redirect()->route('admin.lahan.index')->with('success', 'Data lahan berhasil dihapus!');
+        return redirect()->route('lahan.index')->with('success', 'Data lahan berhasil dihapus!');
     }
 }

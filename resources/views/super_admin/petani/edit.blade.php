@@ -5,6 +5,10 @@
 @section('header', 'Dashboard Admin')
 
 @section('content')
+{{-- Include Leaflet.js Assets (CSS & JS) --}}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <div class="max-w-6xl mx-auto px-4 py-2 animate-fade-in">
     
     {{-- Pop-up Notifikasi Sukses --}}
@@ -87,7 +91,7 @@
                     </div>
                 </div>
 
-                {{-- Section 2: Informasi Lahan & Geometris Spasial (Sesuai Fillable Lahan Anda) --}}
+                {{-- Section 2: Informasi Lahan & Geometris Spasial --}}
                 <div class="pt-8 border-t border-gray-200">
                     <h3 class="text-xs font-bold text-[#214122] uppercase tracking-wider mb-6 flex items-center gap-2">
                         <x-heroicon-o-map class="w-5 h-5 text-gray-500" />
@@ -95,19 +99,11 @@
                     </h3>
                     
                     <div class="flex flex-col lg:flex-row gap-8">
-                        {{-- Sisi Kiri: Peta Geometris Placeholder --}}
+                        {{-- Sisi Kiri: Peta Poligon Leaflet Interaktif --}}
                         <div class="w-full lg:w-1/2">
                             @if($petani->lahan && $petani->lahan->area_lahan)
-                                <div class="w-full h-64 bg-gray-100 rounded-2xl overflow-hidden relative border border-gray-200 shadow-inner group">
-                                    <img src="https://maps.googleapis.com/maps/api/staticmap?center=-0.489,101.406&zoom=15&size=600x300&maptype=satellite&key=YOUR_KEY" 
-                                         class="w-full h-full object-cover transition duration-500 group-hover:scale-105" alt="Peta Lokasi">
-                                    <div class="absolute inset-0 flex items-center justify-center bg-black/10">
-                                        <x-heroicon-s-map-pin class="w-12 h-12 text-red-600 drop-shadow-lg" />
-                                    </div>
-                                    <div class="absolute bottom-3 left-3 bg-black/60 text-white text-[10px] px-2.5 py-1 rounded-md backdrop-blur-sm">
-                                        Area Terbaca Sistem
-                                    </div>
-                                </div>
+                                {{-- Container untuk peta interaktif --}}
+                                <div id="map" class="w-full h-64 rounded-2xl border border-gray-200 shadow-inner relative" style="z-index: 1;"></div>
                             @else
                                 <div class="w-full h-64 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-center p-6">
                                     <x-heroicon-o-map-pin class="w-12 h-12 text-gray-300 mb-2" />
@@ -117,7 +113,7 @@
                             @endif
                         </div>
 
-                        {{-- Sisi Kanan: Detail Data Lahan Sesuai Atribut Fillable Anda --}}
+                        {{-- Sisi Kanan: Detail Data Lahan --}}
                         <div class="flex-1 bg-gray-50/60 rounded-2xl p-6 border border-gray-100 flex flex-col justify-center">
                             @if($petani->lahan)
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 text-xs">
@@ -166,4 +162,46 @@
         </div>
     </form>
 </div>
+
+{{-- Script Penggambar Polygon Leaflet --}}
+@if($petani->lahan && $petani->lahan->area_lahan)
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // 1. Ambil data mentah koordinat dari DB
+        const rawData = {!! $petani->lahan->area_lahan !!};
+        
+        try {
+            // Pastikan data diparsing menjadi array objek javascript
+            const areaData = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
+
+            if (Array.isArray(areaData) && areaData.length > 0) {
+                // 2. Mapping format [{lat, lng}] ke format array koordinat Leaflet [[lat, lng]]
+                const polygonCoordinates = areaData.map(item => [item.lat, item.lng]);
+
+                // 3. Inisialisasi peta ke element #map, set koordinat pusat awal ke titik pertama polygon
+                const map = L.map('map').setView(polygonCoordinates[0], 15);
+
+                // 4. Tambahkan layer peta OpenStreetMap standart
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
+
+                // 5. Gambar objek poligon lahan di atas peta
+                const polygon = L.polygon(polygonCoordinates, {
+                    color: '#214122',       // Garis tepi warna hijau gelap sesuai tema webmu
+                    fillColor: '#214122',   // Isian warna hijau
+                    fillOpacity: 0.4,       // Tingkat transparansi isian poligon
+                    weight: 3               // Ketebalan garis tepi
+                }).addTo(map);
+
+                // 6. Atur batas zoom kamera otomatis agar fit dan fokus membungkus seluruh poligon lahan
+                map.fitBounds(polygon.getBounds());
+            }
+        } catch (error) {
+            console.error("Gagal memproses struktur koordinat polygon:", error);
+        }
+    });
+</script>
+@endif
+
 @endsection
