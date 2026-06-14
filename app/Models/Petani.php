@@ -7,9 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Petani extends Model
 {
     protected $table = 'petani';
-
     protected $primaryKey = 'petani_id';
-
     public $timestamps = false;
 
     protected $fillable = [
@@ -24,4 +22,10 @@ class Petani extends Model
         'petani_tanggal_lahir',
         'petani_username'
     ];
+
+    // relasi ke tabel lahan
+    public function lahan()
+    {
+        return $this->hasOne(Lahan::class, 'petani_id', 'petani_id');
+    }
 }

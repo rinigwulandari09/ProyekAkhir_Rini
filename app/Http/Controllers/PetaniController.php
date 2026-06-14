@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Petani; // Ditambahkan: Wajib di-import agar tidak error Class Not Found
 use Illuminate\Http\Request;
 
 class PetaniController extends Controller
@@ -9,21 +10,40 @@ class PetaniController extends Controller
     public function index()
     {
         // Mengambil semua data dari tabel petani
-        $petani = \App\Models\Petani::all(); 
+        $petani = Petani::all(); 
         return view('super_admin.petani.index', compact('petani'));
     }    
     
-    public function show($id)
-    {
-        $petani = Petani::findOrFail($id);
+    public function edit($id)
+{
+    // Mengambil data petani beserta lahannya
+    $petani = Petani::with('lahan')->findOrFail($id);
 
-        return view('super_admin.petani.show', compact('petani'));
-    }
+    // Mengarah ke file resources/views/super_admin/petani/edit.blade.php
+    return view('super_admin.petani.edit', compact('petani'));
+}
+
+    public function updateStatus(Request $request, $id)
+{
+    $request->validate([
+        'petani_status' => 'required|in:Aktif,Nonaktif'
+    ]);
+
+    $petani = Petani::findOrFail($id);
+    $petani->update([
+        'petani_status' => $request->petani_status
+    ]);
+
+    // BARU: Di-redirect ke rute petani.edit (Aman menggunakan metode GET bawaan browser)
+    return redirect()
+        ->route('petani.edit', $id)
+        ->with('success', 'Status akun petani berhasil diperbarui');
+}
 
     public function destroy($id)
     {
-        $petani = Petani::where('petani_id', $id)->firstOrFail();
-
+        // Mencari data berdasarkan primary key petani_id
+        $petani = Petani::findOrFail($id);
         $petani->delete();
 
         return redirect()

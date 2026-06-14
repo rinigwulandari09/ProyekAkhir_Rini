@@ -23,6 +23,7 @@ Route::middleware(['auth'])->group(function () {
 
     // DASHBOARD
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('super_admin.dashboard');
+
     // untuk update status petani di dashboard
     Route::put('/dashboard/petani/{id}/status', [DashboardController::class, 'updateStatus'])->name('petani.updateStatus');
 
@@ -49,16 +50,16 @@ Route::middleware(['auth'])->group(function () {
 
 
     // --- DATA PETANI ---
-    Route::get('/data-petani', [PetaniController::class, 'index'])->name('petani.index');
+   Route::get('/petani', [PetaniController::class, 'index'])
+    ->name('petani.index');
 
-    Route::get('/data-petani/{id}', function ($id) {
-        return view('super_admin.petani.show', ['id' => $id]);
-    })->name('petani.show');
+    Route::get('/petani/{id}/edit', [PetaniController::class, 'edit'])
+        ->name('petani.edit');
 
-    Route::delete('/data-petani/{id}', [PetaniController::class, 'destroy'])
+    Route::delete('/petani/{id}', [PetaniController::class, 'destroy'])
     ->name('petani.destroy');
 
-
+    
     // --- DATA LAHAN ---
     Route::get('/data-lahan', [LahanController::class, 'index'])->name('lahan.index');
 

@@ -82,7 +82,7 @@
                         {{-- 11. Aksi --}}
                         <td class="p-4">
                             <div class="flex justify-center gap-3">
-                                <a href="{{ route('petani.show', $p->petani_id) }}" class="text-green-700 hover:scale-110 transition">
+                                <a href="{{ route('petani.edit', $p->petani_id) }}" class="text-green-700 hover:scale-110 transition">
                                     <x-heroicon-o-pencil-square class="w-5 h-5" />
                                 </a>
 
