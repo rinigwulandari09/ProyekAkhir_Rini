@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\DesaController;
 use App\Http\Controllers\Api\ProduksiController;
 use App\Http\Controllers\Api\BiayaOperasionalController;
 use App\Http\Controllers\Api\JenisKegiatanController;
+use App\Http\Controllers\Api\LahanController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::get('/desa', [DesaController::class, 'index']);
@@ -18,5 +19,11 @@ Route::get('/biaya-operasional', [BiayaOperasionalController::class, 'index']);
 Route::post('/biaya-operasional', [BiayaOperasionalController::class, 'store']);
 Route::get('/biaya-operasional/{id}', [BiayaOperasionalController::class, 'show']);
 
-#jenis kegiatan
+# jenis kegiatan
 Route::get('/jenis-kegiatan', [JenisKegiatanController::class, 'index']);
+Route::post('/jenis-kegiatan', [JenisKegiatanController::class, 'store']);
+
+# lahan
+Route::get('/lahan', [LahanController::class, 'index']);
+Route::get('/lahan/petani/{petaniId}', [LahanController::class, 'getByPetani']);
+Route::post('/lahan', [LahanController::class, 'store']);

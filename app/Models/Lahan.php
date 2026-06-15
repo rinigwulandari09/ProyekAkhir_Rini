@@ -25,7 +25,8 @@ class Lahan extends Model
         'lahan_lokasi',
         'lahan_luas',
         'petani_id',
-        'area_lahan'
+        'area_lahan',
+        'lahan_nama'
     ];
 
     public function petani()
