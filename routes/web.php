@@ -17,18 +17,17 @@ Route::post('/logout', [LoginController::class,'logout'])
     ->name('logout');
 
     
-
 // SEMUA ROUTE DI BAWAH INI HARUS LOGIN
 Route::middleware(['auth'])->group(function () {
 
     // DASHBOARD
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('super_admin.dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // untuk update status petani di dashboard
     Route::put('/dashboard/petani/{id}/status', [DashboardController::class, 'updateStatus'])->name('petani.updateStatus');
 
-    Route::get('/admin/dashboard', [DashboardController::class, 'index'])->middleware('auth');
-
+    // dashboard admin
+    
     // --- MANAJEMEN USER (CRUD) ---
     // Menampilkan Tabel User
     Route::get('/data-user', [UserController::class, 'index'])->name('user.index');
@@ -49,21 +48,52 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/data-user/{id}', [UserController::class, 'destroy'])->name('user.destroy');
 
 
-    // --- DATA PETANI ---
-   Route::get('/petani', [PetaniController::class, 'index'])
-    ->name('petani.index');
+    // --- KELOLA DATA PETANI (Dipakai Bersama oleh Admin & Super Admin) ---
+    // Menampilkan halaman daftar petani (Otomatis mendeteksi layout di Controller)
+    Route::get('/petani', [PetaniController::class, 'index'])
+        ->name('petani.index');
 
+    // Menampilkan halaman form edit petani
     Route::get('/petani/{id}/edit', [PetaniController::class, 'edit'])
         ->name('petani.edit');
 
+    // Proses memperbarui status/data petani
+    Route::post('/petani/{id}/update-status', [PetaniController::class, 'updateStatus'])
+        ->name('petani.updateStatus');
+
+    // Proses menghapus data petani (Sekarang bisa dieksekusi oleh Admin & Super Admin)
     Route::delete('/petani/{id}', [PetaniController::class, 'destroy'])
-    ->name('petani.destroy');
+        ->name('petani.destroy');
 
     
     // --- DATA LAHAN ---
     Route::get('/data-lahan', [LahanController::class, 'index'])->name('lahan.index');
 
     Route::get('/data-lahan/{id}', [LahanController::class, 'show'])->name('lahan.show');
+
+
+    // --- DATA LAHAN ---
+    // 1. Halaman Utama Daftar Lahan (Bisa diakses Admin & Super Admin)
+    Route::get('/lahan', [LahanController::class, 'index'])->name('lahan.index');
+
+    // 2. Halaman Form Tambah Lahan (Khusus Admin - Membuka view/admin/lahan/tambah.blade.php)
+    Route::get('/lahan/create', [LahanController::class, 'create'])->name('lahan.create');
+
+    // 3. Eksekusi Simpan Data Lahan Baru ke Database (Dipanggil saat submit form)
+    Route::post('/lahan', [LahanController::class, 'store'])->name('lahan.store');
+
+    // 4. Halaman Detail Lahan / Lihat Peta
+    Route::get('/lahan/{id}', [LahanController::class, 'show'])->name('lahan.show');
+
+    // 5. Halaman Edit Lahan
+    Route::get('/lahan/{id}/edit', [LahanController::class, 'edit'])->name('lahan.edit');
+
+    // 6. Eksekusi Update Data Lahan
+    Route::put('/lahan/{id}', [LahanController::class, 'update'])->name('lahan.update');
+
+    // 7. Eksekusi Hapus Data Lahan
+    Route::delete('/lahan/{id}', [LahanController::class, 'destroy'])->name('lahan.destroy');
+
 
 
     // --- KEUANGAN ---

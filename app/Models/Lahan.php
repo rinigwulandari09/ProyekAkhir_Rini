@@ -31,7 +31,7 @@ class Lahan extends Model
 
     public function petani()
     {
-        // Hubungkan ke tabel user berdasarkan kolom 'petani_id' dan primary key 'user_id'
+        // Hubungkan ke tabel user berdasarkan kolom 'petani_id' dan primary key 'petani_id'
         return $this->belongsTo(Petani::class, 'petani_id', 'petani_id');
     }
 }

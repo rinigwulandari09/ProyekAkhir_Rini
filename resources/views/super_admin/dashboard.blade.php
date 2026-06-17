@@ -26,7 +26,7 @@
         </div>
         <div class="bg-[#A8D5BA] p-6 rounded-xl flex items-center justify-between shadow-sm border border-black/5">
             <div>
-                <p class="text-green-900 font-bold text-sm">Jumlah Lahan</p>
+                <p class="text-green-900 font-bold text-sm">Luas Lahan (Ha)</p>
                 <h3 class="text-3xl font-black text-green-900 leading-none">
                     {{ number_format($jumlahLahan, 0, ',', '.') }}
                 </h3>

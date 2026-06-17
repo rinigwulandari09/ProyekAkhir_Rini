@@ -29,19 +29,7 @@ class LoginController extends Controller
 
             $request->session()->regenerate();
 
-            $user = Auth::user();
-
-            switch ($user->user_role) {
-
-                case 'super_admin':
-                    return redirect()->route('super_admin.dashboard');
-
-                case 'admin':
-                    return redirect()->route('admin.dashboard');
-
-                default:
-                    return redirect()->route('dashboard');
-            }
+            return redirect()->route('dashboard');
         }
 
         return back()

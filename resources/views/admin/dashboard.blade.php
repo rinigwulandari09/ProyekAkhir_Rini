@@ -1,6 +1,16 @@
 @extends('layouts.admin')
 
+@section('title', 'Beranda')
+
 @section('content')
+{{-- Include Leaflet.js Assets & Chart.js --}}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+{{-- Tambahan CSS Buttons --}}
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+
 <div class="space-y-6">
     
     {{-- Statistik Utama --}}
@@ -16,7 +26,7 @@
         </div>
         <div class="bg-[#A8D5BA] p-6 rounded-xl flex items-center justify-between shadow-sm border border-black/5">
             <div>
-                <p class="text-green-900 font-bold text-sm">Jumlah Lahan</p>
+                <p class="text-green-900 font-bold text-sm">Luas Lahan (Ha)</p>
                 <h3 class="text-3xl font-black text-green-900 leading-none">
                     {{ number_format($jumlahLahan, 0, ',', '.') }}
                 </h3>
@@ -76,20 +86,19 @@
             <x-heroicon-o-map-pin class="w-4 h-4 text-gray-500" />
             <h3 class="text-[10px] font-bold text-gray-500 uppercase">Sebaran Lahan Anggota</h3>
         </div>
-        <div class="w-full h-80 rounded-lg overflow-hidden bg-gray-200 relative">
-            <img src="https://maps.googleapis.com/maps/api/staticmap?center=-0.489,101.406&zoom=13&size=800x400&maptype=satellite&key=YOUR_KEY" class="w-full h-full object-cover">
-        </div>
+        {{-- Container Peta Sebaran --}}
+        <div id="mapSebaran" class="w-full h-96 rounded-lg bg-gray-100 relative border border-gray-200" style="z-index: 1;"></div>
     </div>
 
 </div>
 
-{{-- JAVASCRIPT --}}
+{{-- Script Inisialisasi Chart.js, DataTables & Leaflet --}}
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // 1. Grafik Pemasukan
+        // --- 1. CONFIG GRAFIK PEMASUKAN (LINE CHART) ---
         const ctxPemasukan = document.getElementById('chartPemasukan').getContext('2d');
         const dataPemasukan = @json(array_values($pemasukanGrafik)); 
 
@@ -98,6 +107,7 @@
             data: {
                 labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
                 datasets: [{
+                    label: 'Total Pemasukan (Rp)',
                     data: dataPemasukan,
                     borderColor: '#234323', 
                     backgroundColor: 'rgba(35, 67, 35, 0.1)',
@@ -111,12 +121,15 @@
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    y: { beginAtZero: true, ticks: { callback: value => 'Rp ' + value.toLocaleString('id-ID') } }
+                    y: {
+                        beginAtZero: true,
+                        ticks: { callback: value => 'Rp ' + value.toLocaleString('id-ID') }
+                    }
                 }
             }
         });
 
-        // 2. Grafik Pengeluaran
+        // --- 2. CONFIG GRAFIK PENGELUARAN (PIE CHART) ---
         const ctxPengeluaran = document.getElementById('chartPengeluaran').getContext('2d');
         const rawPengeluaran = @json($pengeluaranGrafik);
         const labelsPengeluaran = rawPengeluaran.map(item => item.biaya_jenis);
@@ -135,36 +148,63 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } }
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { boxWidth: 12, font: { size: 10 } }
+                    }
+                }
             }
         });
-    });
 
-    // 3. DataTables
-    $(document).ready(function() {
-        $('#tabelPetani').DataTable({
-            "pageLength": 5,
-            "lengthMenu": [5, 10, 25, 50],
-            "order": [[ 0, "asc" ]], 
-            "dom": '<"flex justify-between items-center mb-4"lf>rt<"flex justify-between items-center mt-4"ip>',
-            "language": {
-                "search": "Cari:",
-                "lengthMenu": "Tampilkan _MENU_ data",
-                "zeroRecords": "Tidak ada data petani pending",
-                "info": "Menampilkan _PAGE_ dari _PAGES_",
-                "infoEmpty": "Tidak ada data tersedia",
-                "paginate": { "previous": "Sebelumnya", "next": "Selanjutnya" }
-            },
-            "columnDefs": [{ "orderable": false, "targets": 4 }]
+        // --- 3. CONFIG LEAFLET MAPS - SEBARAN BANYAK LAHAN ---
+        const mapSebaran = L.map('mapSebaran').setView([-0.489, 101.406], 12);
+
+        // MENGGUNAKAN OPENSTREETMAP (Peta Jalanan Minimalis Bersih)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(mapSebaran);
+
+        const polygonGroup = L.featureGroup().addTo(mapSebaran);
+        const listLahan = @json($semuaLahan ?? []);
+
+        listLahan.forEach(function(lahan) {
+            if (lahan.area_lahan) {
+                try {
+                    const areaData = typeof lahan.area_lahan === 'string' ? JSON.parse(lahan.area_lahan) : lahan.area_lahan;
+                    
+                    if (Array.isArray(areaData) && areaData.length > 0) {
+                        const polyCoords = areaData.map(coord => [coord.lat, coord.lng]);
+
+                        // Menggunakan style hijau gelap elegan (#214122) agar serasi dengan web
+                        const polygon = L.polygon(polyCoords, {
+                            color: '#214122',       
+                            fillColor: '#214122',   
+                            fillOpacity: 0.4,       
+                            weight: 3               
+                        });
+
+                        polygon.bindPopup(`
+                            <div style="font-family: sans-serif; font-size: 12px; min-width: 150px;">
+                                <strong style="color: #214122; font-size: 13px;">Detail Lahan Anggota</strong><br>
+                                <hr style="margin: 4px 0; border: 0; border-top: 1px solid #eee;">
+                                <b>Lokasi:</b> ${lahan.lahan_lokasi || '-'}<br>
+                                <b>Luas Lahan:</b> ${lahan.lahan_luas || '0'} Ha
+                            </div>
+                        `);
+
+                        polygon.addTo(polygonGroup);
+                    }
+                } catch (e) {
+                    console.error("Gagal membaca koordinat lahan ID: " + lahan.lahan_id, e);
+                }
+            }
         });
-    });
-</script>
 
-{{-- CSS Tambahan --}}
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-<style>
-    .dataTables_wrapper .dataTables_filter input { border: 1px solid #e5e7eb !important; border-radius: 9999px !important; padding: 4px 12px !important; margin-bottom: 10px !important; outline: none !important; }
-    .dataTables_wrapper .dataTables_length select { border: 1px solid #e5e7eb !important; border-radius: 8px !important; padding: 2px 8px !important; }
-    table.dataTable thead th { border-bottom: 1px solid #e5e7eb !important; }
-</style>
+        if (polygonGroup.getLayers().length > 0) {
+            mapSebaran.fitBounds(polygonGroup.getBounds(), { padding: [40, 40] });
+        }
+    });
+
+</script>
 @endsection

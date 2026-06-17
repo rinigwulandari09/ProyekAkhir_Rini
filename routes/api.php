@@ -9,7 +9,10 @@ use App\Http\Controllers\Api\JenisKegiatanController;
 use App\Http\Controllers\Api\LahanController;
 use App\Http\Controllers\Api\KegiatanController;
 
+
 Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+
 Route::get('/desa', [DesaController::class, 'index']);
 //produksi
 Route::get('/produksi', [ProduksiController::class, 'index']);

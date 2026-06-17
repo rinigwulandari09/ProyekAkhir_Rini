@@ -10,34 +10,53 @@ class PetaniController extends Controller
     public function index()
     {
         $petani = Petani::with('desa')->get();
-        return view('super_admin.petani.index', compact('petani'));
-    }    
+        $user = auth()->user();
+
+        // Jika Super Admin, gunakan layout master 'layouts.dashboard'
+        if ($user->user_role === 'super_admin') {
+            return view('super_admin.petani.index', compact('petani'));
+        } 
+        // Jika Admin Biasa, gunakan layout master 'layouts.app'
+        elseif ($user->user_role === 'admin') {
+            return view('admin.petani.index', compact('petani'));
+        }
+
+        abort(403);
+    }   
     
     public function edit($id)
-{
-    // Mengambil data petani beserta lahan dan desa
-    $petani = Petani::with(['lahan', 'desa'])->findOrFail($id);
+    {
+        $petani = Petani::with(['lahan', 'desa'])->findOrFail($id);
+        $user = auth()->user();
 
-    // Mengarah ke file resources/views/super_admin/petani/edit.blade.php
-    return view('super_admin.petani.edit', compact('petani'));
-}
+        // Jika Super Admin, gunakan pembungkus view super_admin
+        if ($user->user_role === 'super_admin') {
+            return view('super_admin.petani.edit', compact('petani'));
+        } 
+        // Jika Admin, gunakan pembungkus view admin biasa
+        elseif ($user->user_role === 'admin') {
+            return view('admin.petani.edit', compact('petani'));
+        }
+
+        abort(403);
+    }
 
     public function updateStatus(Request $request, $id)
-{
-    $request->validate([
-        'petani_status' => 'required|in:Aktif,Nonaktif'
-    ]);
+    {
+        $request->validate([
+            'petani_status' => 'required|in:Aktif,Nonaktif'
+        ]);
 
-    $petani = Petani::findOrFail($id);
-    $petani->update([
-        'petani_status' => $request->petani_status
-    ]);
+        $petani = Petani::findOrFail($id);
+        $petani->update([
+            'petani_status' => $request->petani_status
+        ]);
 
-    // BARU: Di-redirect ke rute petani.edit (Aman menggunakan metode GET bawaan browser)
-    return redirect()
-        ->route('petani.edit', $id)
-        ->with('success', 'Status akun petani berhasil diperbarui');
-}
+        // BARU: Di-redirect ke rute petani.edit (Aman menggunakan metode GET bawaan browser)
+        return redirect()
+            ->route('petani.edit', $id)
+            ->with('success', 'Status akun petani berhasil diperbarui');
+    }
 
     public function destroy($id)
     {
