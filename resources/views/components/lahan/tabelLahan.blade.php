@@ -47,12 +47,12 @@
                     <tr class="hover:bg-gray-50 transition">
                         <td class="p-4 text-xs text-center text-gray-500 font-mono"></td>
                         <td class="p-4 text-xs text-gray-800 font-medium">{{ $lahan->lahan_lokasi }}</td>
-                        <td class="p-4 text-xs text-gray-600 text-center">{{ $lahan->lahan_luas }} Ha</td>
+                        <td class="p-4 text-xs text-gray-600 text-justify">{{ $lahan->lahan_luas }} Ha</td>
                         <td class="p-4 text-xs text-gray-600">
                             {{ $lahan->petani ? $lahan->petani->petani_nama : 'Tidak terikat petani' }}
                         </td>
                         <td class="p-4">
-                            <div class="flex justify-center gap-3 items-center">
+                            <div class="flex justify gap-3 items-justify">
                                 {{-- Detail Lahan (Bisa dilihat oleh Admin & Super Admin) --}}
                                 <a href="{{ route('lahan.show', $lahan->lahan_id) }}" class="text-blue-600 hover:scale-110 transition" title="Lihat Peta / Detail">
                                     <x-heroicon-o-map-pin class="w-5 h-5" />
@@ -100,6 +100,20 @@
         if ($.fn.dataTable && $.fn.dataTable.Buttons) { $.fn.dataTable.Buttons.jszip(window.JSZip); }
         if ($.fn.DataTable.isDataTable('#lahanTable')) { $('#lahanTable').DataTable().destroy(); }
 
+        // Format pembersih teks spasi kosong berlebih pada row data export
+        var cleanExportFormat = {
+            body: function (data, row, column, node) {
+                if (column === 0) {
+                    return row + 1;
+                }
+                if (node !== null) {
+                    let text = node.textContent || node.innerText || "";
+                    return text.replace(/\s+/g, ' ').trim();
+                }
+                return data;
+            }
+        };
+
         var table = $('#lahanTable').DataTable({
             "destroy": true,
             "language": { "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json" },
@@ -124,17 +138,77 @@
                     text: '<svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path></svg> Export ke Excel',
                     className: 'btn-export-excel',
                     title: 'Data_Lahan_NotaSawit',
-                    exportOptions: { columns: [0, 1, 2, 3] }
+                    exportOptions: { 
+                        columns: [0, 1, 2, 3],
+                        format: cleanExportFormat
+                    }
                 },
                 {
                     extend: 'pdfHtml5',
                     text: '<svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path></svg> Export ke PDF',
                     className: 'btn-export-pdf',
-                    title: 'Data_Lahan_NotaSawit',
-                    exportOptions: { columns: [0, 1, 2, 3] }
+                    title: 'LAPORAN DAFTAR LAHAN SPASIAL',
+                    filename: 'Data_Lahan_NotaSawit',
+                    orientation: 'portrait',
+                    pageSize: 'A4',
+                    exportOptions: { 
+                        columns: [0, 1, 2, 3],
+                        format: cleanExportFormat
+                    },
+                    customize: function (doc) {
+                        // Atur proporsi lebar kolom penuh halaman A4
+                        doc.content[1].table.widths = ['10%', '35%', '20%', '35%'];
+
+                        // Mengatur gaya judul PDF utama
+                        doc.styles.title = {
+                            color: '#1e293b',
+                            fontSize: '15',
+                            alignment: 'center',
+                            bold: true,
+                            margin: [0, 0, 0, 20]
+                        };
+
+                        doc.content[1].table.headerRows = 1;
+                        var rowCount = doc.content[1].table.body.length;
+                        
+                        // Kustomisasi warna background Header kolom PDF (Hijau Tua)
+                        for (var i = 0; i < doc.content[1].table.body[0].length; i++) {
+                            doc.content[1].table.body[0][i].fillColor = '#214122';
+                            doc.content[1].table.body[0][i].color = 'white';
+                            doc.content[1].table.body[0][i].alignment = 'center';
+                            doc.content[1].table.body[0][i].bold = true;
+                        }
+
+                        // Set tata letak alignment baris sel tabel
+                        for (var j = 1; j < rowCount; j++) {
+                            doc.content[1].table.body[j][0].alignment = 'center'; // No
+                            doc.content[1].table.body[j][1].alignment = 'left';   // Lokasi
+                            doc.content[1].table.body[j][2].alignment = 'center'; // Luas
+                            doc.content[1].table.body[j][3].alignment = 'left';   // Pemilik
+                            
+                            if (j % 2 === 0) {
+                                for (var k = 0; k < doc.content[1].table.body[j].length; k++) {
+                                    doc.content[1].table.body[j][k].fillColor = '#f8fafc';
+                                }
+                            }
+                        }
+
+                        // Gridlines & Padding tabel PDF
+                        var objLayout = {};
+                        objLayout['hLineWidth'] = function(i) { return .5; };
+                        objLayout['vLineWidth'] = function(i) { return .5; };
+                        objLayout['hLineColor'] = function(i) { return '#cbd5e1'; };
+                        objLayout['vLineColor'] = function(i) { return '#cbd5e1'; };
+                        objLayout['paddingLeft'] = function(i) { return 8; };
+                        objLayout['paddingRight'] = function(i) { return 8; };
+                        objLayout['paddingTop'] = function(i) { return 6; };
+                        objLayout['paddingBottom'] = function(i) { return 6; };
+                        doc.content[1].layout = objLayout;
+                    }
                 }
             ],
-            "dom": '<"flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-3"B <"flex items-center gap-4"lf>>rtip'
+            // Struktur "dom" dikembalikan seperti semula: B (tombol ekspor) di kiri, lalu l (Entries) dan f (Search) berdampingan di kanan
+            "dom": '<"flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-3"B <"flex items-center gap-4"l f>>rtip'
         });
 
         table.buttons().container().appendTo('#exportButtonsContainer');

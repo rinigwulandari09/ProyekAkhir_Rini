@@ -70,7 +70,7 @@
                     </button>
                 </form>
 
-                <p class="text-center text-gray-500 my-4">atau</p>
+                {{-- <p class="text-center text-gray-500 my-4">atau</p>
 
                 <button class="w-full border py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-100 transition">
                     <img
@@ -79,7 +79,7 @@
                         class="w-5 h-5"
                     />
                     <span class="text-gray-700">Masuk dengan Google</span>
-                </button>
+                </button> --}}
 
             </div>
         </div>

@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PetaniController;
 use App\Http\Controllers\LahanController;
+use App\Http\Controllers\KeuanganController;
 
 Route::get('/', [LoginController::class,'index'])
     ->name('login');
@@ -16,7 +17,10 @@ Route::post('/login', [LoginController::class,'authenticate'])
 Route::post('/logout', [LoginController::class,'logout'])
     ->name('logout');
 
-    
+// Tambahkan kedua route ini
+Route::get('/auth/google', [LoginController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('/auth/google/callback', [LoginController::class, 'handleGoogleCallback']);
+
 // SEMUA ROUTE DI BAWAH INI HARUS LOGIN
 Route::middleware(['auth'])->group(function () {
 
@@ -67,9 +71,9 @@ Route::middleware(['auth'])->group(function () {
 
     
     // --- DATA LAHAN ---
-    Route::get('/data-lahan', [LahanController::class, 'index'])->name('lahan.index');
+    // Route::get('/data-lahan', [LahanController::class, 'index'])->name('lahan.index');
 
-    Route::get('/data-lahan/{id}', [LahanController::class, 'show'])->name('lahan.show');
+    // Route::get('/data-lahan/{id}', [LahanController::class, 'show'])->name('lahan.show');
 
 
     // --- DATA LAHAN ---
@@ -97,9 +101,7 @@ Route::middleware(['auth'])->group(function () {
 
 
     // --- KEUANGAN ---
-    Route::get('/data-keuangan', function () {
-        return view('super_admin.keuangan.index');
-    })->name('keuangan.index');
+    Route::get('/keuangan', [KeuanganController::class, 'index'])->name('keuangan.index');
 
     Route::get('/data-keuangan/{id}', function ($id) {
         return view('super_admin.keuangan.show', ['id' => $id]);

@@ -36,4 +36,16 @@ class Petani extends Model
     {
         return $this->belongsTo(Desa::class, 'desa_id', 'desa_id');
     }
+
+    // relasi produksi
+    public function produksis()
+    {
+        return $this->hasMany(Produksi::class, 'petani_id', 'petani_id');
+    }
+
+    // relasi biaya_operasional
+    public function biayaOperasinals()
+    {
+        return $this->hasMany(BiayaOperasional::class, 'petani_id', 'petani_id');
+    }
 }

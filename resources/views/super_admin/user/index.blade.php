@@ -53,7 +53,7 @@
                         <td class="p-4 text-xs text-gray-800 font-medium">{{ $user->user_nama }}</td>
                         
                         {{-- 3. Username --}}
-                        <td class="p-4 text-xs text-gray-500 font-mono">@ {{ $user->user_username }}</td>
+                        <td class="p-4 text-xs text-gray-500 font-mono">{{ $user->user_username }}</td>
                         
                         {{-- 4. Email --}}
                         <td class="p-4 text-xs text-gray-600">{{ $user->user_email ?? '-' }}</td>
@@ -120,6 +120,20 @@
             $('#userTable').DataTable().destroy();
         }
 
+        // Format pembersih teks spasi kosong berlebih pada row data export
+        var cleanExportFormat = {
+            body: function (data, row, column, node) {
+                if (column === 0) {
+                    return row + 1; // Penomoran urut otomatis saat diexport
+                }
+                if (node !== null) {
+                    let text = node.textContent || node.innerText || "";
+                    return text.replace(/\s+/g, ' ').trim();
+                }
+                return data;
+            }
+        };
+
         var table = $('#userTable').DataTable({
             "destroy": true,
             "language": {
@@ -139,23 +153,81 @@
                     className: 'btn-export-excel',
                     title: 'Data_User_NotaSawit',
                     exportOptions: {
-                        columns: [0, 1, 2, 3, 4, 5]
+                        columns: [0, 1, 2, 3, 4, 5],
+                        format: cleanExportFormat
                     }
                 },
                 {
                     extend: 'pdfHtml5',
                     text: '<svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path></svg> Export ke PDF',
                     className: 'btn-export-pdf',
-                    title: 'Data_User_NotaSawit',
+                    title: 'LAPORAN DAFTAR PENGGUNA (ADMIN DAN SUPER ADMIN)',
+                    filename: 'Data_User_NotaSawit',
+                    orientation: 'landscape', // Landscape karena memiliki 6 kolom agar tidak padat
+                    pageSize: 'A4',
                     exportOptions: {
-                        columns: [0, 1, 2, 3, 4, 5]
+                        columns: [0, 1, 2, 3, 4, 5],
+                        format: cleanExportFormat
+                    },
+                    customize: function (doc) {
+                        // Atur proporsi lebar tiap kolom dalam dokumen PDF
+                        doc.content[1].table.widths = ['8%', '22%', '18%', '22%', '18%', '12%'];
+
+                        // Mengatur gaya judul utama PDF
+                        doc.styles.title = {
+                            color: '#1e293b',
+                            fontSize: '15',
+                            alignment: 'center',
+                            bold: true,
+                            margin: [0, 0, 0, 20]
+                        };
+
+                        doc.content[1].table.headerRows = 1;
+                        var rowCount = doc.content[1].table.body.length;
+                        
+                        // Kustomisasi warna background Header kolom PDF (Hijau Tua serasi)
+                        for (var i = 0; i < doc.content[1].table.body[0].length; i++) {
+                            doc.content[1].table.body[0][i].fillColor = '#214122';
+                            doc.content[1].table.body[0][i].color = 'white';
+                            doc.content[1].table.body[0][i].alignment = 'center';
+                            doc.content[1].table.body[0][i].bold = true;
+                        }
+
+                        // Set susunan letak teks kolom baris data tabel
+                        for (var j = 1; j < rowCount; j++) {
+                            doc.content[1].table.body[j][0].alignment = 'center'; // No
+                            doc.content[1].table.body[j][1].alignment = 'left';   // Nama
+                            doc.content[1].table.body[j][2].alignment = 'left';   // Username
+                            doc.content[1].table.body[j][3].alignment = 'left';   // Email
+                            doc.content[1].table.body[j][4].alignment = 'left';   // Desa Tugas
+                            doc.content[1].table.body[j][5].alignment = 'center'; // Role
+                            
+                            // Zebra striping baris genap berwarna abu-abu sangat muda
+                            if (j % 2 === 0) {
+                                for (var k = 0; k < doc.content[1].table.body[j].length; k++) {
+                                    doc.content[1].table.body[j][k].fillColor = '#f8fafc';
+                                }
+                            }
+                        }
+
+                        // Gridlines border halus & padding tabel PDF
+                        var objLayout = {};
+                        objLayout['hLineWidth'] = function(i) { return .5; };
+                        objLayout['vLineWidth'] = function(i) { return .5; };
+                        objLayout['hLineColor'] = function(i) { return '#cbd5e1'; };
+                        objLayout['vLineColor'] = function(i) { return '#cbd5e1'; };
+                        objLayout['paddingLeft'] = function(i) { return 8; };
+                        objLayout['paddingRight'] = function(i) { return 8; };
+                        objLayout['paddingTop'] = function(i) { return 6; };
+                        objLayout['paddingBottom'] = function(i) { return 6; };
+                        doc.content[1].layout = objLayout;
                     }
                 }
             ],
-            "dom": '<"flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-3"B <"flex items-center gap-4"lf>>rtip'
+            "dom": '<"flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-3"B <"flex items-center gap-4"l f>>rtip'
         });
 
-        // Bagian utama penentu agar nomor index digenerate ulang secara dinamis oleh DataTables
+        // Menjaga sinkronisasi penomoran baris halaman web
         table.on('order.dt search.dt', function () {
             let i = 1;
             table.cells(null, 0, { search: 'applied', order: 'applied' }).every(function (cell) {

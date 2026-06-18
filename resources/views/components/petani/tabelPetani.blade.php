@@ -36,7 +36,7 @@
                     <tr class="hover:bg-gray-50 transition">
                         <td class="p-4 text-xs text-center text-gray-500 font-mono"></td>
                         <td class="p-4 text-xs text-gray-800 font-medium">{{ $p->petani_nama }}</td>
-                        <td class="p-4 text-xs text-gray-600 font-mono">@ {{ $p->petani_username ?? '-' }}</td>
+                        <td class="p-4 text-xs text-gray-600 font-mono">{{ $p->petani_username ?? '-' }}</td>
                         <td class="p-4 text-xs text-gray-800">{{ $p->petani_no_hp ?? '-' }}</td>
                         <td class="p-4 text-xs text-gray-500">{{ $p->petani_email }}</td>
                         <td class="p-4 text-xs text-gray-600">{{ $p->petani_jenis_kelamin ?? '-' }}</td>
@@ -100,31 +100,119 @@
         if ($.fn.dataTable && $.fn.dataTable.Buttons) { $.fn.dataTable.Buttons.jszip(window.JSZip); }
         if ($.fn.DataTable.isDataTable('#petaniTable')) { $('#petaniTable').DataTable().destroy(); }
 
+        // Format pembersih teks spasi kosong berlebih pada row data export
+        var cleanExportFormat = {
+            body: function (data, row, column, node) {
+                if (column === 0) {
+                    return row + 1; // Penomoran urut otomatis saat diexport
+                }
+                if (node !== null) {
+                    let text = node.textContent || node.innerText || "";
+                    return text.replace(/\s+/g, ' ').trim();
+                }
+                return data;
+            }
+        };
+
         var table = $('#petaniTable').DataTable({
             "destroy": true,
             "language": { "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json" },
             "pageLength": 5,
             "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
             "order": [[ 1, "asc" ]],
-            "columnDefs": [ { "orderable": false, "targets": [0, 10] } ],
+            "columnDefs": [ 
+                { "orderable": false, "targets": [0, 10] },
+                { "searchable": false, "targets": [0, 10] }
+            ],
             "buttons": [
                 {
                     extend: 'excelHtml5',
-                    text: 'Export ke Excel',
+                    text: '<svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path></svg> Export ke Excel',
                     className: 'btn-export-excel',
                     title: 'Data_Petani_NotaSawit',
-                    exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] }
+                    exportOptions: { 
+                        columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+                        format: cleanExportFormat
+                    }
                 },
                 {
                     extend: 'pdfHtml5',
-                    text: 'Export ke PDF',
+                    text: '<svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path></svg> Export ke PDF',
                     className: 'btn-export-pdf',
-                    title: 'Data_Petani_NotaSawit',
+                    title: 'LAPORAN DAFTAR DATA PETANI SAWIT',
+                    filename: 'Data_Petani_NotaSawit',
                     orientation: 'landscape',
-                    exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] }
+                    pageSize: 'A4',
+                    exportOptions: { 
+                        columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+                        format: cleanExportFormat
+                    },
+                    customize: function (doc) {
+                        // 1. Atur lebar spesifik per kolom dalam % (Total harus 100%)
+                        // Urutan: No, Nama, Username, No. HP, Email, Gender, Tgl Lahir, Desa, Alamat, Status
+                        doc.content[1].table.widths = ['4%', '12%', '10%', '10%', '16%', '7%', '9%', '10%', '14%', '8%'];
+
+                        // Mengatur gaya judul utama PDF
+                        doc.styles.title = {
+                            color: '#1e293b',
+                            fontSize: '15',
+                            alignment: 'center',
+                            bold: true,
+                            margin: [0, 0, 0, 20]
+                        };
+
+                        // 2. Kecilkan ukuran font default tabel agar pas di kertas A4 (PENTING)
+                        doc.styles.tableBodyNormal = { fontSize: 8 };
+                        doc.styles.tableHeader = { fontSize: 8, bold: true };
+
+                        doc.content[1].table.headerRows = 1;
+                        var rowCount = doc.content[1].table.body.length;
+                        
+                        // Mewarnai baris header tabel menjadi Hijau Tua serasi
+                        for (var i = 0; i < doc.content[1].table.body[0].length; i++) {
+                            doc.content[1].table.body[0][i].fillColor = '#214122';
+                            doc.content[1].table.body[0][i].color = 'white';
+                            doc.content[1].table.body[0][i].alignment = 'center';
+                            doc.content[1].table.body[0][i].fontSize = 8; // Terapkan font kecil ke header
+                        }
+
+                        // Set tata letak alignment konten baris sel tabel
+                        for (var j = 1; j < rowCount; j++) {
+                            doc.content[1].table.body[j][0].alignment = 'center'; // No
+                            doc.content[1].table.body[j][3].alignment = 'center'; // No. HP
+                            doc.content[1].table.body[j][5].alignment = 'center'; // Gender
+                            doc.content[1].table.body[j][6].alignment = 'center'; // Tgl Lahir
+                            doc.content[1].table.body[j][9].alignment = 'center'; // Status
+                            
+                            // Terapkan font kecil ke semua baris data agar teks panjang otomatis wrapping kebawah (tidak lurus memotong)
+                            for (var c = 0; c < doc.content[1].table.body[j].length; c++) {
+                                doc.content[1].table.body[j][c].fontSize = 8;
+                            }
+
+                            // Zebra Striping ringan baris genap
+                            if (j % 2 === 0) {
+                                for (var k = 0; k < doc.content[1].table.body[j].length; k++) {
+                                    doc.content[1].table.body[j][k].fillColor = '#f8fafc';
+                                }
+                            }
+                        }
+
+                        // Gridlines & Padding tabel PDF
+                        var objLayout = {};
+                        objLayout['hLineWidth'] = function(i) { return .5; };
+                        objLayout['vLineWidth'] = function(i) { return .5; };
+                        objLayout['hLineColor'] = function(i) { return '#cbd5e1'; };
+                        objLayout['vLineColor'] = function(i) { return '#cbd5e1'; };
+                        objLayout['paddingLeft'] = function(i) { return 4; }; // Padding dipersempit sedikit agar muat
+                        objLayout['paddingRight'] = function(i) { return 4; };
+                        objLayout['paddingTop'] = function(i) { return 5; };
+                        objLayout['paddingBottom'] = function(i) { return 5; };
+                        doc.content[1].layout = objLayout;
+                    }
                 }
             ],
-            "dom": '<"flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-3"B <"flex items-center gap-4"lf>>rtip'
+            // Kontrol penempatan dom: B (Buttons) di kiri, l (length/entries) & f (filter/search) rapat di kanan
+            "dom": '<"flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-3"B <"flex items-center gap-4"l f>>rtip'
         });
 
         table.on('order.dt search.dt draw.dt', function () {
@@ -139,8 +227,16 @@
 </script>
 
 <style>
-    /* Paste semua custom CSS style DataTables Anda di sini */
-    .dataTables_wrapper .dataTables_filter input { border: 1px solid #e5e7eb !important; border-radius: 9999px !important; padding: 4px 12px !important; }
-    .dt-buttons .btn-export-excel { background-color: transparent !important; border: 1px solid #10B981 !important; color: #047857 !important; border-radius: 0.5rem !important; padding: 0.5rem 1rem !important; font-weight: 600 !important; }
-    .dt-buttons .btn-export-pdf { background-color: transparent !important; border: 1px solid #FCA5A5 !important; color: #DC2626 !important; border-radius: 0.5rem !important; padding: 0.5rem 1rem !important; font-weight: 600 !important; }
+    /* Custom CSS style DataTables */
+    .dataTables_wrapper .dataTables_filter input { border: 1px solid #e5e7eb !important; border-radius: 9999px !important; padding: 4px 12px !important; outline: none !important; }
+    .dataTables_wrapper .dataTables_filter input:focus { border-color: #214122 !important; }
+    .dataTables_wrapper .dataTables_length select { border: 1px solid #e5e7eb !important; border-radius: 8px !important; padding: 4px 24px 4px 8px !important; }
+    
+    .dt-buttons .btn-export-excel { background-color: transparent !important; border: 1px solid #10B981 !important; color: #047857 !important; border-radius: 0.5rem !important; padding: 0.5rem 1rem !important; font-weight: 600 !important; font-size: 0.875rem !important; transition: all 0.2s !important; box-shadow: none !important; }
+    .dt-buttons .btn-export-excel:hover { background-color: #F0FDF4 !important; transform: scale(1.02); }
+    
+    .dt-buttons .btn-export-pdf { background-color: transparent !important; border: 1px solid #FCA5A5 !important; color: #DC2626 !important; border-radius: 0.5rem !important; padding: 0.5rem 1rem !important; font-weight: 600 !important; font-size: 0.875rem !important; transition: all 0.2s !important; box-shadow: none !important; }
+    .dt-buttons .btn-export-pdf:hover { background-color: #FEF2F2 !important; transform: scale(1.02); }
+    
+    .dt-buttons { float: none !important; }
 </style>

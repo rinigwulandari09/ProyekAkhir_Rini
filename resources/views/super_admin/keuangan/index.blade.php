@@ -4,135 +4,284 @@
 
 @section('content')
 <div class="p-2">
-    {{-- Header & Summary Cards --}}
-    <div class="flex justify-between items-start mb-6">
+    {{-- Header Section --}}
+    <div class="flex flex-col md:flex-row justify-between items-start gap-4 mb-6">
         <div>
             <h1 class="text-2xl font-bold text-[#214122]">Daftar Keuangan Petani</h1>
-            <p class="text-sm text-gray-500">Ringkasan aktivitas keuangan seluruh petani sawit yang terdaftar.</p>
+            <p class="text-sm text-gray-500">Ringkasan aktivitas pemasukan (produksi) dan pengeluaran (operasional) seluruh petani.</p>
         </div>
         
-        <div class="flex gap-4">
+        <div class="flex flex-wrap gap-4 w-full md:w-auto">
             {{-- Card Pemasukan --}}
-            <div class="bg-white p-3 px-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+            <div class="bg-white p-3 px-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 flex-1 md:flex-none">
                 <div class="bg-green-100 p-2 rounded-lg text-green-600 flex">
-                    <x-heroicon-o-arrow-trending-up class="w-7 h-7" />
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307L21.75 6.75M21.75 6.75H16.5M21.75 6.75v5.25"></path></svg>
                 </div>
                 <div>
                     <p class="text-[10px] font-bold text-gray-400 uppercase">Total Pemasukan</p>
-                    <p class="text-lg font-bold text-gray-800">Rp 145.2M</p>
+                    <p class="text-lg font-bold text-gray-800">Rp {{ number_format($totalPemasukanseluruh, 0, ',', '.') }}</p>
                 </div>
             </div>
             {{-- Card Pengeluaran --}}
-            <div class="bg-white p-3 px-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+            <div class="bg-white p-3 px-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 flex-1 md:flex-none">
                 <div class="bg-red-100 p-2 rounded-lg text-red-400 flex">
-                    <x-heroicon-o-arrow-trending-down class="w-7 h-7" />
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6L9 12.75l4.306-4.307L21.75 17.25M21.75 17.25H16.5M21.75 17.25v-5.25"></path></svg>
                 </div>
                 <div>
                     <p class="text-[10px] font-bold text-gray-400 uppercase">Total Pengeluaran</p>
-                    <p class="text-lg font-bold text-gray-800">Rp 82.4M</p>
+                    <p class="text-lg font-bold text-gray-800">Rp {{ number_format($totalPengeluaranSeluruh, 0, ',', '.') }}</p>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- Filter & Actions Bar --}}
-    <div class="bg-white p-4 rounded-t-2xl border border-gray-200 border-b-0 flex flex-wrap justify-between items-center gap-4">
-        <div class="flex items-center gap-3">
-            <div class="relative">
-                <x-heroicon-o-magnifying-glass class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input type="text" placeholder="Cari nama petani..." class="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-1 focus:ring-green-700 outline-none w-64">
+    {{-- Filter Bar & Container Tombol Export --}}
+    <div class="flex flex-col lg:flex-row justify-between items-center gap-4 mb-4 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+        {{-- Form Filter Rentang Waktu (Kiri) --}}
+        <form action="{{ url()->current() }}" method="GET" class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+            @php
+                $namaBulan = [1=>'Januari', 2=>'Februari', 3=>'Maret', 4=>'April', 5=>'Mei', 6=>'Juni', 7=>'Juli', 8=>'Agustus', 9=>'September', 10=>'Oktober', 11=>'November', 12=>'Desember'];
+            @endphp
+            
+            <div class="w-36">
+                <select name="bulan_awal" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-2 px-3 rounded-xl text-xs font-semibold outline-none focus:ring-1 focus:ring-green-700 cursor-pointer">
+                    <option value="">Dari Bulan</option>
+                    @foreach($namaBulan as $num => $name)
+                        <option value="{{ $num }}" {{ request('bulan_awal') == $num ? 'selected' : '' }}>{{ $name }}</option>
+                    @endforeach
+                </select>
             </div>
-            <div class="relative">
-                <x-heroicon-o-calendar-days class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input type="text" value="Januari 2024 s/d Desember 2024" class="pl-10 pr-10 py-2 border border-gray-200 rounded-lg text-sm outline-none w-72 bg-gray-50 cursor-default" readonly>
-                <x-heroicon-o-chevron-down class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            </div>
-            <button class="bg-[#214122] text-white px-6 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-[#325a33] transition">
-                <x-heroicon-o-funnel class="w-4 h-4" /> Cari
-            </button>
-        </div>
 
-        <div class="flex items-center gap-2">
-            <button class="border border-green-200 text-green-700 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-green-50 transition">
-                <x-heroicon-o-document-arrow-down class="w-5 h-5" /> Export ke Excel
+            <div class="w-36">
+                <select name="bulan_akhir" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-2 px-3 rounded-xl text-xs font-semibold outline-none focus:ring-1 focus:ring-green-700 cursor-pointer">
+                    <option value="">Sampai Bulan</option>
+                    @foreach($namaBulan as $num => $name)
+                        <option value="{{ $num }}" {{ request('bulan_akhir') == $num ? 'selected' : '' }}>{{ $name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="w-28">
+                <select name="tahun" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-2 px-3 rounded-xl text-xs font-semibold outline-none focus:ring-1 focus:ring-green-700 cursor-pointer">
+                    <option value="">Tahun</option>
+                    @for($y = date('Y'); $y >= 2020; $y--)
+                        <option value="{{ $y }}" {{ request('tahun') == $y ? 'selected' : '' }}>{{ $y }}</option>
+                    @endfor
+                </select>
+            </div>
+
+            <button type="submit" class="bg-[#214122] text-white px-5 py-2 rounded-xl text-xs font-bold hover:bg-[#325a33] transition cursor-pointer">
+                Terapkan Filter
             </button>
-            <button class="border border-red-200 text-red-600 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-red-50 transition">
-                <x-heroicon-o-document-text class="w-5 h-5" /> Export ke PDF
-            </button>
-        </div>
+
+            @if(request('bulan_awal') || request('bulan_akhir') || request('tahun'))
+                <a href="{{ url()->current() }}" class="text-xs text-red-500 hover:underline ml-1">Reset Filter</a>
+            @endif
+        </form>
+
+        {{-- Tempat Menampung Tombol Export DataTables --}}
+        <div id="exportButtonsContainer" class="flex gap-3"></div>
     </div>
-
-    {{-- Table Keuangan --}}
-    <div class="bg-white rounded-b-2xl shadow-sm overflow-hidden border border-gray-200">
-        <table class="w-full text-left">
-            <thead>
-                <tr class="bg-[#D9F99D] text-[#214122] font-bold text-xs uppercase">
-                    <th class="p-4 text-center">Nama Petani</th>
-                    <th class="p-4 text-center">Pemasukan</th>
-                    <th class="p-4 text-center">Pengeluaran</th>
-                    <th class="p-4 text-center">Asal Lahan</th>
-                    <th class="p-4 text-center">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="text-sm divide-y divide-gray-50">
-                @php
-                $data = [
-                    ['inisial' => 'AS', 'nama' => 'Ahmad Subardjo', 'masuk' => 'Rp 12.450.000', 'keluar' => 'Rp 4.200.000', 'lahan' => 'Blok A, Jalan Sejati 1'],
-                    ['inisial' => 'DL', 'nama' => 'Deddy Leman', 'masuk' => 'Rp 6.700.000', 'keluar' => 'Rp 3.500.000', 'lahan' => 'Blok A, Jalan Sejati 1'],
-                    ['inisial' => 'RK', 'nama' => 'Rahmat Kartolo', 'masuk' => 'Rp 11.100.000', 'keluar' => 'Rp 5.200.000', 'lahan' => 'Blok A, Jalan Sejati 1'],
-                    ['inisial' => 'DL', 'nama' => 'Deddy Leman', 'masuk' => 'Rp 6.700.000', 'keluar' => 'Rp 3.500.000', 'lahan' => 'Blok A, Jalan Sejati 1'],
-                    ['inisial' => 'RK', 'nama' => 'Rahmat Kartolo', 'masuk' => 'Rp 11.100.000', 'keluar' => 'Rp 5.200.000', 'lahan' => 'Blok A, Jalan Sejati 1'],
-                ];
-                @endphp
-
-                @foreach($data as $d)
-                <tr class="hover:bg-gray-50/50 transition">
-                    <td class="p-4 flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-[10px] font-bold text-blue-400 border border-blue-100">
-                            {{ $d['inisial'] }}
-                        </div>
-                        <span class="font-bold text-gray-700">{{ $d['nama'] }}</span>
-                    </td>
-                    <td class="p-4 text-center text-green-600 font-bold">{{ $d['masuk'] }}</td>
-                    <td class="p-4 text-center text-gray-500 font-medium">{{ $d['keluar'] }}</td>
-                    <td class="p-4 text-center text-gray-600 text-xs">{{ $d['lahan'] }}</td>
-                    <td class="p-4">
-                        <div class="flex justify-center gap-4 text-gray-400">
-                            {{-- Link ke Halaman Detail/Edit --}}
-                            <a href="{{ route('keuangan.show', $d['id'] ?? 1) }}" 
-                            class="hover:text-blue-600 transition flex items-center" 
-                            title="Lihat Detail">
-                                <x-heroicon-o-pencil-square class="w-5 h-5" />
-                            </a>
-
-                            {{-- Tombol Hapus --}}
-                            <button class="hover:text-red-500 transition flex items-center" title="Hapus">
-                                <x-heroicon-o-trash class="w-5 h-5" />
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-        
-        {{-- Footer Table --}}
-        <div class="p-4 flex justify-between items-center bg-white border-t border-gray-100">
-            <p class="text-xs text-gray-400">Menampilkan 1 - 5 dari 1.240 data petani</p>
-            <div class="flex gap-1">
-                <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-200 text-gray-400 hover:bg-gray-50 transition">
-                    <x-heroicon-o-chevron-left class="w-4 h-4" />
-                </button>
-                <button class="w-8 h-8 flex items-center justify-center rounded bg-[#214122] text-white text-xs font-bold shadow-sm">1</button>
-                <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-200 text-xs font-bold text-gray-600 hover:bg-gray-50 transition">2</button>
-                <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-200 text-xs font-bold text-gray-600 hover:bg-gray-50 transition">3</button>
-                <span class="px-2 text-gray-400 flex items-center">...</span>
-                <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-200 text-xs font-bold text-gray-600 hover:bg-gray-50 transition">248</button>
-                <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-200 text-gray-400 hover:bg-gray-50 transition">
-                    <x-heroicon-o-chevron-right class="w-4 h-4" />
-                </button>
-            </div>
+    
+    {{-- Table Card --}}
+    <div class="bg-white rounded-2xl shadow-sm p-4 border border-gray-200">
+        <div class="overflow-x-auto">
+            <table id="keuanganTable" class="w-full text-left border-collapse whitespace-nowrap">
+                <thead>
+                    <tr class="bg-[#D9F99D] border-b border-gray-200">
+                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center w-12">No</th>
+                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Nama Petani</th>
+                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">Pemasukan (Produksi)</th>
+                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">Pengeluaran (Operasional)</th>
+                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    @foreach($petanis as $petani)
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="p-4 text-xs text-center text-gray-500 font-mono"></td>
+                        <td class="p-4 text-xs text-gray-800 font-medium">
+                            <div class="flex items-center gap-3">
+                                <span>{{ $petani->petani_nama }}</span>
+                            </div>
+                        </td>
+                        <td class="p-4 text-xs text-green-600 font-bold">
+                            Rp {{ number_format($petani->total_masuk ?? 0, 0, ',', '.') }}
+                        </td>
+                        <td class="p-4 text-xs text-red-500 font-medium">
+                            Rp {{ number_format($petani->total_keluar ?? 0, 0, ',', '.') }}
+                        </td>
+                        <td class="p-4">
+                            <div class="flex justify gap-3">
+                                <a href="{{ route('keuangan.show', $petani->petani_id) }}" class="text-green-700 hover:scale-110 transition" title="Lihat Detail Transaksi">
+                                    <x-heroicon-o-pencil-square class="w-5 h-5" />
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
+
+{{-- Assets Library DataTables --}}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        window.JSZip = JSZip;
+        
+        if ($.fn.DataTable.isDataTable('#keuanganTable')) { 
+            $('#keuanganTable').DataTable().destroy(); 
+        }
+
+        // Fungsi pembersih HTML & spasi kosong untuk Export Excel & PDF
+        var exportFormatHandler = {
+            body: function (data, row, column, node) {
+                if (column === 0) {
+                    return row + 1; // Penomoran urut otomatis
+                }
+                // Jika kolom nama atau nominal mengandung tag HTML, ambil teksnya saja
+                if (node !== null && (column === 1 || column === 2 || column === 3)) {
+                    let plainText = node.textContent || node.innerText || "";
+                    return plainText.replace(/\s+/g, ' ').trim(); // Bersihkan whitespace berlebih
+                }
+                return data;
+            }
+        };
+
+        var table = $('#keuanganTable').DataTable({
+            "destroy": true,
+            "pageLength": 5,
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
+            "order": [[ 1, "asc" ]],
+            "columnDefs": [ { "orderable": false, "targets": [0, 4] } ],
+            
+            "language": {
+                "search": "Cari:",
+                "lengthMenu": "Tampilkan _MENU_ data",
+                "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                "infoEmpty": "Menampilkan 0 sampai 0 dari 0 data",
+                "infoFiltered": "(disaring dari _MAX_ total data)",
+                "zeroRecords": "Tidak ditemukan data yang sesuai",
+                "paginate": {
+                    "first": "Pertama",
+                    "last": "Terakhir",
+                    "next": "Berikutnya",
+                    "previous": "Sebelumnya"
+                }
+            },
+            "buttons": [
+                {
+                    extend: 'excelHtml5',
+                    text: 'Export ke Excel',
+                    className: 'btn-export-excel',
+                    title: 'Laporan_Keuangan_Petani_NotaSawit',
+                    exportOptions: { 
+                        columns: [0, 1, 2, 3],
+                        format: exportFormatHandler
+                    }
+                },
+                {
+                    extend: 'pdfHtml5',
+                    text: 'Export ke PDF',
+                    className: 'btn-export-pdf',
+                    title: 'LAPORAN KEUANGAN PETANI',
+                    filename: 'Data_Keuangan_Petani_NotaSawit',
+                    orientation: 'portrait',
+                    pageSize: 'A4',
+                    exportOptions: { 
+                        columns: [0, 1, 2, 3],
+                        format: exportFormatHandler
+                    },
+                    customize: function (doc) {
+                        doc.content[1].table.widths = ['10%', '35%', '27%', '28%'];
+
+                        doc.styles.title = {
+                            color: '#1e293b',
+                            fontSize: '16',
+                            alignment: 'center',
+                            bold: true,
+                            margin: [0, 0, 0, 20]
+                        };
+
+                        doc.content[1].table.headerRows = 1;
+                        var rowCount = doc.content[1].table.body.length;
+                        
+                        for (var i = 0; i < doc.content[1].table.body[0].length; i++) {
+                            doc.content[1].table.body[0][i].fillColor = '#214122';
+                            doc.content[1].table.body[0][i].color = 'white';
+                            doc.content[1].table.body[0][i].alignment = 'center';
+                            doc.content[1].table.body[0][i].bold = true;
+                        }
+
+                        for (var j = 1; j < rowCount; j++) {
+                            doc.content[1].table.body[j][0].alignment = 'center';
+                            doc.content[1].table.body[j][1].alignment = 'left';
+                            doc.content[1].table.body[j][2].alignment = 'right';
+                            doc.content[1].table.body[j][3].alignment = 'right';
+                            
+                            if (j % 2 === 0) {
+                                for (var k = 0; k < doc.content[1].table.body[j].length; k++) {
+                                    doc.content[1].table.body[j][k].fillColor = '#f8fafc';
+                                }
+                            }
+                        }
+
+                        var objLayout = {};
+                        objLayout['hLineWidth'] = function(i) { return .5; };
+                        objLayout['vLineWidth'] = function(i) { return .5; };
+                        objLayout['hLineColor'] = function(i) { return '#cbd5e1'; };
+                        objLayout['vLineColor'] = function(i) { return '#cbd5e1'; };
+                        objLayout['paddingLeft'] = function(i) { return 8; };
+                        objLayout['paddingRight'] = function(i) { return 8; };
+                        objLayout['paddingTop'] = function(i) { return 6; };
+                        objLayout['paddingBottom'] = function(i) { return 6; };
+                        doc.content[1].layout = objLayout;
+                    }
+                }
+            ],
+            "dom": '<"flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-3"B><"flex flex-col sm:flex-row justify-between items-center gap-4 w-full mb-3"l f>rtip'
+        });
+
+        table.on('order.dt search.dt draw.dt', function () {
+            let start = table.page.info().start;
+            table.column(0, {search: 'applied', order: 'applied'}).nodes().each(function(cell, i) {
+                cell.innerHTML = start + i + 1;
+            });
+        }).draw();
+
+        table.buttons().container().appendTo('#exportButtonsContainer');
+    });
+</script>
+
+<style>
+    .dataTables_wrapper .dataTables_filter input { 
+        border: 1px solid #e5e7eb !important; 
+        border-radius: 9999px !important; 
+        padding: 4px 12px !important; 
+        outline: none;
+    }
+    .dataTables_wrapper .dataTables_filter input:focus { border-color: #214122 !important; }
+    .dataTables_wrapper .dataTables_length select { border: 1px solid #e5e7eb !important; border-radius: 0.375rem !important; padding: 2px 8px !important; }
+    
+    .dt-buttons .btn-export-excel { background-color: transparent !important; border: 1px solid #10B981 !important; color: #047857 !important; border-radius: 0.5rem !important; padding: 0.5rem 1rem !important; font-weight: 600 !important; cursor: pointer;}
+    .dt-buttons .btn-export-excel:hover { background-color: #10B981 !important; color: white !important; }
+    
+    .dt-buttons .btn-export-pdf { background-color: transparent !important; border: 1px solid #FCA5A5 !important; color: #DC2626 !important; border-radius: 0.5rem !important; padding: 0.5rem 1rem !important; font-weight: 600 !important; cursor: pointer;}
+    .dt-buttons .btn-export-pdf:hover { background-color: #DC2626 !important; color: white !important; }
+</style>
 @endsection
