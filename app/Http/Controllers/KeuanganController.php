@@ -86,4 +86,55 @@ class KeuanganController extends Controller
 
         abort(403);
     }
+
+    public function show(Request $request, $id)
+    {
+        // 1. Cari data petani, pastikan ID ditemukan
+        $petani = Petani::findOrFail($id);
+
+        // Tangkap parameter filter tanggal
+        $bulanAwal  = $request->input('bulan_awal');  
+        $bulanAkhir = $request->input('bulan_akhir'); 
+        $tahun      = $request->input('tahun');       
+
+        // 2. Ambil query relasi
+        $produksiQuery = $petani->produksis(); 
+        $biayaQuery = $petani->biayaOperasinals(); 
+
+        // 3. Terapkan filter PostgreSQL dengan nama kolom yang benar
+        if ($tahun) {
+            $produksiQuery->whereYear('produksi_tanggal', $tahun);
+            $biayaQuery->whereYear('biaya_tanggal', $tahun);
+        }
+        if ($bulanAwal && $bulanAkhir) {
+            // PERBAIKAN: Menggunakan 'produksi_tanggal', bukan 'Bradley'
+            $produksiQuery->whereRaw("EXTRACT(MONTH FROM produksi_tanggal) BETWEEN ? AND ?", [$bulanAwal, $bulanAkhir]);
+            $biayaQuery->whereRaw("EXTRACT(MONTH FROM biaya_tanggal) BETWEEN ? AND ?", [$bulanAwal, $bulanAkhir]);
+        } elseif ($bulanAwal) {
+            $produksiQuery->whereRaw("EXTRACT(MONTH FROM produksi_tanggal) >= ?", [$bulanAwal]);
+            $biayaQuery->whereRaw("EXTRACT(MONTH FROM biaya_tanggal) >= ?", [$bulanAwal]);
+        } elseif ($bulanAkhir) {
+            $produksiQuery->whereRaw("EXTRACT(MONTH FROM produksi_tanggal) <= ?", [$bulanAkhir]);
+            $biayaQuery->whereRaw("EXTRACT(MONTH FROM biaya_tanggal) <= ?", [$bulanAkhir]);
+        }
+
+        $pemasukan = $produksiQuery->get();
+        $pengeluaran = $biayaQuery->get();
+
+        // 4. Hitung ringkasan total akumulasi nominal
+        $totalPemasukan = $pemasukan->sum('total_pendapatan');
+        $totalPengeluaran = $pengeluaran->sum('biaya_jumlah');
+
+        $user = auth()->user();
+        $compactData = compact('petani', 'pemasukan', 'pengeluaran', 'totalPemasukan', 'totalPengeluaran', 'bulanAwal', 'bulanAkhir', 'tahun');
+
+        // Alihkan ke view sesuai role
+        if ($user->user_role === 'super_admin') {
+            return view('super_admin.keuangan.show', $compactData);
+        } elseif ($user->user_role === 'admin') {
+            return view('admin.keuangan.show', $compactData);
+        }
+
+        abort(403);
+    }
 }

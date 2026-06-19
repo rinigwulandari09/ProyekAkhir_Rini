@@ -102,10 +102,7 @@ Route::middleware(['auth'])->group(function () {
 
     // --- KEUANGAN ---
     Route::get('/keuangan', [KeuanganController::class, 'index'])->name('keuangan.index');
-
-    Route::get('/data-keuangan/{id}', function ($id) {
-        return view('super_admin.keuangan.show', ['id' => $id]);
-    })->name('keuangan.show');
+    Route::get('/data-keuangan/{id}', [KeuanganController::class, 'show'])->name('keuangan.show');
 
 
     // --- LAIN-LAIN ---

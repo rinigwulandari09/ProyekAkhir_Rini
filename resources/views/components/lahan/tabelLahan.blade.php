@@ -45,14 +45,14 @@
                 <tbody class="divide-y divide-gray-100">
                     @foreach($lahans as $lahan)
                     <tr class="hover:bg-gray-50 transition">
-                        <td class="p-4 text-xs text-center text-gray-500 font-mono"></td>
+                        <td class="p-4 text-xs text-justify text-gray-500 font-mono"></td>
                         <td class="p-4 text-xs text-gray-800 font-medium">{{ $lahan->lahan_lokasi }}</td>
                         <td class="p-4 text-xs text-gray-600 text-justify">{{ $lahan->lahan_luas }} Ha</td>
                         <td class="p-4 text-xs text-gray-600">
                             {{ $lahan->petani ? $lahan->petani->petani_nama : 'Tidak terikat petani' }}
                         </td>
                         <td class="p-4">
-                            <div class="flex justify gap-3 items-justify">
+                            <div class="flex justify gap-3 items-center">
                                 {{-- Detail Lahan (Bisa dilihat oleh Admin & Super Admin) --}}
                                 <a href="{{ route('lahan.show', $lahan->lahan_id) }}" class="text-blue-600 hover:scale-110 transition" title="Lihat Peta / Detail">
                                     <x-heroicon-o-map-pin class="w-5 h-5" />
@@ -121,16 +121,8 @@
             "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
             "order": [[ 1, "asc" ]], 
             "columnDefs": [
-                { 
-                    "searchable": false, 
-                    "orderable": false, 
-                    "targets": 0,
-                    "render": function (data, type, row, meta) {
-                        return meta.row + meta.settings._iDisplayStart + 1;
-                    }
-                },
-                { "orderable": false, "targets": [4] }, 
-                { "searchable": false, "targets": [4] }
+                { "orderable": false, "targets": [0, 4] }, 
+                { "searchable": false, "targets": [0, 4] }
             ],
             "buttons": [
                 {
@@ -156,10 +148,8 @@
                         format: cleanExportFormat
                     },
                     customize: function (doc) {
-                        // Atur proporsi lebar kolom penuh halaman A4
                         doc.content[1].table.widths = ['10%', '35%', '20%', '35%'];
 
-                        // Mengatur gaya judul PDF utama
                         doc.styles.title = {
                             color: '#1e293b',
                             fontSize: '15',
@@ -171,7 +161,6 @@
                         doc.content[1].table.headerRows = 1;
                         var rowCount = doc.content[1].table.body.length;
                         
-                        // Kustomisasi warna background Header kolom PDF (Hijau Tua)
                         for (var i = 0; i < doc.content[1].table.body[0].length; i++) {
                             doc.content[1].table.body[0][i].fillColor = '#214122';
                             doc.content[1].table.body[0][i].color = 'white';
@@ -179,12 +168,11 @@
                             doc.content[1].table.body[0][i].bold = true;
                         }
 
-                        // Set tata letak alignment baris sel tabel
                         for (var j = 1; j < rowCount; j++) {
-                            doc.content[1].table.body[j][0].alignment = 'center'; // No
-                            doc.content[1].table.body[j][1].alignment = 'left';   // Lokasi
-                            doc.content[1].table.body[j][2].alignment = 'center'; // Luas
-                            doc.content[1].table.body[j][3].alignment = 'left';   // Pemilik
+                            doc.content[1].table.body[j][0].alignment = 'center';
+                            doc.content[1].table.body[j][1].alignment = 'left';
+                            doc.content[1].table.body[j][2].alignment = 'center';
+                            doc.content[1].table.body[j][3].alignment = 'left';
                             
                             if (j % 2 === 0) {
                                 for (var k = 0; k < doc.content[1].table.body[j].length; k++) {
@@ -193,7 +181,6 @@
                             }
                         }
 
-                        // Gridlines & Padding tabel PDF
                         var objLayout = {};
                         objLayout['hLineWidth'] = function(i) { return .5; };
                         objLayout['vLineWidth'] = function(i) { return .5; };
@@ -207,19 +194,81 @@
                     }
                 }
             ],
-            // Struktur "dom" dikembalikan seperti semula: B (tombol ekspor) di kiri, lalu l (Entries) dan f (Search) berdampingan di kanan
-            "dom": '<"flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-3"B <"flex items-center gap-4"l f>>rtip'
+            // DOM diperbarui: info (i) di kiri bawah, pagination (p) di kanan bawah. Dibungkus utility flex responsif
+            "dom": '<"flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-3"B <"flex items-center gap-4"l f>>rt<"flex flex-col md:flex-row justify-between items-center gap-4 mt-4"i p>'
         });
+
+        // Loop penomoran baris otomatis yang kompatibel dengan pagination & filter data
+        table.on('order.dt search.dt draw.dt', function () {
+            let start = table.page.info().start;
+            table.column(0, {search: 'applied', order: 'applied'}).nodes().each(function(cell, i) {
+                cell.innerHTML = start + i + 1;
+            });
+        }).draw();
 
         table.buttons().container().appendTo('#exportButtonsContainer');
     });
 </script>
 
 <style>
+    /* Custom CSS style DataTables global elements */
     .dataTables_wrapper .dataTables_filter input { border: 1px solid #e5e7eb !important; border-radius: 9999px !important; padding: 4px 12px !important; outline: none !important; }
+    .dataTables_wrapper .dataTables_filter input:focus { border-color: #214122 !important; }
     .dataTables_wrapper .dataTables_length select { border: 1px solid #e5e7eb !important; border-radius: 8px !important; padding: 4px 24px 4px 8px !important; }
-    .dt-buttons .btn-export-excel { background-color: transparent !important; border: 1px solid #10B981 !important; color: #047857 !important; border-radius: 0.5rem !important; padding: 0.5rem 1rem !important; font-weight: 600 !important; font-size: 0.875rem !important; transition: all 0.2s !important; }
+    
+    .dt-buttons .btn-export-excel { background-color: transparent !important; border: 1px solid #10B981 !important; color: #047857 !important; border-radius: 0.5rem !important; padding: 0.5rem 1rem !important; font-weight: 600 !important; font-size: 0.875rem !important; transition: all 0.2s !important; box-shadow: none !important; }
     .dt-buttons .btn-export-excel:hover { background-color: #F0FDF4 !important; transform: scale(1.02); }
-    .dt-buttons .btn-export-pdf { background-color: transparent !important; border: 1px solid #FCA5A5 !important; color: #DC2626 !important; border-radius: 0.5rem !important; padding: 0.5rem 1rem !important; font-weight: 600 !important; font-size: 0.875rem !important; transition: all 0.2s !important; }
+    .dt-buttons .btn-export-pdf { background-color: transparent !important; border: 1px solid #FFCACA !important; color: #DC2626 !important; border-radius: 0.5rem !important; padding: 0.5rem 1rem !important; font-weight: 600 !important; font-size: 0.875rem !important; transition: all 0.2s !important; box-shadow: none !important; }
     .dt-buttons .btn-export-pdf:hover { background-color: #FEF2F2 !important; transform: scale(1.02); }
+    .dt-buttons { float: none !important; }
+
+    /* Custom Styling Bagian Informasi Halaman (Kiri Bawah) */
+    .dataTables_wrapper .dataTables_info {
+        font-size: 0.875rem !important;
+        color: #6b7280 !important;
+        padding-top: 0 !important;
+    }
+    .dataTables_wrapper .dataTables_info b, 
+    .dataTables_wrapper .dataTables_info strong {
+        font-weight: 700 !important;
+        color: #1f2937 !important;
+    }
+
+    /* Custom Styling Pagination Buttons (Kanan Bawah) */
+    .dataTables_wrapper .dataTables_paginate {
+        padding-top: 0 !important;
+        display: flex !important;
+        gap: 0.25rem !important;
+        align-items: center;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        border: 1px solid #e5e7eb !important;
+        background: #ffffff !important;
+        color: #4b5563 !important;
+        border-radius: 0.375rem !important;
+        padding: 4px 12px !important;
+        font-size: 0.875rem !important;
+        transition: all 0.2s;
+    }
+    /* Tombol Halaman Aktif (Biru Cerah) */
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+        background: #2563eb !important;
+        color: #ffffff !important;
+        border-color: #2563eb !important;
+    }
+    /* State Hover tombol biasa */
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background: #f3f4f6 !important;
+        color: #1f2937 !important;
+        border-color: #d1d5db !important;
+    }
+    /* State Disabled ketika tombol navigasi mati */
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+        color: #9ca3af !important;
+        background: #f9fafb !important;
+        border-color: #e5e7eb !important;
+        cursor: not-allowed;
+    }
 </style>

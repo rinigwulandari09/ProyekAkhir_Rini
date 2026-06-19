@@ -46,8 +46,8 @@
                 <tbody class="divide-y divide-gray-100">
                     @forelse($users as $user)
                     <tr class="hover:bg-gray-50 transition">
-                        {{-- 1. No (Kosongkan isinya karena akan diisi otomatis oleh JavaScript DataTables) --}}
-                        <td class="p-4 text-xs text-justify text-gray-500 font-mono indexColumn"></td>
+                        {{-- 1. No --}}
+                        <td class="p-4 text-xs text-center text-gray-500 font-mono"></td>
                         
                         {{-- 2. Nama --}}
                         <td class="p-4 text-xs text-gray-800 font-medium">{{ $user->user_nama }}</td>
@@ -62,7 +62,7 @@
                         <td class="p-4 text-xs text-gray-600">{{ $user->desa->desa_nama ?? '-' }} </td>
                         
                         {{-- 6. Role --}}
-                        <td class="p-4 text-justify">
+                        <td class="p-4 text-center">
                             <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $user->user_role == 'super_admin' ? 'bg-purple-100 text-purple-700 border border-purple-200' : 'bg-blue-100 text-blue-700 border border-blue-200' }}">
                                 {{ str_replace('_', ' ', $user->user_role) }}
                             </span>
@@ -70,7 +70,7 @@
                         
                         {{-- 7. Aksi --}}
                         <td class="p-4">
-                            <div class="flex justify gap-3">
+                            <div class="flex justify-center gap-3">
                                 <a href="{{ route('user.edit', $user->user_id) }}" class="text-green-700 hover:scale-110 transition">
                                     <x-heroicon-o-pencil-square class="w-5 h-5" />
                                 </a>
@@ -111,14 +111,8 @@
 <script>
     $(document).ready(function() {
         window.JSZip = jszip = JSZip;
-
-        if ($.fn.dataTable && $.fn.dataTable.Buttons) {
-            $.fn.dataTable.Buttons.jszip(window.JSZip);
-        }
-
-        if ($.fn.DataTable.isDataTable('#userTable')) {
-            $('#userTable').DataTable().destroy();
-        }
+        if ($.fn.dataTable && $.fn.dataTable.Buttons) { $.fn.dataTable.Buttons.jszip(window.JSZip); }
+        if ($.fn.DataTable.isDataTable('#userTable')) { $('#userTable').DataTable().destroy(); }
 
         // Format pembersih teks spasi kosong berlebih pada row data export
         var cleanExportFormat = {
@@ -136,12 +130,10 @@
 
         var table = $('#userTable').DataTable({
             "destroy": true,
-            "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json"
-            },
+            "language": { "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json" },
             "pageLength": 5,
             "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
-            "order": [[ 1, "asc" ]], // Tetap urut default berdasarkan abjad Nama (Indeks ke-1)
+            "order": [[ 1, "asc" ]], 
             "columnDefs": [
                 { "orderable": false, "targets": [0, 6] },
                 { "searchable": false, "targets": [0, 6] }
@@ -163,17 +155,15 @@
                     className: 'btn-export-pdf',
                     title: 'LAPORAN DAFTAR PENGGUNA (ADMIN DAN SUPER ADMIN)',
                     filename: 'Data_User_NotaSawit',
-                    orientation: 'landscape', // Landscape karena memiliki 6 kolom agar tidak padat
+                    orientation: 'landscape',
                     pageSize: 'A4',
                     exportOptions: {
                         columns: [0, 1, 2, 3, 4, 5],
                         format: cleanExportFormat
                     },
                     customize: function (doc) {
-                        // Atur proporsi lebar tiap kolom dalam dokumen PDF
                         doc.content[1].table.widths = ['8%', '22%', '18%', '22%', '18%', '12%'];
 
-                        // Mengatur gaya judul utama PDF
                         doc.styles.title = {
                             color: '#1e293b',
                             fontSize: '15',
@@ -185,7 +175,6 @@
                         doc.content[1].table.headerRows = 1;
                         var rowCount = doc.content[1].table.body.length;
                         
-                        // Kustomisasi warna background Header kolom PDF (Hijau Tua serasi)
                         for (var i = 0; i < doc.content[1].table.body[0].length; i++) {
                             doc.content[1].table.body[0][i].fillColor = '#214122';
                             doc.content[1].table.body[0][i].color = 'white';
@@ -193,16 +182,14 @@
                             doc.content[1].table.body[0][i].bold = true;
                         }
 
-                        // Set susunan letak teks kolom baris data tabel
                         for (var j = 1; j < rowCount; j++) {
-                            doc.content[1].table.body[j][0].alignment = 'center'; // No
-                            doc.content[1].table.body[j][1].alignment = 'left';   // Nama
-                            doc.content[1].table.body[j][2].alignment = 'left';   // Username
-                            doc.content[1].table.body[j][3].alignment = 'left';   // Email
-                            doc.content[1].table.body[j][4].alignment = 'left';   // Desa Tugas
-                            doc.content[1].table.body[j][5].alignment = 'center'; // Role
+                            doc.content[1].table.body[j][0].alignment = 'center';
+                            doc.content[1].table.body[j][1].alignment = 'left';
+                            doc.content[1].table.body[j][2].alignment = 'left';
+                            doc.content[1].table.body[j][3].alignment = 'left';
+                            doc.content[1].table.body[j][4].alignment = 'left';
+                            doc.content[1].table.body[j][5].alignment = 'center';
                             
-                            // Zebra striping baris genap berwarna abu-abu sangat muda
                             if (j % 2 === 0) {
                                 for (var k = 0; k < doc.content[1].table.body[j].length; k++) {
                                     doc.content[1].table.body[j][k].fillColor = '#f8fafc';
@@ -210,7 +197,6 @@
                             }
                         }
 
-                        // Gridlines border halus & padding tabel PDF
                         var objLayout = {};
                         objLayout['hLineWidth'] = function(i) { return .5; };
                         objLayout['vLineWidth'] = function(i) { return .5; };
@@ -224,14 +210,15 @@
                     }
                 }
             ],
-            "dom": '<"flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-3"B <"flex items-center gap-4"l f>>rtip'
+            // DOM diselaraskan dengan tabel petani (Info di kiri bawah, pagination di kanan bawah)
+            "dom": '<"flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-3"B <"flex items-center gap-4"l f>>rt<"flex flex-col md:flex-row justify-between items-center gap-4 mt-4"i p>'
         });
 
-        // Menjaga sinkronisasi penomoran baris halaman web
-        table.on('order.dt search.dt', function () {
-            let i = 1;
-            table.cells(null, 0, { search: 'applied', order: 'applied' }).every(function (cell) {
-                this.data(i++);
+        // Penomoran baris otomatis yang mendukung sistem Pagination & Pencarian
+        table.on('order.dt search.dt draw.dt', function () {
+            let start = table.page.info().start;
+            table.column(0, {search: 'applied', order: 'applied'}).nodes().each(function(cell, i) {
+                cell.innerHTML = start + i + 1;
             });
         }).draw();
 
@@ -240,56 +227,66 @@
 </script>
 
 <style>
-    .dataTables_wrapper .dataTables_filter input {
+    /* Custom CSS style DataTables global elements */
+    .dataTables_wrapper .dataTables_filter input { border: 1px solid #e5e7eb !important; border-radius: 9999px !important; padding: 4px 12px !important; outline: none !important; }
+    .dataTables_wrapper .dataTables_filter input:focus { border-color: #214122 !important; }
+    .dataTables_wrapper .dataTables_length select { border: 1px solid #e5e7eb !important; border-radius: 8px !important; padding: 4px 24px 4px 8px !important; background-position: right 8px center !important; }
+    table.dataTable thead th { border-bottom: 1px solid #e5e7eb !important; }
+
+    .dt-buttons .btn-export-excel { background-color: transparent !important; border: 1px solid #10B981 !important; color: #047857 !important; border-radius: 0.5rem !important; padding: 0.5rem 1rem !important; font-weight: 600 !important; font-size: 0.875rem !important; transition: all 0.2s !important; box-shadow: none !important; }
+    .dt-buttons .btn-export-excel:hover { background-color: #F0FDF4 !important; transform: scale(1.02); }
+    .dt-buttons .btn-export-pdf { background-color: transparent !important; border: 1px solid #FCA5A5 !important; color: #DC2626 !important; border-radius: 0.5rem !important; padding: 0.5rem 1rem !important; font-weight: 600 !important; font-size: 0.875rem !important; transition: all 0.2s !important; box-shadow: none !important; }
+    .dt-buttons .btn-export-pdf:hover { background-color: #FEF2F2 !important; transform: scale(1.02); }
+    .dt-buttons { float: none !important; }
+
+    /* Custom Styling Bagian Informasi (Menampilkan X dari Y data) */
+    .dataTables_wrapper .dataTables_info {
+        font-size: 0.875rem !important;
+        color: #6b7280 !important;
+        padding-top: 0 !important;
+    }
+    .dataTables_wrapper .dataTables_info b, 
+    .dataTables_wrapper .dataTables_info strong {
+        font-weight: 700 !important;
+        color: #1f2937 !important;
+    }
+
+    /* Custom Styling Pagination Buttons */
+    .dataTables_wrapper .dataTables_paginate {
+        padding-top: 0 !important;
+        display: flex !important;
+        gap: 0.25rem !important;
+        align-items: center;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
         border: 1px solid #e5e7eb !important;
-        border-radius: 9999px !important;
+        background: #ffffff !important;
+        color: #4b5563 !important;
+        border-radius: 0.375rem !important;
         padding: 4px 12px !important;
-        outline: none !important;
-    }
-    .dataTables_wrapper .dataTables_length select {
-        border: 1px solid #e5e7eb !important;
-        border-radius: 8px !important;
-        padding: 4px 24px 4px 8px !important;
-        background-position: right 8px center !important;
-    }
-    table.dataTable thead th {
-        border-bottom: 1px solid #e5e7eb !important;
-    }
-
-    .dt-buttons .btn-export-excel {
-        background-color: transparent !important;
-        border: 1px solid #10B981 !important;
-        color: #047857 !important;
-        border-radius: 0.5rem !important;
-        padding: 0.5rem 1rem !important;
-        font-weight: 600 !important;
         font-size: 0.875rem !important;
-        transition: all 0.2s !important;
-        box-shadow: none !important;
+        transition: all 0.2s;
     }
-    .dt-buttons .btn-export-excel:hover {
-        background-color: #F0FDF4 !important;
-        transform: scale(1.02);
+    /* Tombol Halaman Aktif (Berwarna Biru Cerah) */
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+        background: #2563eb !important;
+        color: #ffffff !important;
+        border-color: #2563eb !important;
     }
-
-    .dt-buttons .btn-export-pdf {
-        background-color: transparent !important;
-        border: 1px solid #FCA5A5 !important;
-        color: #DC2626 !important;
-        border-radius: 0.5rem !important;
-        padding: 0.5rem 1rem !important;
-        font-weight: 600 !important;
-        font-size: 0.875rem !important;
-        transition: all 0.2s !important;
-        box-shadow: none !important;
+    /* Hover state untuk tombol biasa */
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background: #f3f4f6 !important;
+        color: #1f2937 !important;
+        border-color: #d1d5db !important;
     }
-    .dt-buttons .btn-export-pdf:hover {
-        background-color: #FEF2F2 !important;
-        transform: scale(1.02);
-    }
-    
-    .dt-buttons {
-        float: none !important;
+    /* State disabled untuk Prev / Next ketika berada di ujung halaman */
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+        color: #9ca3af !important;
+        background: #f9fafb !important;
+        border-color: #e5e7eb !important;
+        cursor: not-allowed;
     }
 </style>
 @endsection

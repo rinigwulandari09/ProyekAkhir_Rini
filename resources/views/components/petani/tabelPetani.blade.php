@@ -148,11 +148,8 @@
                         format: cleanExportFormat
                     },
                     customize: function (doc) {
-                        // 1. Atur lebar spesifik per kolom dalam % (Total harus 100%)
-                        // Urutan: No, Nama, Username, No. HP, Email, Gender, Tgl Lahir, Desa, Alamat, Status
                         doc.content[1].table.widths = ['4%', '12%', '10%', '10%', '16%', '7%', '9%', '10%', '14%', '8%'];
 
-                        // Mengatur gaya judul utama PDF
                         doc.styles.title = {
                             color: '#1e293b',
                             fontSize: '15',
@@ -161,35 +158,30 @@
                             margin: [0, 0, 0, 20]
                         };
 
-                        // 2. Kecilkan ukuran font default tabel agar pas di kertas A4 (PENTING)
                         doc.styles.tableBodyNormal = { fontSize: 8 };
                         doc.styles.tableHeader = { fontSize: 8, bold: true };
 
                         doc.content[1].table.headerRows = 1;
                         var rowCount = doc.content[1].table.body.length;
                         
-                        // Mewarnai baris header tabel menjadi Hijau Tua serasi
                         for (var i = 0; i < doc.content[1].table.body[0].length; i++) {
                             doc.content[1].table.body[0][i].fillColor = '#214122';
                             doc.content[1].table.body[0][i].color = 'white';
                             doc.content[1].table.body[0][i].alignment = 'center';
-                            doc.content[1].table.body[0][i].fontSize = 8; // Terapkan font kecil ke header
+                            doc.content[1].table.body[0][i].fontSize = 8;
                         }
 
-                        // Set tata letak alignment konten baris sel tabel
                         for (var j = 1; j < rowCount; j++) {
-                            doc.content[1].table.body[j][0].alignment = 'center'; // No
-                            doc.content[1].table.body[j][3].alignment = 'center'; // No. HP
-                            doc.content[1].table.body[j][5].alignment = 'center'; // Gender
-                            doc.content[1].table.body[j][6].alignment = 'center'; // Tgl Lahir
-                            doc.content[1].table.body[j][9].alignment = 'center'; // Status
+                            doc.content[1].table.body[j][0].alignment = 'center';
+                            doc.content[1].table.body[j][3].alignment = 'center';
+                            doc.content[1].table.body[j][5].alignment = 'center';
+                            doc.content[1].table.body[j][6].alignment = 'center';
+                            doc.content[1].table.body[j][9].alignment = 'center';
                             
-                            // Terapkan font kecil ke semua baris data agar teks panjang otomatis wrapping kebawah (tidak lurus memotong)
                             for (var c = 0; c < doc.content[1].table.body[j].length; c++) {
                                 doc.content[1].table.body[j][c].fontSize = 8;
                             }
 
-                            // Zebra Striping ringan baris genap
                             if (j % 2 === 0) {
                                 for (var k = 0; k < doc.content[1].table.body[j].length; k++) {
                                     doc.content[1].table.body[j][k].fillColor = '#f8fafc';
@@ -197,13 +189,12 @@
                             }
                         }
 
-                        // Gridlines & Padding tabel PDF
                         var objLayout = {};
                         objLayout['hLineWidth'] = function(i) { return .5; };
                         objLayout['vLineWidth'] = function(i) { return .5; };
                         objLayout['hLineColor'] = function(i) { return '#cbd5e1'; };
                         objLayout['vLineColor'] = function(i) { return '#cbd5e1'; };
-                        objLayout['paddingLeft'] = function(i) { return 4; }; // Padding dipersempit sedikit agar muat
+                        objLayout['paddingLeft'] = function(i) { return 4; };
                         objLayout['paddingRight'] = function(i) { return 4; };
                         objLayout['paddingTop'] = function(i) { return 5; };
                         objLayout['paddingBottom'] = function(i) { return 5; };
@@ -211,8 +202,8 @@
                     }
                 }
             ],
-            // Kontrol penempatan dom: B (Buttons) di kiri, l (length/entries) & f (filter/search) rapat di kanan
-            "dom": '<"flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-3"B <"flex items-center gap-4"l f>>rtip'
+            // DOM diperbarui: info (i) di kiri bawah, pagination (p) di kanan bawah. Terbungkus Flexbox Responsif
+            "dom": '<"flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-3"B <"flex items-center gap-4"l f>>rt<"flex flex-col md:flex-row justify-between items-center gap-4 mt-4"i p>'
         });
 
         table.on('order.dt search.dt draw.dt', function () {
@@ -239,4 +230,54 @@
     .dt-buttons .btn-export-pdf:hover { background-color: #FEF2F2 !important; transform: scale(1.02); }
     
     .dt-buttons { float: none !important; }
+
+    /* Custom Styling Bagian Informasi (Menampilkan X dari Y data) */
+    .dataTables_wrapper .dataTables_info {
+        font-size: 0.875rem !important;
+        color: #6b7280 !important;
+        padding-top: 0 !important;
+    }
+    .dataTables_wrapper .dataTables_info b, 
+    .dataTables_wrapper .dataTables_info strong {
+        font-weight: 700 !important;
+        color: #1f2937 !important;
+    }
+
+    /* Custom Styling Pagination Buttons */
+    .dataTables_wrapper .dataTables_paginate {
+        padding-top: 0 !important;
+        display: flex !important;
+        gap: 0.25rem !important;
+        align-items: center;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        border: 1px solid #e5e7eb !important;
+        background: #ffffff !important;
+        color: #4b5563 !important;
+        border-radius: 0.375rem !important;
+        padding: 4px 12px !important;
+        font-size: 0.875rem !important;
+        transition: all 0.2s;
+    }
+    /* Tombol Halaman Aktif (Berwarna Biru Cerah) */
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+        background: #2563eb !important;
+        color: #ffffff !important;
+        border-color: #2563eb !important;
+    }
+    /* Hover state untuk tombol biasa */
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background: #f3f4f6 !important;
+        color: #1f2937 !important;
+        border-color: #d1d5db !important;
+    }
+    /* State disabled untuk Prev / Next ketika berada di ujung halaman */
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+        color: #9ca3af !important;
+        background: #f9fafb !important;
+        border-color: #e5e7eb !important;
+        cursor: not-allowed;
+    }
 </style>
