@@ -24,4 +24,9 @@ class Desa extends Model
     {
         return $this->hasMany(Petani::class, 'desa_id', 'desa_id');
     }
+
+    public function produksi()
+    {
+        return $this->hasMany(Produksi::class, 'desa_id', 'desa_id');
+    }
 }

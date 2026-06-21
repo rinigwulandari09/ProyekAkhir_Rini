@@ -99,6 +99,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/lahan/{id}', [LahanController::class, 'destroy'])->name('lahan.destroy');
 
 
+    Route::post('/lahan/import-geojson', [App\Http\Controllers\LahanController::class, 'importGeoJson'])->name('lahan.import_geojson');
 
     // --- KEUANGAN ---
     Route::get('/keuangan', [KeuanganController::class, 'index'])->name('keuangan.index');

@@ -3,24 +3,43 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
             <h1 class="text-2xl font-bold text-[#214122]">Daftar Lahan</h1>
-            <p class="text-sm text-gray-500">Daftar lahan spasial yang terdaftar di database Supabase</p>
+            <p class="text-sm text-gray-500">Daftar lahan spasial yang terdaftar di database.</p>
         </div>
         
-        {{-- TOMBOL TAMBAH LAHAN: Otomatis Muncul Hanya Untuk Role Admin --}}
+        {{-- TOMBOL AKSI: Hanya Muncul Untuk Role Admin --}}
         @if(auth()->user()->user_role === 'admin')
-        <a href="{{ route('lahan.create') }}" class="bg-[#214122] text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-green-900 active:scale-95 transition shadow-sm flex items-center gap-2 cursor-pointer">
-            <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
-            </svg>
-            Tambah Lahan
-        </a>
+        <div class="flex flex-wrap gap-3">
+            {{-- FORM IMPORT FILE JSON DIRECT --}}
+            <form action="{{ route('lahan.import_geojson') }}" method="POST" enctype="multipart/form-data" class="flex items-center gap-2 bg-gray-100 p-1.5 rounded-xl border border-gray-300 shadow-sm">
+                @csrf
+                <input type="file" name="geojson_file" accept=".json" required class="text-xs text-gray-600 max-w-45 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-gray-200 file:text-gray-700 hover:file:bg-gray-300 cursor-pointer">
+                <button type="submit" class="bg-[#214122] text-white text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-green-900 active:scale-95 transition cursor-pointer">
+                    Import JSON
+                </button>
+            </form>
+
+            {{-- TOMBOL TAMBAH MANUAL --}}
+            {{-- <a href="{{ route('lahan.create') }}" class="bg-[#214122] text-white text-sm font-semibold px-5 py-2 rounded-xl hover:bg-green-900 active:scale-95 transition shadow-sm flex items-center gap-2 cursor-pointer">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
+                </svg>
+                Tambah Lahan
+            </a> --}}
+        </div>
         @endif
     </div>
 
-    {{-- Alert Notification --}}
+    {{-- Alert Notification Sukses --}}
     @if(session('success'))
         <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl relative text-sm flex items-center shadow-sm" role="alert">
             <span class="block sm:inline">{{ session('success') }}</span>
+        </div>
+    @endif
+
+    {{-- Alert Notification Error Gagal Import --}}
+    @if(session('error'))
+        <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl relative text-sm flex items-center shadow-sm" role="alert">
+            <span class="block sm:inline">{{ session('error') }}</span>
         </div>
     @endif
 
@@ -117,8 +136,8 @@
         var table = $('#lahanTable').DataTable({
             "destroy": true,
             "language": { "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json" },
-            "pageLength": 5, 
-            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
+            "pageLength": 10, 
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "Semua"]],
             "order": [[ 1, "asc" ]], 
             "columnDefs": [
                 { "orderable": false, "targets": [0, 4] }, 
@@ -253,9 +272,9 @@
     /* Tombol Halaman Aktif (Biru Cerah) */
     .dataTables_wrapper .dataTables_paginate .paginate_button.current,
     .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-        background: #2563eb !important;
+        background: #214122 !important;
         color: #ffffff !important;
-        border-color: #2563eb !important;
+        border-color: #214122 !important;
     }
     /* State Hover tombol biasa */
     .dataTables_wrapper .dataTables_paginate .paginate_button:hover {

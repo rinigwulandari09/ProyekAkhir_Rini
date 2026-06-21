@@ -157,12 +157,16 @@
             }
         });
 
-        // --- 3. CONFIG LEAFLET MAPS - SEBARAN BANYAK LAHAN ---
-        const mapSebaran = L.map('mapSebaran').setView([-0.489, 101.406], 12);
+        // --- 3. CONFIG LEAFLET MAPS ---
+        const mapSebaran = L.map('mapSebaran', {
+            minZoom: 3,
+            maxZoom: 19
+        }).setView([0.65, 101.85], 13);
 
-        // MENGGUNAKAN OPENSTREETMAP (Peta Jalanan Minimalis Bersih)
+        // MENGGUNAKAN LAYER DETAIL OPENSTREETMAP (Sama seperti Gambar 1 Anda)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
         }).addTo(mapSebaran);
 
         const polygonGroup = L.featureGroup().addTo(mapSebaran);
@@ -173,38 +177,49 @@
                 try {
                     const areaData = typeof lahan.area_lahan === 'string' ? JSON.parse(lahan.area_lahan) : lahan.area_lahan;
                     
-                    if (Array.isArray(areaData) && areaData.length > 0) {
-                        const polyCoords = areaData.map(coord => [coord.lat, coord.lng]);
+                    if (areaData && areaData.type === 'Polygon' && Array.isArray(areaData.coordinates)) {
+                        
+                        const polyCoords = areaData.coordinates[0].map(c => [c[1], c[0]]);
 
-                        // Menggunakan style hijau gelap elegan (#214122) agar serasi dengan web
-                        const polygon = L.polygon(polyCoords, {
-                            color: '#214122',       
-                            fillColor: '#214122',   
-                            fillOpacity: 0.4,       
-                            weight: 3               
-                        });
+                        const isValidWGS84 = polyCoords.every(coord => 
+                            coord[0] > -5 && coord[0] < 10 && 
+                            coord[1] > 95 && coord[1] < 140   
+                        );
 
-                        polygon.bindPopup(`
-                            <div style="font-family: sans-serif; font-size: 12px; min-width: 150px;">
-                                <strong style="color: #214122; font-size: 13px;">Detail Lahan Anggota</strong><br>
-                                <hr style="margin: 4px 0; border: 0; border-top: 1px solid #eee;">
-                                <b>Lokasi:</b> ${lahan.lahan_lokasi || '-'}<br>
-                                <b>Luas Lahan:</b> ${lahan.lahan_luas || '0'} Ha
-                            </div>
-                        `);
+                        if (isValidWGS84 && polyCoords.length > 0) {
+                            const polygon = L.polygon(polyCoords, {
+                                color: '#15803d',       
+                                fillColor: '#22c55e',   
+                                fillOpacity: 0.4,       
+                                weight: 2.5               
+                            });
 
-                        polygon.addTo(polygonGroup);
+                            polygon.bindPopup(`
+                                <div style="font-family: sans-serif; font-size: 12px; min-width: 170px;">
+                                    <strong style="color: #166534; font-size: 13px;">Detail Lahan Spasial</strong><br>
+                                    <hr style="margin: 4px 0; border: 0; border-top: 1px solid #e5e7eb;">
+                                    <b>Nama Pemilik:</b> ${lahan.petani_nama || '-'}<br>
+                                    <b>Lokasi Lahan:</b> ${lahan.lahan_lokasi || '-'}<br>
+                                    <b>Luas Hamparan:</b> ${lahan.lahan_luas || '0'} Ha
+                                </div>
+                            `);
+
+                            polygon.addTo(polygonGroup);
+                        }
                     }
                 } catch (e) {
-                    console.error("Gagal membaca koordinat lahan ID: " + lahan.lahan_id, e);
+                    console.error("Gagal rendering polygon pada Lahan ID: " + lahan.lahan_id, e);
                 }
             }
         });
 
+        // Mengatur auto-focus dan membatasi agar tidak melakukan zoom out terlalu jauh (ngelebar)
         if (polygonGroup.getLayers().length > 0) {
-            mapSebaran.fitBounds(polygonGroup.getBounds(), { padding: [40, 40] });
+            mapSebaran.fitBounds(polygonGroup.getBounds(), { 
+                padding: [40, 40],
+                maxZoom: 16 // Mengunci level zoom otomatis supaya langsung fokus dekat ke area jalan
+            });
         }
     });
-
 </script>
 @endsection

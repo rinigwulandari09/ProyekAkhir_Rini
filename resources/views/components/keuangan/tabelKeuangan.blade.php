@@ -98,10 +98,10 @@
                         <td class="p-4 text-xs text-gray-800 font-medium">
                             {{ $petani->petani_nama }}
                         </td>
-                        <td class="p-4 text-xs text-green-600 font-bold text-right">
+                        <td class="p-4 text-xs text-green-600 font-bold text-justify">
                             Rp {{ number_format($petani->total_masuk ?? 0, 0, ',', '.') }}
                         </td>
-                        <td class="p-4 text-xs text-red-500 font-medium text-right">
+                        <td class="p-4 text-xs text-red-500 font-medium text-justify">
                             Rp {{ number_format($petani->total_keluar ?? 0, 0, ',', '.') }}
                         </td>
                         <td class="p-4">
@@ -157,8 +157,8 @@
 
         var table = $('#keuanganTable').DataTable({
             "destroy": true,
-            "pageLength": 5,
-            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
+            "pageLength": 10,
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "Semua"]],
             "order": [[ 1, "asc" ]],
             "columnDefs": [ 
                 { "orderable": false, "targets": [0, 4] },

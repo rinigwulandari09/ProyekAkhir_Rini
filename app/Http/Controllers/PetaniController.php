@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Petani; // Ditambahkan: Wajib di-import agar tidak error Class Not Found
+use App\Models\Petani;
 use Illuminate\Http\Request;
 
 class PetaniController extends Controller

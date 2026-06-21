@@ -38,7 +38,7 @@ class Petani extends Model
     }
 
     // relasi produksi
-    public function produksis()
+    public function produksi()
     {
         return $this->hasMany(Produksi::class, 'petani_id', 'petani_id');
     }

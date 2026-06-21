@@ -34,4 +34,10 @@ class Lahan extends Model
         // Hubungkan ke tabel user berdasarkan kolom 'petani_id' dan primary key 'petani_id'
         return $this->belongsTo(Petani::class, 'petani_id', 'petani_id');
     }
+
+    // relasi dgn tabel produksi
+    public function produksi()
+    {
+        return $this->hasMany(Produksi::class, 'lahan_id'. 'lahan_id');
+    }
 }

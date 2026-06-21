@@ -10,11 +10,31 @@ class BiayaOperasional extends Model
 
     protected $fillable = [
         'biaya_tanggal',
+        'biaya_nama',
         'biaya_jenis',
         'biaya_jumlah',
+        'biaya_total',
         'biaya_ket',
-        'petani_id'
+        'petani_id',
+        'desa_id',
+        'lahan_id',
+        'biaya_bukti'
     ];
 
     public $timestamps = false;
+
+    public function petani()
+    {
+        return $this->belongsTo(Petani::class, 'petani_id', 'petani_id');
+    }
+
+    public function desa()
+    {
+        return $this->belongsTo(Desa::class, 'desa_id', 'desa_id');
+    }
+
+    public function lahan()
+    {
+        return $this->belongsTo(Lahan::class, 'lahan_id', 'lahan_id');
+    }
 }

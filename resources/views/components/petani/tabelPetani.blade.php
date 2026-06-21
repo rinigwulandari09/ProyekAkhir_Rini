@@ -117,8 +117,8 @@
         var table = $('#petaniTable').DataTable({
             "destroy": true,
             "language": { "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json" },
-            "pageLength": 5,
-            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]],
+            "pageLength": 10,
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "Semua"]],
             "order": [[ 1, "asc" ]],
             "columnDefs": [ 
                 { "orderable": false, "targets": [0, 10] },
@@ -262,9 +262,9 @@
     /* Tombol Halaman Aktif (Berwarna Biru Cerah) */
     .dataTables_wrapper .dataTables_paginate .paginate_button.current,
     .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-        background: #2563eb !important;
+        background: #214122 !important;
         color: #ffffff !important;
-        border-color: #2563eb !important;
+        border-color: #214122 !important;
     }
     /* Hover state untuk tombol biasa */
     .dataTables_wrapper .dataTables_paginate .paginate_button:hover {

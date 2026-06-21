@@ -10,33 +10,81 @@ class BiayaOperasionalController extends Controller
 {
     public function index()
     {
-        return response()->json([
-            'success' => true,
-            'data' => BiayaOperasional::all()
-        ]);
-    }
-
-    public function store(Request $request)
-    {
-        $biaya = BiayaOperasional::create([
-            'biaya_tanggal' => $request->biaya_tanggal,
-            'biaya_jenis' => $request->biaya_jenis,
-            'biaya_jumlah' => $request->biaya_jumlah,
-            'biaya_ket' => $request->biaya_ket,
-            'petani_id' => $request->petani_id
-        ]);
+        $data = BiayaOperasional::with([
+            'petani',
+            'desa',
+            'lahan'
+        ])->latest()->get();
 
         return response()->json([
             'success' => true,
-            'message' => 'Data biaya berhasil ditambahkan',
-            'data' => $biaya
+            'message' => 'Data biaya operasional berhasil diambil',
+            'data' => $data
         ]);
     }
 
     public function show($id)
     {
-        return response()->json(
-            BiayaOperasional::findOrFail($id)
-        );
+        $data = BiayaOperasional::with([
+            'petani',
+            'desa',
+            'lahan'
+        ])->find($id);
+
+        if (!$data) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data tidak ditemukan'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'biaya_tanggal' => 'required|date',
+            'biaya_nama'    => 'required|string|max:255',
+            'biaya_jenis'   => 'required|string|max:255',
+            'biaya_jumlah'  => 'required|numeric',
+            'petani_id'     => 'required|exists:petani,id',
+            'desa_id'       => 'required|exists:desa,id',
+            'lahan_id'      => 'required|exists:lahan,id',
+            'biaya_ket'     => 'nullable|string',
+
+            // Upload bukti
+            'biaya_bukti'   => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+        ]);
+
+        $path = null;
+
+        if ($request->hasFile('biaya_bukti')) {
+
+            $path = $request->file('biaya_bukti')
+                ->store('bukti-biaya', 'public');
+        }
+
+        $biaya = BiayaOperasional::create([
+            'biaya_tanggal' => $request->biaya_tanggal,
+            'biaya_nama'    => $request->biaya_nama,
+            'biaya_jenis'   => $request->biaya_jenis,
+            'biaya_jumlah'  => $request->biaya_jumlah,
+            'biaya_total'   => $request->biaya_jumlah,
+            'biaya_ket'     => $request->biaya_ket,
+            'petani_id'     => $request->petani_id,
+            'desa_id'       => $request->desa_id,
+            'lahan_id'      => $request->lahan_id,
+            'biaya_bukti'   => $path
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data biaya operasional berhasil ditambahkan',
+            'data' => $biaya
+        ], 201);
     }
 }
