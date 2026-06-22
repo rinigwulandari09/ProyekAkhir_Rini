@@ -7,12 +7,11 @@
         <div class="flex gap-2 items-center">
 
             {{-- MARK ALL READ --}}
-            <form method="POST" action="{{ url('/notifikasi/mark-all') }}">
-                @csrf
-                <button type="submit" class="text-[10px] text-green-600 hover:underline">
-                    Tandai semua
-                </button>
-            </form>
+            <button
+                onclick="markAllNotifRead()"
+                class="text-[10px] text-green-600 hover:underline">
+                Tandai semua
+            </button>
 
             <button id="btnCloseNotif" class="text-gray-400 hover:text-gray-600">
                 <x-heroicon-o-x-mark class="w-5 h-5" />
@@ -58,12 +57,11 @@
 
                     {{-- ACTION --}}
                     @if(!$notif->is_read)
-                        <form method="POST" action="{{ url('/notifikasi/read/'.$notif->id) }}">
-                            @csrf
-                            <button type="submit" class="text-[10px] text-green-600 mt-1 hover:underline">
-                                Tandai dibaca
-                            </button>
-                        </form>
+                        <button
+                            onclick="markNotifRead({{ $notif->id }})"
+                            class="text-[10px] text-green-600 mt-1 hover:underline">
+                            Tandai dibaca
+                        </button>
                     @endif
 
                 </div>
@@ -91,4 +89,71 @@
     document.getElementById('btnCloseNotif')?.addEventListener('click', function () {
         document.getElementById('popupNotif')?.classList.add('hidden');
     });
+
+    function markNotifRead(id)
+    {
+        fetch('/notifikasi/read/' + id, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            if(data.success){
+                location.reload();
+            }
+
+        })
+        .catch(error => {
+            console.log(error);
+        });
+    }
+
+    function markAllNotifRead()
+    {
+        fetch('/notifikasi/mark-all', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            if(data.success){
+
+                // sembunyikan semua tombol tandai dibaca
+                document.querySelectorAll('[id^="notif-"]').forEach(el => {
+                    el.remove();
+                });
+
+                // badge jadi 0
+                const badge = document.getElementById('notifBadge');
+
+                if(badge){
+                    badge.classList.add('hidden');
+                    badge.innerText = 0;
+                }
+
+                // tampilkan pesan kosong
+                const container = document.querySelector('.max-h-80.overflow-y-auto.space-y-2');
+
+                if(container){
+                    container.innerHTML = `
+                        <p class="text-center text-gray-400 text-xs py-4">
+                            Tidak ada notifikasi
+                        </p>
+                    `;
+                }
+            }
+
+        })
+        .catch(error => {
+            console.error(error);
+        });
+    }
 </script>

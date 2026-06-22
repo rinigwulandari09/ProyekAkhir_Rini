@@ -121,4 +121,58 @@ class ProduksiController extends Controller
             ]
         ], 201);
     }
+
+    public function show($id)
+    {
+        $produksi = Produksi::with([
+            'petani',
+            'lahan'
+        ])->find($id);
+
+
+        if (!$produksi) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data produksi tidak ditemukan'
+            ], 404);
+
+        }
+
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Detail produksi berhasil diambil',
+            'data' => [
+                'id' => $produksi->id,
+                'produksi_tanggal' => $produksi->produksi_tanggal,
+                'jumlah_tbs' => $produksi->jumlah_tbs,
+                'harga_tbs' => $produksi->harga_tbs,
+                'total_pendapatan' => $produksi->total_pendapatan,
+                'status_validasi' => $produksi->status_validasi,
+                'produksi_ket' => $produksi->produksi_ket,
+
+                // PATH GAMBAR
+                'produksi_bukti' => $produksi->produksi_bukti,
+
+                // URL GAMBAR UNTUK ANDROID
+                'produksi_bukti_url' => $produksi->produksi_bukti
+                    ? asset('storage/' . $produksi->produksi_bukti)
+                    : null,
+
+                // DATA PETANI
+                'petani' => [
+                    'id' => $produksi->petani->petani_id ?? null,
+                    'nama' => $produksi->petani->petani_nama ?? null
+                ],
+
+                // DATA LAHAN
+                'lahan' => [
+                    'id' => $produksi->lahan->lahan_id ?? null,
+                    'nama' => $produksi->lahan->lahan_nama ?? null
+                ]
+
+            ]
+
+        ], 200);
+    }
 }

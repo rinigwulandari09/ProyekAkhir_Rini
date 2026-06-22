@@ -24,14 +24,12 @@ class NotifikasiController extends Controller
             $query->where('target', 'superadmin');
         } else {
             $query->where('target', 'admin')
-                ->where('user_id', $user->user_id);
+                  ->where('user_id', $user->user_id);
         }
 
         $notifikasi = $query->latest()->take(10)->get();
 
-        return response()->json([
-            'data' => $notifikasi
-        ]);
+        return response()->json($notifikasi);
     }
 
     /*
@@ -68,10 +66,11 @@ class NotifikasiController extends Controller
 
         $notif = Notifikasi::findOrFail($id);
 
-        if ($user->user_role !== 'super_admin') {
-            if ($notif->user_id != $user->user_id) {
-                abort(403);
-            }
+        if (
+            $user->user_role !== 'super_admin' &&
+            $notif->user_id != $user->user_id
+        ) {
+            abort(403);
         }
 
         $notif->update([
@@ -79,8 +78,7 @@ class NotifikasiController extends Controller
             'read_at' => now()
         ]);
 
-        return redirect()->back()
-            ->with('success', 'Notifikasi berhasil dibaca');
+        return back()->with('success', 'Notifikasi ditandai dibaca');
     }
 
     /*
@@ -98,15 +96,18 @@ class NotifikasiController extends Controller
             $query->where('target', 'superadmin');
         } else {
             $query->where('target', 'admin')
-                  ->where('user_id', $user->user_id);
+                ->where('user_id', $user->user_id);
         }
 
-        $query->update([
+        $updated = $query->update([
             'is_read' => true,
             'read_at' => now()
         ]);
 
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success' => true,
+            'updated' => $updated
+        ]);
     }
 
     /*
