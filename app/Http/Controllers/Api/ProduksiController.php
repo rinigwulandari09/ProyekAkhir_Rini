@@ -72,12 +72,12 @@ class ProduksiController extends Controller
         $petani = Petani::find($request->petani_id);
 
         // BUAT NOTIFIKASI
-        // NotifikasiHelper::create(
-        //     'superadmin',
-        //     'Produksi Baru',
-        //     $petani->petani_nama . ' menambahkan data produksi',
-        //     'produksi'
-        // );
+        NotifikasiHelper::create(
+            'superadmin',
+            'Produksi Baru',
+            $petani->petani_nama . ' menambahkan data produksi',
+            'produksi'
+        );
 
         return response()->json([
             'success' => true,
