@@ -155,7 +155,7 @@
                 </div>
                 
                 <div>
-                    <label for="petani_status" class="block text-sm font-bold text-gray-700 mb-1">Status Baru</label>
+                    <label class="for="petani_status" class="block text-sm font-bold text-gray-700 mb-1">Status Baru</label>
                     <select id="selectStatus" name="petani_status" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none">
                         <option value="Pending">Pending</option>
                         <option value="Aktif">Disetujui</option>
@@ -237,10 +237,9 @@
             }
         });
 
-        // --- 3. CONFIG LEAFLET MAPS - SEBARAN BANYAK LAHAN ---
+        // --- 3. CONFIG LEAFLET MAPS - SEBARAN BANYAK LAHAN (FIXED) ---
         const mapSebaran = L.map('mapSebaran').setView([-0.489, 101.406], 12);
 
-        // MENGGUNAKAN OPENSTREETMAP (Peta Jalanan Minimalis Bersih)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(mapSebaran);
@@ -251,29 +250,51 @@
         listLahan.forEach(function(lahan) {
             if (lahan.area_lahan) {
                 try {
-                    const areaData = typeof lahan.area_lahan === 'string' ? JSON.parse(lahan.area_lahan) : lahan.area_lahan;
+                    let areaData = typeof lahan.area_lahan === 'string' ? JSON.parse(lahan.area_lahan) : lahan.area_lahan;
                     
+                    // Ekstraksi data jika dibungkus format GeoJSON standard (geometry.coordinates)
+                    if (areaData.geometry && areaData.geometry.coordinates) {
+                        areaData = areaData.geometry.coordinates[0];
+                    } else if (areaData.coordinates) {
+                        areaData = areaData.coordinates[0];
+                    } else if (areaData.features && areaData.features[0]) {
+                        areaData = areaData.features[0].geometry.coordinates[0];
+                    }
+
                     if (Array.isArray(areaData) && areaData.length > 0) {
-                        const polyCoords = areaData.map(coord => [coord.lat, coord.lng]);
+                        const polyCoords = areaData.map(coord => {
+                            if (coord !== null && typeof coord === 'object' && 'lat' in coord && 'lng' in coord) {
+                                return [coord.lat, coord.lng];
+                            } else if (Array.isArray(coord) && coord.length >= 2) {
+                                // Koreksi otomatis jika koordinat terbalik [longitude, latitude] dari format GeoJSON Postgres
+                                if (Math.abs(coord[0]) > 90) {
+                                    return [coord[1], coord[0]];
+                                }
+                                return [coord[0], coord[1]];
+                            }
+                            return null;
+                        }).filter(c => c !== null);
 
-                        // Menggunakan style hijau gelap elegan (#214122) agar serasi dengan web
-                        const polygon = L.polygon(polyCoords, {
-                            color: '#214122',       
-                            fillColor: '#214122',   
-                            fillOpacity: 0.4,       
-                            weight: 3               
-                        });
+                        if (polyCoords.length > 0) {
+                            const polygon = L.polygon(polyCoords, {
+                                color: '#214122',       
+                                fillColor: '#214122',   
+                                fillOpacity: 0.4,      
+                                weight: 3              
+                            });
 
-                        polygon.bindPopup(`
-                            <div style="font-family: sans-serif; font-size: 12px; min-width: 150px;">
-                                <strong style="color: #214122; font-size: 13px;">Detail Lahan Anggota</strong><br>
-                                <hr style="margin: 4px 0; border: 0; border-top: 1px solid #eee;">
-                                <b>Lokasi:</b> ${lahan.lahan_lokasi || '-'}<br>
-                                <b>Luas Lahan:</b> ${lahan.lahan_luas || '0'} Ha
-                            </div>
-                        `);
+                            polygon.bindPopup(`
+                                <div style="font-family: sans-serif; font-size: 12px; min-width: 160px;">
+                                    <strong style="color: #214122; font-size: 13px;">Detail Lahan Anggota</strong><br>
+                                    <hr style="margin: 6px 0; border: 0; border-top: 1px solid #eee;">
+                                    <b>Nama Petani:</b> ${lahan.petani_nama || '-'}<br>
+                                    <b>Lokasi Lahan:</b> ${lahan.lahan_lokasi || '-'}<br>
+                                    <b>Luas Lahan:</b> ${lahan.lahan_luas || '0'} Ha
+                                </div>
+                            `);
 
-                        polygon.addTo(polygonGroup);
+                            polygon.addTo(polygonGroup);
+                        }
                     }
                 } catch (e) {
                     console.error("Gagal membaca koordinat lahan ID: " + lahan.lahan_id, e);
@@ -281,8 +302,12 @@
             }
         });
 
+        // Trigger otomatis agar Leaflet menyesuaikan bound map dan ukuran container
         if (polygonGroup.getLayers().length > 0) {
-            mapSebaran.fitBounds(polygonGroup.getBounds(), { padding: [40, 40] });
+            setTimeout(() => {
+                mapSebaran.invalidateSize();
+                mapSebaran.fitBounds(polygonGroup.getBounds(), { padding: [40, 40] });
+            }, 300);
         }
     });
 
@@ -290,17 +315,16 @@
     var table = $('#tabelPetani').DataTable({
         "pageLength": 5,
         "lengthMenu": [5, 10, 25, 50],
-        "order": [[ 1, "asc" ]], // Urutkan berdasarkan Nama (indeks ke-1)
+        "order": [[ 1, "asc" ]], 
         "dom": '<"flex justify-between items-center mb-4"lf>rt<"flex justify-between items-center mt-4"ip>',
         "language": {
             "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json"
         },
         "columnDefs": [
-            { "orderable": false, "targets": [0, 4] } // Matikan sorting untuk kolom No (0) dan Aksi (4)
+            { "orderable": false, "targets": [0, 4] } 
         ]
     });
 
-    // Generasi nomor urut otomatis saat tabel di-render/pindah halaman
     table.on('order.dt search.dt draw.dt', function () {
         let start = table.page.info().start;
         table.column(0, {

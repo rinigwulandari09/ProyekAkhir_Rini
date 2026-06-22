@@ -24,26 +24,6 @@ class ProduksiController extends Controller
         ]);
     }
 
-    public function show($id)
-    {
-        $produksi = Produksi::with([
-            'petani',
-            'lahan'
-        ])->find($id);
-
-        if (!$produksi) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Data tidak ditemukan'
-            ], 404);
-        }
-
-        return response()->json([
-            'success' => true,
-            'data' => $produksi
-        ]);
-    }
-
     public function store(Request $request)
     {
         $request->validate([
@@ -60,17 +40,12 @@ class ProduksiController extends Controller
 
         $totalPendapatan = $request->jumlah_tbs * $request->harga_tbs;
 
-        // ==========================
         // SIMPAN FOTO
-        // ==========================
         $fotoPath = null;
 
         if ($request->hasFile('produksi_bukti')) {
-
             $file = $request->file('produksi_bukti');
-
             $namaFile = time() . '_' . $file->getClientOriginalName();
-
             $fotoPath = $file->storeAs(
                 'produksi_bukti',
                 $namaFile,
@@ -137,7 +112,6 @@ class ProduksiController extends Controller
             ], 404);
 
         }
-
 
         return response()->json([
             'success' => true,
