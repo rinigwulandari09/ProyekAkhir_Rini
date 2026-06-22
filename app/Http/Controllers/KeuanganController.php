@@ -20,7 +20,7 @@ class KeuanganController extends Controller
         $petaniQuery = Petani::query();
 
         // Pemasukan (Produksi)
-        $petaniQuery->withSum(['produksis as total_masuk' => function($query) use ($bulanAwal, $bulanAkhir, $tahun) {
+        $petaniQuery->withSum(['produksi as total_masuk' => function($query) use ($bulanAwal, $bulanAkhir, $tahun) {
             if ($tahun) {
                 $query->whereYear('produksi_tanggal', $tahun);
             }
@@ -47,7 +47,7 @@ class KeuanganController extends Controller
             } elseif ($bulanAkhir) {
                 $query->whereRaw("EXTRACT(MONTH FROM biaya_tanggal) <= ?", [$bulanAkhir]);
             }
-        }], 'biaya_jumlah');
+        }], 'biaya_total');
 
         $petanis = $petaniQuery->get();
 
@@ -61,7 +61,6 @@ class KeuanganController extends Controller
         }
         
         if ($bulanAwal && $bulanAkhir) {
-            // Perbaikan pencarian summary card untuk PostgreSQL
             $produksiSummary->whereRaw("EXTRACT(MONTH FROM produksi_tanggal) BETWEEN ? AND ?", [$bulanAwal, $bulanAkhir]);
             $biayaSummary->whereRaw("EXTRACT(MONTH FROM biaya_tanggal) BETWEEN ? AND ?", [$bulanAwal, $bulanAkhir]);
         } elseif ($bulanAwal) {
@@ -73,7 +72,7 @@ class KeuanganController extends Controller
         }
 
         $totalPemasukanseluruh = $produksiSummary->sum('total_pendapatan');
-        $totalPengeluaranSeluruh = $biayaSummary->sum('biaya_jumlah');
+        $totalPengeluaranSeluruh = $biayaSummary->sum('biaya_total');
 
         $user = auth()->user();
         $compactData = compact('petanis', 'totalPemasukanseluruh', 'totalPengeluaranSeluruh', 'bulanAwal', 'bulanAkhir', 'tahun');
@@ -98,7 +97,7 @@ class KeuanganController extends Controller
         $tahun      = $request->input('tahun');       
 
         // 2. Ambil query relasi
-        $produksiQuery = $petani->produksis(); 
+        $produksiQuery = $petani->produksi(); 
         $biayaQuery = $petani->biayaOperasinals(); 
 
         // 3. Terapkan filter PostgreSQL dengan nama kolom yang benar
@@ -118,12 +117,14 @@ class KeuanganController extends Controller
             $biayaQuery->whereRaw("EXTRACT(MONTH FROM biaya_tanggal) <= ?", [$bulanAkhir]);
         }
 
-        $pemasukan = $produksiQuery->get();
+        $pemasukan = $produksiQuery
+            ->with('lahan')
+            ->get();
         $pengeluaran = $biayaQuery->get();
 
         // 4. Hitung ringkasan total akumulasi nominal
         $totalPemasukan = $pemasukan->sum('total_pendapatan');
-        $totalPengeluaran = $pengeluaran->sum('biaya_jumlah');
+        $totalPengeluaran = $pengeluaran->sum('biaya_total');
 
         $user = auth()->user();
         $compactData = compact('petani', 'pemasukan', 'pengeluaran', 'totalPemasukan', 'totalPengeluaran', 'bulanAwal', 'bulanAkhir', 'tahun');

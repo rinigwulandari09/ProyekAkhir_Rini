@@ -120,4 +120,11 @@ Route::middleware(['auth'])->group(function () {
     // Route::get('/admin/lahan/create', [LahanController::class, 'create'])->name('admin.lahan.create');
     // Route::post('/admin/lahan/store', [LahanController::class, 'store'])->name('admin.lahan.store');
 
+    // lahan
+    Route::post('/lahan/preview-import', [LahanController::class, 'previewImport'])
+    ->name('lahan.preview_import');
+
+    Route::post('/lahan/process-import', [LahanController::class, 'processImport'])
+        ->name('lahan.process_import');
+
     });

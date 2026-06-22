@@ -80,7 +80,7 @@
                             <td class="p-3 text-justify text-gray-600">
                                 {{ \Carbon\Carbon::parse($masuk->produksi_tanggal)->translatedFormat('d M Y') }}
                             </td>
-                            <td class="p-3 text-gray-700 font-medium">{{ $masuk->lahan_nama }}</td>
+                            <td class="p-3 text-gray-700 font-medium">{{ $masuk->lahan->lahan_nama ?? '-' }}</td>
                             <td class="p-3 text-justify text-green-600 font-bold">
                                 Rp {{ number_format($masuk->total_pendapatan, 0, ',', '.') }}
                             </td>
@@ -113,29 +113,51 @@
                             <th class="p-3 text-center w-12">No</th>
                             <th class="p-3 text-center">Tanggal</th>
                             <th class="p-3">Asal Lahan</th>
+                            <th class="p-3">Jenis Biaya</th>
                             <th class="p-3 text-right">Jumlah Biaya</th>
+                            <th class="p-3">Bukti</th>
                             <th class="p-3">Keterangan</th>
                         </tr>
                     </thead>
                     <tbody class="text-xs divide-y divide-gray-50">
                         @forelse ($pengeluaran as $keluar)
                         <tr class="hover:bg-gray-50/50 transition">
-                            <td class="p-3 text-justify text-gray-400 font-mono"></td>
-                            <td class="p-3 text-justify text-gray-600">
+                            <td class="p-3 text-center text-gray-400 font-mono"></td>
+
+                            <td class="p-3 text-center text-gray-600">
                                 {{ \Carbon\Carbon::parse($keluar->biaya_tanggal)->translatedFormat('d M Y') }}
                             </td>
-                            <td class="p-3 text-gray-700 font-medium">{{ $keluar->lahan_nama }}</td>
-                            <td class="p-3 text-justify text-red-600 font-bold">
-                                Rp {{ number_format($keluar->biaya_jumlah, 0, ',', '.') }}
+
+                            <td class="p-3 text-gray-700 font-medium">
+                                {{ $keluar->lahan_nama }}
                             </td>
-                            <td class="p-3 text-gray-400 max-w-50 truncate" title="{{ $keluar->biaya_keterangan ?? $keluar->keterangan }}">
-                                {{ $keluar->biaya_keterangan ?? $keluar->keterangan ?? '-' }}
+
+                            <td class="p-3 text-gray-600">
+                                {{ $keluar->biaya_jenis ?? '-' }}
+                            </td>
+
+                            <td class="p-3 text-justify text-red-600 font-bold">
+                                Rp {{ number_format($keluar->biaya_total, 0, ',', '.') }}
+                            </td>
+
+                            <td class="p-3">
+                                @if($keluar->biaya_bukti)
+                                    <a href="{{ Storage::url($keluar->biaya_bukti) }}" target="_blank">
+                                        Lihat Bukti
+                                    </a>
+                                @else
+                                    <span class="text-gray-400">-</span>
+                                @endif
+                            </td>
+
+                            <td class="p-3 text-gray-400">
+                                {{ $keluar->biaya_keterangan ?? '-' }}
                             </td>
                         </tr>
                         @empty
                         <tr>
                             {{-- KOLOM SUDAH DISESUAIKAN MENJADI BARISAN COLSPAN 5 AGAR TIDAK ERROR --}}
-                            <td colspan="5" class="p-6 text-center text-gray-400 italic bg-gray-50/50">Belum ada data transaksi pengeluaran.</td>
+                            <td colspan="7" class="p-6 text-center text-gray-400 italic bg-gray-50/50">
                         </tr>
                         @endforelse
                     </tbody>
@@ -242,13 +264,19 @@
             var node = this.node();
             dataPengeluaran.push([
                 rowLoop + 1,
-                $(node).find('td').eq(1).text().trim(),
-                $(node).find('td').eq(2).text().trim(),
-                $(node).find('td').eq(3).text().trim(),
-                $(node).find('td').eq(4).text().trim()
+                $(node).find('td').eq(1).text().trim(), // tanggal
+                $(node).find('td').eq(2).text().trim(), // lahan
+                $(node).find('td').eq(3).text().trim(), // jenis
+                $(node).find('td').eq(4).text().trim(), // jumlah
+                $(node).find('td').eq(5).text().trim(), // bukti
+                $(node).find('td').eq(6).text().trim()  // keterangan
             ]);
         });
-        if (dataPengeluaran.length === 0) dataPengeluaran.push([{ text: 'Belum ada catatan transaksi.', colspan: 5, alignment: 'center', italic: true }, '', '', '', '']);
+        if (dataPengeluaran.length === 0)
+            dataPengeluaran.push([
+                { text: 'Belum ada catatan transaksi.', colspan: 7, alignment: 'center', italic: true },
+                '', '', '', '', '', ''
+            ]);
 
         // Definisi Struktur Dokumen PDF Laporan Keuangan Ke PDFMake
         var docDefinition = {
@@ -257,7 +285,7 @@
             pageMargins: [40, 40, 40, 40],
             content: [
                 { text: 'LAPORAN REKAPITULASI KEUANGAN PETANI', style: 'docTitle' },
-                { text: 'Sistem Informasi Manajemen Keuangan Sektor Pertanian', style: 'docSub', alignment: 'center' },
+                { text: 'Sistem Informasi Manajemen Keuangan Petani', style: 'docSub', alignment: 'center' },
                 { canvas: [{ type: 'line', x1: 0, y1: 5, x2: 515, y2: 5, lineWidth: 1.5, lineColor: '#214122' }] },
                 { text: '\n' },
                 
@@ -312,14 +340,16 @@
                 {
                     style: 'tableStyle',
                     table: {
-                        widths: ['8%', '22%', '25%', '23%', '22%'],
+                        widths: ['5%', '15%', '15%', '15%', '15%', '15%', '20%'],
                         headerRows: 1,
                         body: [
                             [
                                 { text: 'No', style: 'tableHeaderKeluar' },
                                 { text: 'Tanggal', style: 'tableHeaderKeluar' },
                                 { text: 'Asal Lahan', style: 'tableHeaderKeluar' },
-                                { text: 'Jumlah Biaya', style: 'tableHeaderKeluar', alignment: 'right' },
+                                { text: 'Jenis Biaya', style: 'tableHeaderKeluar' },
+                                { text: 'Jumlah Biaya', style: 'tableHeaderKeluar' },
+                                { text: 'Bukti', style: 'tableHeaderKeluar' },
                                 { text: 'Keterangan', style: 'tableHeaderKeluar' }
                             ],
                             ...dataPengeluaran

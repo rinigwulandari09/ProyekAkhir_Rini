@@ -22,11 +22,15 @@ class Lahan extends Model
 
     // Isi kolom sesuai dengan skema di Supabase
     protected $fillable = [
+        'petani_id',
+        'lahan_nama',
         'lahan_lokasi',
         'lahan_luas',
-        'petani_id',
-        'area_lahan',
-        'lahan_nama'
+        'area_lahan'
+    ];
+
+    protected $casts = [
+        'area_lahan' => 'array'
     ];
 
     public function petani()

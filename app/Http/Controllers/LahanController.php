@@ -134,6 +134,60 @@ class LahanController extends Controller
         return redirect()->route('lahan.index')->with('success', 'Data lahan berhasil dihapus!');
     }
 
+
+    private function cariPetaniTerbaik($namaJson, $desaId)
+    {
+        $namaJson = strtolower(trim($namaJson));
+
+        // Hapus angka di belakang
+        $namaJson = preg_replace('/\s+\d+$/', '', $namaJson);
+
+        // 1. Exact Match
+        $petani = Petani::where('desa_id', $desaId)
+            ->whereRaw('LOWER(petani_nama) = ?', [$namaJson])
+            ->first();
+
+        if ($petani) {
+            return $petani;
+        }
+
+        // 2. LIKE Match
+        $petani = Petani::where('desa_id', $desaId)
+            ->whereRaw('LOWER(petani_nama) LIKE ?', ['%' . $namaJson . '%'])
+            ->first();
+
+        if ($petani) {
+            return $petani;
+        }
+
+        // 3. Similarity Match
+        $petanis = Petani::where('desa_id', $desaId)->get();
+
+        $bestMatch = null;
+        $bestScore = 0;
+
+        foreach ($petanis as $p) {
+
+            similar_text(
+                $namaJson,
+                strtolower($p->petani_nama),
+                $score
+            );
+
+            if ($score > $bestScore) {
+                $bestScore = $score;
+                $bestMatch = $p;
+            }
+        }
+
+        // Minimal kemiripan 50%
+        if ($bestScore >= 50) {
+            return $bestMatch;
+        }
+
+        return null;
+    }
+
     // import file
     // import file GeoJSON dengan sistem LOCK total (Anti-Duplikat Murni)
     public function importGeoJson(Request $request)
@@ -154,6 +208,8 @@ class LahanController extends Controller
 
         $jumlahSukses = 0;
         $jumlahDilewati = 0;
+
+        $gagalMapping = [];
 
         try {
             foreach ($data['features'] as $index => $feature) {
@@ -198,30 +254,30 @@ class LahanController extends Controller
                 //     continue; 
                 // }
 
-                $namaRaw = $propsLower['nama_petan'] ?? $propsLower['nama_petani'] ?? $propsLower['nama'] ?? '';
-                if (empty($namaRaw) || trim($namaRaw) === '') {
+                $namaRaw = $propsLower['nama_petan']
+                    ?? $propsLower['nama_petani']
+                    ?? $propsLower['nama']
+                    ?? '';
+
+                if (empty($namaRaw)) {
                     $jumlahDilewati++;
-                    continue; 
-                }
-                
-                $namaBersih = trim(preg_replace('/\s+\d+$/', '', $namaRaw)); 
-
-                // MENCARI DENGAN LIKE (Contoh: "Nita" akan mencocokkan ke "Nita Salsabilla")
-                $petaniData = Petani::where('desa_id', $desaId)
-                                    ->where('petani_nama', 'ILIKE', $namaBersih . '%') // Mencari yang berawalan nama tersebut
-                                    ->first();
-
-                // Pilihan cadangan: Jika masih tidak ketemu, coba cari apakah nama di JSON mengandung bagian dari nama DB
-                if (!$petaniData) {
-                    $petaniData = Petani::where('desa_id', $desaId)
-                                        ->where('petani_nama', 'ILIKE', '%' . $namaBersih . '%')
-                                        ->first();
+                    continue;
                 }
 
-                // JIKA SAMA SEKALI TIDAK ADA DI DATABASE VPS -> SKIP
+                $petaniData = $this->cariPetaniTerbaik(
+                    $namaRaw,
+                    $desaId
+                );
+
                 if (!$petaniData) {
+
+                    $gagalMapping[] = [
+                        'nama_json' => $namaRaw,
+                        'desa' => $namaDesa
+                    ];
+
                     $jumlahDilewati++;
-                    continue; 
+                    continue;
                 }
 
                 // PROSES AMBIL DATA ATRIBUT LAHAN
@@ -232,8 +288,6 @@ class LahanController extends Controller
                 $luasLahan = (float) $hectareRaw;
 
                 $namaLahan = $propsLower['id_sub_blo'] ?? $propsLower['no_blok'] ?? $namaRaw;
-                $kecamatan = $propsLower['kecamatan'] ?? '-';
-                $kabupaten = $propsLower['kabupaten'] ?? '-';
 
                 $geometry = $feature['geometry'];
                 $geometryJsonString = json_encode($geometry);
@@ -241,9 +295,11 @@ class LahanController extends Controller
 
                 // CEK DUPLIKASI GANDA (Atribut + Spasial)
                 // Cek apakah data lahan dengan Nama Lahan & Petani ini SUDAH ADA
-                $lahanEksis = Lahan::where('petani_id', $petaniData->petani_id)
-                                   ->where('lahan_nama', $namaLahan)
-                                   ->first();
+                $lahanEksis->update([
+                    'lahan_luas'   => $luasLahan,
+                    'lahan_lokasi' => $desaData->desa_nama,
+                    'area_lahan'   => DB::raw("ST_AsGeoJSON(" . $geometriBaruRaw . ")::jsonb"),
+                ]);
 
                 // Pengecekan alternatif via koordinat murni jika nama lahannya berbeda di JSON
                 if (!$lahanEksis) {
@@ -265,11 +321,11 @@ class LahanController extends Controller
 
                 // JIKA BENAR-BENAR BARU -> CREATE NEW DATA
                 Lahan::create([
-                    'lahan_nama'   => $namaLahan, 
+                    'lahan_nama'   => $namaLahan,
                     'lahan_luas'   => $luasLahan,
-                    'lahan_lokasi' => "Kec. " . $kecamatan . ", Kab. " . $kabupaten,
+                    'lahan_lokasi' => $desaData->desa_nama,
                     'petani_id'    => $petaniData->petani_id,
-                    'area_lahan'   => DB::raw("ST_AsGeoJSON(" . $geometriBaruRaw . ")::jsonb"), 
+                    'area_lahan'   => DB::raw("ST_AsGeoJSON(" . $geometriBaruRaw . ")::jsonb"),
                 ]);
 
                 $jumlahSukses++;
@@ -288,11 +344,327 @@ class LahanController extends Controller
                 $statusPesan .= " Sebanyak " . $jumlahDilewati . " data lama berhasil diperbarui/dilewati.";
             }
 
-            return redirect()->route('lahan.index')->with('success', $statusPesan);
+            return redirect()
+                ->route('lahan.index')
+                ->with('success', $statusPesan)
+                ->with('gagal_mapping', $gagalMapping);
 
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Gagal memproses file GeoJSON. Terjadi kesalahan: ' . $e->getMessage());
         }
+    }
+
+    // preview
+    public function previewImport(Request $request)
+    {
+        $request->validate([
+            'geojson_file' => 'required|file|mimes:json,txt'
+        ]);
+
+        $json = json_decode(
+            file_get_contents(
+                $request->file('geojson_file')->getRealPath()
+            ),
+            true
+        );
+
+        if (!isset($json['features'])) {
+            return back()->with(
+                'error',
+                'Format GeoJSON tidak valid'
+            );
+        }
+
+        $preview = [];
+
+        foreach ($json['features'] as $feature) {
+
+            $properties = $feature['properties'] ?? [];
+
+            $namaPetani =
+                $properties['Nama_Petan']
+                ?? $properties['Nama_Petani']
+                ?? '';
+
+            $namaDesa =
+                $properties['Desa']
+                ?? '';
+
+            $desa = Desa::where(
+                'desa_nama',
+                $namaDesa
+            )->first();
+
+            $petani = null;
+
+            if ($desa) {
+                $petani = $this->cariPetaniTerbaik(
+                    $namaPetani,
+                    $desa->desa_id
+                );
+            }
+
+            $preview[] = [
+                'nama_json' => $namaPetani,
+                'desa' => $namaDesa,
+                'petani_db' => $petani?->petani_nama,
+                'petani_id' => $petani?->petani_id,
+                'status' => $petani ? 'cocok' : 'tidak_cocok',
+                'feature' => $feature
+            ];
+        }
+
+        session([
+            'preview_geojson' => $preview
+        ]);
+
+        $role = auth()->user()->user_role;
+
+        if ($role === 'super_admin') {
+            return view(
+                'super_admin.lahan.preview_import',
+                compact('preview')
+            );
+        }
+
+        return view(
+            'admin.lahan.preview_import',
+            compact('preview')
+        );
+    }
+
+    //
+    private function cekPolygonSudahAda($geometry)
+    {
+        $geometryJson = json_encode($geometry);
+
+        $existing = DB::selectOne("
+            SELECT lahan_id
+            FROM lahan
+            WHERE ST_Equals(
+                ST_SetSRID(
+                    ST_GeomFromGeoJSON(area_lahan::text),
+                    4326
+                ),
+                ST_Transform(
+                    ST_SetSRID(
+                        ST_GeomFromGeoJSON(?),
+                        32647
+                    ),
+                    4326
+                )
+            )
+            LIMIT 1
+        ", [$geometryJson]);
+
+        return $existing ? true : false;
+    }
+
+   public function processImport()
+    {
+        $preview = session('preview_geojson');
+
+        if (!$preview) {
+            return redirect()
+                ->route('lahan.index')
+                ->with(
+                    'error',
+                    'Data preview tidak ditemukan'
+                );
+        }
+
+        DB::beginTransaction();
+
+        try {
+
+            $jumlahImport = 0;
+            $jumlahSkip   = 0;
+
+            foreach ($preview as $item) {
+
+                if ($item['status'] !== 'cocok') {
+                    continue;
+                }
+
+                $feature = $item['feature'];
+
+                $properties = $feature['properties'] ?? [];
+
+                $geometry = $feature['geometry'] ?? null;
+
+                if (!$geometry) {
+                    continue;
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | KONVERSI 32647 -> 4326
+                |--------------------------------------------------------------------------
+                */
+
+                $geometryJson = json_encode($geometry);
+
+                $hasil = DB::selectOne("
+                    SELECT ST_AsGeoJSON(
+                        ST_Transform(
+                            ST_SetSRID(
+                                ST_GeomFromGeoJSON(?),
+                                32647
+                            ),
+                            4326
+                        )
+                    ) AS geojson
+                ", [$geometryJson]);
+
+                $geojson4326 = json_decode(
+                    $hasil->geojson,
+                    true
+                );
+
+                /*
+                |--------------------------------------------------------------------------
+                | CEK DUPLIKAT POLYGON
+                |--------------------------------------------------------------------------
+                */
+
+                if ($this->polygonSudahAda($geojson4326)) {
+
+                    $jumlahSkip++;
+
+                    continue;
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | DATA ATRIBUT
+                |--------------------------------------------------------------------------
+                */
+
+                $luas =
+                    $properties['Hectare']
+                    ?? $properties['Hectares']
+                    ?? $properties['hectare']
+                    ?? $properties['hectares']
+                    ?? 0;
+
+                if (is_string($luas)) {
+                    $luas = str_replace(',', '.', $luas);
+                }
+
+                $namaLahan =
+                    $properties['Id_Sub_Blo']
+                    ?? $properties['id_sub_blo']
+                    ?? $properties['No_Blok']
+                    ?? $properties['no_blok']
+                    ?? 'Lahan';
+
+                $petani = Petani::with('desa')
+                    ->find($item['petani_id']);
+
+                if (!$petani) {
+                    continue;
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | SIMPAN
+                |--------------------------------------------------------------------------
+                */
+
+                Lahan::create([
+
+                    'petani_id' => $petani->petani_id,
+
+                    'lahan_nama' => $namaLahan,
+
+                    'lahan_luas' => (float) $luas,
+
+                    'lahan_lokasi' => $petani->desa->desa_nama,
+
+                    'area_lahan' => $geojson4326
+                ]);
+
+                $jumlahImport++;
+            }
+
+            DB::commit();
+
+            session()->forget(
+                'preview_geojson'
+            );
+
+            return redirect()
+                ->route('lahan.index')
+                ->with(
+                    'success',
+                    "Import selesai. {$jumlahImport} data berhasil ditambahkan dan {$jumlahSkip} data dilewati karena polygon sudah ada."
+                );
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return redirect()
+                ->route('lahan.index')
+                ->with(
+                    'error',
+                    'Gagal import: ' . $e->getMessage()
+                );
+        }
+    }
+
+    private function polygonSudahAda($geojson4326)
+    {
+        if (
+            !is_array($geojson4326)
+            || !isset($geojson4326['coordinates'])
+            || !isset($geojson4326['coordinates'][0])
+        ) {
+            return false;
+        }
+
+        $coordsBaru = collect(
+            $geojson4326['coordinates'][0]
+        )->map(function ($item) {
+
+            return [
+                round($item[0], 6),
+                round($item[1], 6)
+            ];
+
+        })->toArray();
+
+        foreach (Lahan::all() as $lahan) {
+
+            $polygonLama = is_array($lahan->area_lahan)
+                ? $lahan->area_lahan
+                : json_decode($lahan->area_lahan, true);
+
+            if (
+                !$polygonLama ||
+                !isset($polygonLama['coordinates']) ||
+                !isset($polygonLama['coordinates'][0])
+            ) {
+                continue;
+            }
+
+            $coordsLama = collect(
+                $polygonLama['coordinates'][0]
+            )->map(function ($item) {
+
+                return [
+                    round($item[0], 6),
+                    round($item[1], 6)
+                ];
+
+            })->toArray();
+
+            if ($coordsBaru == $coordsLama) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

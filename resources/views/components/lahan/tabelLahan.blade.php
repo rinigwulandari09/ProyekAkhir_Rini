@@ -10,7 +10,7 @@
         @if(auth()->user()->user_role === 'admin')
         <div class="flex flex-wrap gap-3">
             {{-- FORM IMPORT FILE JSON DIRECT --}}
-            <form action="{{ route('lahan.import_geojson') }}" method="POST" enctype="multipart/form-data" class="flex items-center gap-2 bg-gray-100 p-1.5 rounded-xl border border-gray-300 shadow-sm">
+            <form action="{{ route('lahan.preview_import') }}" method="POST" enctype="multipart/form-data" class="flex items-center gap-2 bg-gray-100 p-1.5 rounded-xl border border-gray-300 shadow-sm">
                 @csrf
                 <input type="file" name="geojson_file" accept=".json" required class="text-xs text-gray-600 max-w-45 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-gray-200 file:text-gray-700 hover:file:bg-gray-300 cursor-pointer">
                 <button type="submit" class="bg-[#214122] text-white text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-green-900 active:scale-95 transition cursor-pointer">
@@ -41,6 +41,30 @@
         <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl relative text-sm flex items-center shadow-sm" role="alert">
             <span class="block sm:inline">{{ session('error') }}</span>
         </div>
+    @endif
+
+    @if(session('gagal_mapping') && count(session('gagal_mapping')) > 0)
+
+    {{-- // alert mapping --}}
+    <div class="mb-4 bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded-xl">
+
+        <strong>
+            Beberapa petani tidak ditemukan:
+        </strong>
+
+        <ul class="mt-2 list-disc pl-5">
+            @foreach(session('gagal_mapping') as $item)
+
+                <li>
+                    {{ $item['nama_json'] }}
+                    ({{ $item['desa'] }})
+                </li>
+
+            @endforeach
+        </ul>
+
+    </div>
+
     @endif
 
     {{-- Container tempat tombol Export diletakkan --}}

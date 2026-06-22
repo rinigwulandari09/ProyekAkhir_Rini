@@ -21,6 +21,7 @@ class AuthController extends Controller
             'petani_jenis_kelamin'   => 'nullable|string',
             'petani_tanggal_lahir'   => 'nullable',
             'petani_username'        => 'nullable|string|max:255',
+            'petani_profil'          => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
         ]);
 
         $petani = Petani::create([
@@ -77,10 +78,11 @@ class AuthController extends Controller
 
         // LOGIN PETANI
         $petani = Petani::where('petani_username', $request->username)->first();
-
         if ($petani) {
-
             if ($petani->petani_pin == $request->password) {
+                // Ambil ulang data profil berdasarkan petani_id
+                $profilPetani = Petani::where('petani_id', $petani->petani_id)
+                    ->value('petani_profil');
 
                 return response()->json([
                     'success' => true,
@@ -91,7 +93,8 @@ class AuthController extends Controller
                         'petani_nama' => $petani->petani_nama,
                         'petani_username' => $petani->petani_username,
                         'petani_status' => $petani->petani_status,
-                        'desa_id' => $petani->desa_id
+                        'desa_id' => $petani->desa_id,
+                        'petani_profil' => $profilPetani
                     ]
                 ]);
             }
@@ -101,10 +104,5 @@ class AuthController extends Controller
                 'message' => 'PIN salah'
             ], 401);
         }
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Username tidak ditemukan'
-        ], 404);
     }
 }

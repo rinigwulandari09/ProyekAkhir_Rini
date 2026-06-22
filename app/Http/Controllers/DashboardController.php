@@ -51,7 +51,7 @@ class DashboardController extends Controller
 
         // GRAFIK PIE PENGELUARAN
         $pengeluaranGrafik = DB::table('biaya_operasional')
-            ->select('biaya_jenis', DB::raw("SUM(biaya_jumlah) as total"))
+            ->select('biaya_jenis', DB::raw("SUM(biaya_total) as total"))
             ->groupBy('biaya_jenis')
             ->get();
 

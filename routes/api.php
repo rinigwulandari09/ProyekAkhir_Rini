@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\RiwayatKeuanganController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/petani/{petani_id}', [AuthController::class, 'getPetani']);
 
 Route::get('/desa', [DesaController::class, 'index']);
 
