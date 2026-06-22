@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Models\Notifikasi;
 
 class DashboardController extends Controller
 {
@@ -70,14 +71,63 @@ class DashboardController extends Controller
         $user = auth()->user();
 
         if ($user->user_role === 'super_admin') {
+
+            $notifikasi = Notifikasi::where('target', 'superadmin')
+                ->latest()
+                ->take(10)
+                ->get();
+
+            $unreadCount = Notifikasi::where('target', 'superadmin')
+                ->where('is_read', false)
+                ->count();
+
+        } else {
+
+            $notifikasi = Notifikasi::where('target', 'admin')
+                ->where('user_id', $user->user_id)
+                ->latest()
+                ->take(10)
+                ->get();
+
+            $unreadCount = Notifikasi::where('target', 'admin')
+                ->where('user_id', $user->user_id)
+                ->where('is_read', false)
+                ->count();
+        }
+
+        // 
+        $jumlahProduksiHariIni = DB::table('produksi')
+        ->whereDate('created_at', today())
+        ->count();
+
+        if ($user->user_role === 'super_admin') {
+
             return view('super_admin.dashboard', compact(
-                'jumlahPetani', 'jumlahLahan', 'pendapatanBulanIni', 
-                'petaniPending', 'pemasukanGrafik', 'pengeluaranGrafik', 'semuaLahan'
+                'jumlahPetani',
+                'jumlahLahan',
+                'pendapatanBulanIni',
+                'petaniPending',
+                'pemasukanGrafik',
+                'pengeluaranGrafik',
+                'semuaLahan',
+                'notifikasi',
+                'unreadCount',
+                'jumlahProduksiHariIni'
             ));
+
         } elseif ($user->user_role === 'admin') {
+
             return view('admin.dashboard', compact(
-                'jumlahPetani', 'jumlahLahan', 'pendapatanBulanIni', 
-                'petaniPending', 'pemasukanGrafik', 'pengeluaranGrafik', 'semuaLahan'
+                'jumlahPetani',
+                'jumlahLahan',
+                'pendapatanBulanIni',
+                'petaniPending',
+                'pemasukanGrafik',
+                'pengeluaranGrafik',
+                'semuaLahan',
+                'notifikasi',
+                'unreadCount',
+                'jumlahProduksiHariIni'
             ));
         }
 

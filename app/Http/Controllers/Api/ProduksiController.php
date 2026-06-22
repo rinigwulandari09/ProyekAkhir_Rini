@@ -52,10 +52,31 @@ class ProduksiController extends Controller
             'harga_tbs'        => 'required|numeric',
             'petani_id'        => 'required|exists:petani,petani_id',
             'lahan_id'         => 'required|exists:lahan,lahan_id',
-            'produksi_ket'     => 'nullable|string'
+            'produksi_ket'     => 'nullable|string',
+
+            // TAMBAHAN
+            'produksi_bukti'   => 'nullable|image|mimes:jpg,jpeg,png|max:5120'
         ]);
 
         $totalPendapatan = $request->jumlah_tbs * $request->harga_tbs;
+
+        // ==========================
+        // SIMPAN FOTO
+        // ==========================
+        $fotoPath = null;
+
+        if ($request->hasFile('produksi_bukti')) {
+
+            $file = $request->file('produksi_bukti');
+
+            $namaFile = time() . '_' . $file->getClientOriginalName();
+
+            $fotoPath = $file->storeAs(
+                'produksi_bukti',
+                $namaFile,
+                'public'
+            );
+        }
 
         $produksi = Produksi::create([
             'produksi_tanggal' => $request->produksi_tanggal,
@@ -65,7 +86,10 @@ class ProduksiController extends Controller
             'status_validasi'  => 'Pending',
             'petani_id'        => $request->petani_id,
             'lahan_id'         => $request->lahan_id,
-            'produksi_ket'     => $request->produksi_ket
+            'produksi_ket'     => $request->produksi_ket,
+
+            // TAMBAHAN
+            'produksi_bukti'   => $fotoPath
         ]);
 
         // AMBIL DATA PETANI
@@ -82,7 +106,19 @@ class ProduksiController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Data produksi berhasil ditambahkan',
-            'data' => $produksi
+            'data' => [
+                'id' => $produksi->id,
+                'produksi_tanggal' => $produksi->produksi_tanggal,
+                'jumlah_tbs' => $produksi->jumlah_tbs,
+                'harga_tbs' => $produksi->harga_tbs,
+                'total_pendapatan' => $produksi->total_pendapatan,
+                'produksi_bukti' => $produksi->produksi_bukti,
+
+                // URL YANG BISA DIPAKAI GLIDE
+                'produksi_bukti_url' => $fotoPath
+                    ? asset('storage/' . $fotoPath)
+                    : null
+            ]
         ], 201);
     }
 }
