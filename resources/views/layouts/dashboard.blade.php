@@ -136,42 +136,103 @@
         const popupNotif = document.getElementById('popupNotif');
         const notifBadge = document.getElementById('notifBadge');
 
-        // OPEN / CLOSE POPUP
-        btnNotif.addEventListener('click', function (e) {
+        btnNotif.addEventListener('click', function(e) {
             e.stopPropagation();
+
             popupNotif.classList.toggle('hidden');
 
-            // optional: refresh notif saat dibuka
             loadNotifCount();
+            loadNotifList();
         });
 
-        // CLICK OUTSIDE CLOSE (FIXED SAFE)
-        document.addEventListener('click', function (e) {
-            if (!popupNotif.classList.contains('hidden')) {
-                if (!popupNotif.contains(e.target) && e.target !== btnNotif) {
-                    popupNotif.classList.add('hidden');
-                }
+        document.addEventListener('click', function(e) {
+
+            if (
+                !popupNotif.contains(e.target) &&
+                !btnNotif.contains(e.target)
+            ) {
+                popupNotif.classList.add('hidden');
             }
+
         });
 
-        // LOAD COUNT NOTIF (DARI CONTROLLER)
-        function loadNotifCount() {
+        function loadNotifCount()
+        {
             fetch('/notifikasi/count')
                 .then(res => res.json())
                 .then(data => {
+
                     if (data.count > 0) {
+
                         notifBadge.classList.remove('hidden');
                         notifBadge.innerText = data.count;
+
                     } else {
+
                         notifBadge.classList.add('hidden');
+
                     }
-                })
-                .catch(() => {});
+
+                });
         }
 
-        // INIT
+        function loadNotifList()
+        {
+            fetch('/notifikasi/popup')
+                .then(res => res.json())
+                .then(response => {
+
+                    let html = '';
+
+                    if (response.data.length === 0) {
+
+                        html = `
+                            <div class="text-center py-5 text-xs text-gray-400">
+                                Tidak ada notifikasi
+                            </div>
+                        `;
+
+                    } else {
+
+                        response.data.forEach(notif => {
+
+                            html += `
+                            <div class="mb-2 p-3 rounded-lg border ${
+                                notif.is_read
+                                ? 'bg-white'
+                                : 'bg-green-50 border-green-200'
+                            }">
+
+                                <div class="flex justify-between">
+
+                                    <div class="font-bold text-xs">
+                                        ${notif.judul}
+                                    </div>
+
+                                    <div class="text-[10px] text-gray-400">
+                                        ${notif.created_at}
+                                    </div>
+
+                                </div>
+
+                                <div class="text-[11px] text-gray-600 mt-1">
+                                    ${notif.pesan}
+                                </div>
+
+                            </div>
+                            `;
+                        });
+                    }
+
+                    document.getElementById('notifContainer').innerHTML = html;
+                });
+        }
+
         loadNotifCount();
-        setInterval(loadNotifCount, 10000);
+
+        setInterval(() => {
+            loadNotifCount();
+        }, 10000);
         </script>
 </body>
 </html>

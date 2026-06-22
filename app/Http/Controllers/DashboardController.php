@@ -97,7 +97,7 @@ class DashboardController extends Controller
 
         // 
         $jumlahProduksiHariIni = DB::table('produksi')
-        ->whereDate('created_at', today())
+        ->whereDate('produksi_tanggal', today())
         ->count();
 
         if ($user->user_role === 'super_admin') {

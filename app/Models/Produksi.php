@@ -16,7 +16,8 @@ class Produksi extends Model
         'status_validasi',
         'petani_id',
         'lahan_id',
-        'produksi_ket'
+        'produksi_ket',
+        'produksi_bukti'
     ];
 
     public $timestamps = false;

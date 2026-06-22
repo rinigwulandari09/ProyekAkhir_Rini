@@ -24,12 +24,14 @@ class NotifikasiController extends Controller
             $query->where('target', 'superadmin');
         } else {
             $query->where('target', 'admin')
-                  ->where('user_id', $user->user_id);
+                ->where('user_id', $user->user_id);
         }
 
         $notifikasi = $query->latest()->take(10)->get();
 
-        return response()->json($notifikasi);
+        return response()->json([
+            'data' => $notifikasi
+        ]);
     }
 
     /*
@@ -66,9 +68,8 @@ class NotifikasiController extends Controller
 
         $notif = Notifikasi::findOrFail($id);
 
-        // safety check
         if ($user->user_role !== 'super_admin') {
-            if ($notif->user_id !== $user->user_id) {
+            if ($notif->user_id != $user->user_id) {
                 abort(403);
             }
         }
@@ -78,7 +79,8 @@ class NotifikasiController extends Controller
             'read_at' => now()
         ]);
 
-        return response()->json(['success' => true]);
+        return redirect()->back()
+            ->with('success', 'Notifikasi berhasil dibaca');
     }
 
     /*

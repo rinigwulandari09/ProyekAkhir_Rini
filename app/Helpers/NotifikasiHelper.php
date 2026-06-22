@@ -12,13 +12,14 @@ class NotifikasiHelper
         $pesan,
         $jenis,
         $userId = null
-    ) {
+    )
+    {
         return Notifikasi::create([
-            'target'  => $target,
+            'target' => $target,
             'user_id' => $userId,
-            'judul'   => $judul,
-            'pesan'   => $pesan,
-            'jenis'   => $jenis,
+            'judul' => $judul,
+            'pesan' => $pesan,
+            'jenis' => $jenis,
             'is_read' => false
         ]);
     }

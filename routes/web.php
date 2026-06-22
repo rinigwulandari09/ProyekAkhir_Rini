@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PetaniController;
 use App\Http\Controllers\LahanController;
 use App\Http\Controllers\KeuanganController;
+use App\Http\Controllers\NotifikasiController;
 
 Route::get('/', [LoginController::class,'index'])
     ->name('login');
@@ -129,9 +130,14 @@ Route::middleware(['auth'])->group(function () {
 
 
     // notifikasi
-    Route::get('/notifikasi/superadmin', [NotifikasiController::class, 'superadmin']);
-    Route::get('/notifikasi/count', [NotifikasiController::class, 'countSuperadmin']);
-    Route::post('/notifikasi/read/{id}', [NotifikasiController::class, 'markAsRead']);
-    Route::post('/notifikasi/read-all', [NotifikasiController::class, 'markAllAsRead']);
+    Route::get('/notifikasi/popup', [NotifikasiController::class, 'getPopup']);
 
+    Route::get('/notifikasi/count', [NotifikasiController::class, 'count']);
+
+    Route::post('/notifikasi/read/{id}', [NotifikasiController::class, 'markAsRead']);
+
+    Route::post('/notifikasi/mark-all', [NotifikasiController::class, 'markAllAsRead']);
+
+    Route::get('/notifikasi', [NotifikasiController::class, 'index'])
+        ->name('notifikasi.index');
     });
