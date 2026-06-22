@@ -12,7 +12,6 @@ class BiayaOperasionalController extends Controller
     {
         $data = BiayaOperasional::with([
             'petani',
-            'desa',
             'lahan'
         ])->latest()->get();
 
@@ -27,7 +26,6 @@ class BiayaOperasionalController extends Controller
     {
         $data = BiayaOperasional::with([
             'petani',
-            'desa',
             'lahan'
         ])->find($id);
 
@@ -52,7 +50,6 @@ class BiayaOperasionalController extends Controller
             'biaya_jenis'   => 'required|string|max:255',
             'biaya_jumlah'  => 'required|numeric',
             'petani_id'     => 'required|exists:petani,id',
-            'desa_id'       => 'required|exists:desa,id',
             'lahan_id'      => 'required|exists:lahan,id',
             'biaya_ket'     => 'nullable|string',
 
@@ -76,7 +73,6 @@ class BiayaOperasionalController extends Controller
             'biaya_total'   => $request->biaya_jumlah,
             'biaya_ket'     => $request->biaya_ket,
             'petani_id'     => $request->petani_id,
-            'desa_id'       => $request->desa_id,
             'lahan_id'      => $request->lahan_id,
             'biaya_bukti'   => $path
         ]);

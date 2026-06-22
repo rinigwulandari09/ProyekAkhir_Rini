@@ -98,7 +98,7 @@ class KeuanganController extends Controller
 
         // 2. Ambil query relasi
         $produksiQuery = $petani->produksi(); 
-        $biayaQuery = $petani->biayaOperasinals(); 
+        $biayaQuery = $petani->biayaOperasinals()->with('lahan');
 
         // 3. Terapkan filter PostgreSQL dengan nama kolom yang benar
         if ($tahun) {

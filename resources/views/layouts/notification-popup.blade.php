@@ -1,65 +1,94 @@
 <div class="p-4">
-    {{-- Header --}}
-    <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-bold text-[#214122]">Notifikasi</h3>
-        <button id="btnCloseNotif" class="text-gray-400 hover:text-gray-600 transition">
-            <x-heroicon-o-x-mark class="w-6 h-6" />
-        </button>
-    </div>
 
-    {{-- Tabs --}}
-    <div class="flex gap-4 border-b border-gray-100 mb-4 text-sm">
-        <button class="pb-2 border-b-2 border-green-600 font-bold text-green-700">Semua</button>
-        <button class="pb-2 text-gray-400 hover:text-gray-600 transition">Belum Dibaca</button>
-    </div>
+    {{-- HEADER --}}
+    <div class="flex justify-between items-center mb-3">
+        <h3 class="text-sm font-bold text-[#214122]">Notifikasi</h3>
 
-    {{-- List Notifikasi --}}
-    <div class="max-h-87.5 overflow-y-auto space-y-1">
-        {{-- Item 1 --}}
-        <div class="flex items-start gap-3 p-3 bg-green-50 rounded-xl border border-green-50">
-            <div class="w-10 h-10 rounded-lg bg-[#214122] flex items-center justify-center shrink-0">
-                {{-- Menggunakan Truck sebagai pengganti Tractor karena Heroicons tidak punya ikon traktor --}}
-                <x-heroicon-o-truck class="w-6 h-6 text-white" />
-            </div>
-            <div class="flex-1">
-                <p class="text-xs font-bold text-gray-800">15 Petani telah mengisi data produksi hari ini</p>
-                <p class="text-[10px] text-gray-400">Laporan harian otomatis dihasilkan sistem.</p>
-            </div>
+        <div class="flex gap-2 items-center">
+
+            {{-- MARK ALL READ --}}
+            <form method="POST" action="{{ url('/notifikasi/mark-all') }}">
+                @csrf
+                <button type="submit" class="text-[10px] text-green-600 hover:underline">
+                    Tandai semua
+                </button>
+            </form>
+
+            <button id="btnCloseNotif" class="text-gray-400 hover:text-gray-600">
+                <x-heroicon-o-x-mark class="w-5 h-5" />
+            </button>
         </div>
+    </div>
 
-        {{-- Item 2 --}}
-        <div class="flex items-start gap-3 p-3 hover:bg-gray-50 rounded-xl transition cursor-pointer">
-            <div class="relative shrink-0">
-                <img src="https://ui-avatars.com/api/?name=Ahmad+Subardjo" class="w-10 h-10 rounded-full">
-                <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
-            </div>
-            <div class="flex-1">
-                <div class="flex justify-between">
-                    <p class="text-xs font-bold text-gray-800">Ahmad Subardjo mengisi data</p>
-                    <span class="text-[9px] text-gray-400">2m lalu</span>
+    {{-- INFO RINGKAS --}}
+    <div class="mb-3 bg-green-50 p-2 rounded-lg border border-green-100">
+        <p class="text-[10px] text-green-700 font-bold">
+            {{ $jumlahProduksiHariIni ?? 0 }} petani input produksi hari ini
+        </p>
+    </div>
+
+    {{-- LIST NOTIF --}}
+    <div class="max-h-80 overflow-y-auto space-y-2">
+
+        @forelse ($notifikasi ?? [] as $notif)
+            <div class="flex gap-3 p-3 rounded-xl border
+                {{ $notif->is_read ? 'bg-white' : 'bg-green-50 border-green-100' }}">
+
+                {{-- ICON --}}
+                <div class="w-9 h-9 rounded-lg bg-[#214122] flex items-center justify-center">
+                    <x-heroicon-o-bell class="w-5 h-5 text-white" />
                 </div>
-                <p class="text-[10px] text-gray-500">Hasil panen: 2.5 Ton Kelapa Sawit (TBS)</p>
+
+                {{-- CONTENT --}}
+                <div class="flex-1">
+
+                    <div class="flex justify-between gap-2">
+                        <p class="text-xs font-bold text-gray-800">
+                            {{ $notif->judul }}
+                        </p>
+
+                        <span class="text-[9px] text-gray-400 whitespace-nowrap">
+                            {{ optional($notif->created_at)->diffForHumans() }}
+                        </span>
+                    </div>
+
+                    <p class="text-[10px] text-gray-500 mt-1">
+                        {{ $notif->pesan }}
+                    </p>
+
+                    {{-- ACTION --}}
+                    @if(!$notif->is_read)
+                        <form method="POST" action="{{ url('/notifikasi/read/'.$notif->id) }}">
+                            @csrf
+                            <button type="submit" class="text-[10px] text-green-600 mt-1 hover:underline">
+                                Tandai dibaca
+                            </button>
+                        </form>
+                    @endif
+
+                </div>
             </div>
-        </div>
+
+        @empty
+            <p class="text-center text-gray-400 text-xs py-4">
+                Tidak ada notifikasi
+            </p>
+        @endforelse
+
     </div>
 
-    {{-- Tombol Bawah --}}
-    <div class="mt-4 space-y-2">
-        <button class="w-full py-2 border border-gray-200 rounded-lg text-xs font-bold text-gray-600 hover:bg-gray-50 transition flex items-center justify-center gap-2">
-            <x-heroicon-o-check-badge class="w-4 h-4" />
-            Tandai semua telah dibaca
-        </button>
-        
-        <a href="{{ route('notifikasi.index') }}" 
-        class="w-full py-2.5 bg-[#214122] text-white rounded-lg text-xs font-bold shadow-md hover:bg-[#3D5A3E] transition inline-block text-center">
+    {{-- FOOTER --}}
+    <div class="mt-3">
+        <a href="{{ route('notifikasi.index') }}"
+           class="block text-center bg-[#214122] text-white text-xs font-bold py-2 rounded-lg hover:bg-[#3D5A3E]">
             Lihat Semua Notifikasi
         </a>
     </div>
+
 </div>
 
 <script>
-    document.getElementById('btnCloseNotif').addEventListener('click', function() {
-        const popup = document.getElementById('popupNotif');
-        if(popup) popup.classList.add('hidden');
+    document.getElementById('btnCloseNotif')?.addEventListener('click', function () {
+        document.getElementById('popupNotif')?.classList.add('hidden');
     });
 </script>

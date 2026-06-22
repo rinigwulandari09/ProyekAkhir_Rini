@@ -127,4 +127,11 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/lahan/process-import', [LahanController::class, 'processImport'])
         ->name('lahan.process_import');
 
+
+    // notifikasi
+    Route::get('/notifikasi/superadmin', [NotifikasiController::class, 'superadmin']);
+    Route::get('/notifikasi/count', [NotifikasiController::class, 'countSuperadmin']);
+    Route::post('/notifikasi/read/{id}', [NotifikasiController::class, 'markAsRead']);
+    Route::post('/notifikasi/read-all', [NotifikasiController::class, 'markAllAsRead']);
+
     });

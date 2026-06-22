@@ -98,9 +98,19 @@
                     <div class="relative inline-block">
                         <button id="btnNotif" class="relative p-2 text-blue-400 bg-blue-50 rounded-full hover:bg-blue-100 transition">
                             <x-heroicon-o-bell class="w-5 h-5 md:w-6 md:h-6" />
-                            <span class="absolute top-1 right-1 bg-blue-500 text-white text-[8px] font-bold px-1 rounded-full border-2 border-white">21</span>
+
+                            {{-- BADGE DINAMIS --}}
+                            <span id="notifBadge"
+                                class="absolute top-1 right-1 bg-blue-500 text-white text-[8px] font-bold px-1 rounded-full border-2 border-white hidden">
+                                0
+                            </span>
                         </button>
-                        <div id="popupNotif" class="hidden absolute right-0 mt-3 w-72 md:w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50">
+
+                        {{-- POPUP --}}
+                        <div id="popupNotif"
+                            class="hidden absolute right-0 mt-3 w-72 md:w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50">
+
+                            {{-- ISI POPUP --}}
                             @include('layouts.notification-popup')
                         </div>
                     </div>
@@ -124,17 +134,44 @@
     <script>
         const btnNotif = document.getElementById('btnNotif');
         const popupNotif = document.getElementById('popupNotif');
+        const notifBadge = document.getElementById('notifBadge');
 
-        btnNotif.addEventListener('click', function(event) {
-            event.stopPropagation();
+        // OPEN / CLOSE POPUP
+        btnNotif.addEventListener('click', function (e) {
+            e.stopPropagation();
             popupNotif.classList.toggle('hidden');
+
+            // optional: refresh notif saat dibuka
+            loadNotifCount();
         });
 
-        document.addEventListener('click', function(event) {
-            if (!popupNotif.contains(event.target) && event.target !== btnNotif) {
-                popupNotif.classList.add('hidden');
+        // CLICK OUTSIDE CLOSE (FIXED SAFE)
+        document.addEventListener('click', function (e) {
+            if (!popupNotif.classList.contains('hidden')) {
+                if (!popupNotif.contains(e.target) && e.target !== btnNotif) {
+                    popupNotif.classList.add('hidden');
+                }
             }
         });
-    </script>
+
+        // LOAD COUNT NOTIF (DARI CONTROLLER)
+        function loadNotifCount() {
+            fetch('/notifikasi/count')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.count > 0) {
+                        notifBadge.classList.remove('hidden');
+                        notifBadge.innerText = data.count;
+                    } else {
+                        notifBadge.classList.add('hidden');
+                    }
+                })
+                .catch(() => {});
+        }
+
+        // INIT
+        loadNotifCount();
+        setInterval(loadNotifCount, 10000);
+        </script>
 </body>
 </html>

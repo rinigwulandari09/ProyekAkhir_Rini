@@ -24,6 +24,23 @@ class AuthController extends Controller
             'petani_profil'          => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
         ]);
 
+        // default null
+        $filePath = null;
+
+        // CEK ADA FILE FOTO
+        if ($request->hasFile('petani_profil')) {
+            $file = $request->file('petani_profil');
+
+            // bikin nama unik
+            $fileName = time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
+
+            // simpan ke storage/app/public/petani
+            $file->storeAs('public/petani', $fileName);
+
+            // path yang disimpan ke DB
+            $filePath = 'petani/'.$fileName;
+        }
+
         $petani = Petani::create([
             'petani_nama' => $request->petani_nama,
             'petani_alamat' => $request->petani_alamat,
@@ -34,8 +51,16 @@ class AuthController extends Controller
             'petani_jenis_kelamin' => $request->petani_jenis_kelamin,
             'petani_tanggal_lahir' => $request->petani_tanggal_lahir,
             'petani_username' => $request->petani_username,
-            'desa_id' => $request->desa_id
+            'desa_id' => $request->desa_id,
+            'petani_profil' => $filePath
         ]);
+
+        NotifikasiHelper::create(
+            'superadmin',
+            'Petani Baru',
+            $petani->petani_nama . ' telah mendaftar',
+            'register'
+        );
 
         return response()->json([
             'success' => true,

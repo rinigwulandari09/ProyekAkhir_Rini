@@ -15,7 +15,6 @@ class Produksi extends Model
         'total_pendapatan',
         'status_validasi',
         'petani_id',
-        'desa_id',
         'lahan_id',
         'produksi_ket'
     ];
@@ -26,12 +25,6 @@ class Produksi extends Model
     public function petani()
     {
         return $this->belongsTo(Petani::class, 'petani_id', 'petani_id');
-    }
-
-    // relasi ke tabel desa
-    public function desa()
-    {
-        return $this->belongsTo(Desa::class, 'desa_id', 'desa_id');
     }
 
     // relasi ke tabel lahan

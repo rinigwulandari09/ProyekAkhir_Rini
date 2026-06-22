@@ -16,7 +16,6 @@ class BiayaOperasional extends Model
         'biaya_total',
         'biaya_ket',
         'petani_id',
-        'desa_id',
         'lahan_id',
         'biaya_bukti'
     ];
@@ -26,11 +25,6 @@ class BiayaOperasional extends Model
     public function petani()
     {
         return $this->belongsTo(Petani::class, 'petani_id', 'petani_id');
-    }
-
-    public function desa()
-    {
-        return $this->belongsTo(Desa::class, 'desa_id', 'desa_id');
     }
 
     public function lahan()
