@@ -89,7 +89,7 @@
                     </div>
 
                     {{-- Prioritas --}}
-                    <div class="space-y-2">
+                    {{-- <div class="space-y-2">
                         <label class="block text-xs font-bold text-gray-700">Prioritas</label>
                         <div class="flex gap-3">
                             <label class="flex items-center gap-2 cursor-pointer bg-green-100 px-4 py-1.5 rounded-full border border-green-200">
@@ -101,7 +101,7 @@
                                 <span class="text-[10px] font-bold text-gray-400 group-hover:text-red-400 uppercase transition">Urgent</span>
                             </label>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
 
                 {{-- Tombol Simpan --}}

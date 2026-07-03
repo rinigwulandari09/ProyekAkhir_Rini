@@ -49,8 +49,8 @@ class BiayaOperasionalController extends Controller
             'biaya_nama'    => 'required|string|max:255',
             'biaya_jenis'   => 'required|string|max:255',
             'biaya_jumlah'  => 'required|numeric',
-            'petani_id'     => 'required|exists:petani_id',
-            'lahan_id'      => 'required|exists:lahan_id',
+            'petani_id'     => 'required|exists:petani,petani_id',
+            'lahan_id'      => 'required|exists:lahan,lahan_id',
             'biaya_ket'     => 'nullable|string',
 
             // Upload bukti
