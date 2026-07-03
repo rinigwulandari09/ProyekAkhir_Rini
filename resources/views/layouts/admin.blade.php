@@ -60,6 +60,10 @@
                     <x-heroicon-o-banknotes class="w-5 h-5 shrink-0" /> 
                     <span x-show="sidebarOpen">Data Keuangan</span>
                 </a>
+                <a href="#" class="flex items-center gap-3 {{ request()->routeIs('keuangan.*') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition" :class="!sidebarOpen && 'justify-center'">
+                    <x-heroicon-o-document-text class="w-5 h-5 shrink-0" /> 
+                    <span x-show="sidebarOpen">Audit</span>
+                </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="flex items-center gap-3 p-3 rounded-lg w-full text-left hover:bg-[#3D5A3E] transition" :class="!sidebarOpen && 'justify-center'">
@@ -83,7 +87,7 @@
                     <div class="relative inline-block">
                         <button id="btnNotif" class="relative p-2 text-blue-400 bg-blue-50 rounded-full hover:bg-blue-100 transition">
                             <x-heroicon-o-bell class="w-5 h-5 md:w-6 md:h-6" />
-                            <span class="absolute top-1 right-1 bg-blue-500 text-white text-[8px] font-bold px-1 rounded-full border-2 border-white">21</span>
+                            <span id="notifBadge" class="hidden absolute top-1 right-1 bg-blue-500 text-white text-[8px] font-bold px-1 rounded-full border-2 border-white"></span>
                         </button>
                         <div id="popupNotif" class="hidden absolute right-0 mt-3 w-72 md:w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50">
                             @include('layouts.notification-popup')
@@ -105,21 +109,5 @@
             </main>
         </div>
     </div>
-
-    <script>
-        const btnNotif = document.getElementById('btnNotif');
-        const popupNotif = document.getElementById('popupNotif');
-
-        btnNotif.addEventListener('click', function(event) {
-            event.stopPropagation();
-            popupNotif.classList.toggle('hidden');
-        });
-
-        document.addEventListener('click', function(event) {
-            if (!popupNotif.contains(event.target) && event.target !== btnNotif) {
-                popupNotif.classList.add('hidden');
-            }
-        });
-    </script>
 </body>
 </html>

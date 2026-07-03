@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Produksi;
 use App\Models\Petani;
+use App\Models\User;
 use Illuminate\Http\Request;
-use App\Helpers\NotifikasiHelper;
 
 class ProduksiController extends Controller
 {
@@ -70,13 +70,8 @@ class ProduksiController extends Controller
         // AMBIL DATA PETANI
         $petani = Petani::find($request->petani_id);
 
-        // BUAT NOTIFIKASI
-        NotifikasiHelper::create(
-            'superadmin',
-            'Produksi Baru',
-            $petani->petani_nama . ' menambahkan data produksi',
-            'produksi'
-        );
+        // Catatan: notifikasi produksi untuk superadmin akan diambil secara runtime dari tabel produksi.
+        // Tidak membuat record notifikasi baru di tabel `notifikasi`.
 
         return response()->json([
             'success' => true,

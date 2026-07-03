@@ -55,13 +55,6 @@ class AuthController extends Controller
             'petani_profil' => $filePath
         ]);
 
-        NotifikasiHelper::create(
-            'superadmin',
-            'Petani Baru',
-            $petani->petani_nama . ' telah mendaftar',
-            'register'
-        );
-
         return response()->json([
             'success' => true,
             'message' => 'Pendaftaran berhasil',

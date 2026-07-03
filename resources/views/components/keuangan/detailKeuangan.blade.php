@@ -27,7 +27,7 @@
                     Nama Petani: <span id="namaPetaniCetak" class="font-medium text-gray-600">{{ $petani->petani_nama ?? $petani->nama ?? 'Dhini Handayani' }}</span>
                 </h2>
             </div>
-            {{-- Tombol Utama pemicu download PDF gabungan keuangan --}}
+            {{-- Tombol Utama pemicu download PDF --}}
             <button onclick="exportSemuaLaporan()" class="bg-[#214122] text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-[#325934] transition shadow-sm">
                 <x-heroicon-o-arrow-up-tray class="w-4 h-4" /> Export Laporan Keuangan (PDF)
             </button>
@@ -76,21 +76,20 @@
                     <tbody class="text-xs divide-y divide-gray-50">
                         @forelse ($pemasukan as $masuk)
                         <tr class="hover:bg-gray-50/50 transition">
-                            <td class="p-3 text-justify text-gray-400 font-mono"></td>
-                            <td class="p-3 text-justify text-gray-600">
+                            <td class="p-3 text-center text-gray-400 font-mono"></td>
+                            <td class="p-3 text-center text-gray-600">
                                 {{ \Carbon\Carbon::parse($masuk->produksi_tanggal)->translatedFormat('d M Y') }}
                             </td>
                             <td class="p-3 text-gray-700 font-medium">{{ $masuk->lahan->lahan_nama ?? '-' }}</td>
-                            <td class="p-3 text-justify text-green-600 font-bold">
+                            <td class="p-3 text-right text-green-600 font-bold">
                                 Rp {{ number_format($masuk->total_pendapatan, 0, ',', '.') }}
                             </td>
-                            <td class="p-3 text-gray-400 max-w-50 truncate" title="{{ $masuk->produksi_keterangan ?? $masuk->keterangan }}">
+                            <td class="p-3 text-gray-500 max-w-50 truncate" title="{{ $masuk->produksi_keterangan ?? $masuk->keterangan }}">
                                 {{ $masuk->produksi_keterangan ?? $masuk->keterangan ?? '-' }}
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            {{-- KOLOM SUDAH DISESUAIKAN MENJADI BARISAN COLSPAN 5 AGAR TIDAK ERROR INCORRECT COLUMN COUNT --}}
                             <td colspan="5" class="p-6 text-center text-gray-400 italic bg-gray-50/50">Belum ada data transaksi pemasukan.</td>
                         </tr>
                         @endforelse
@@ -115,7 +114,7 @@
                             <th class="p-3">Asal Lahan</th>
                             <th class="p-3">Jenis Biaya</th>
                             <th class="p-3 text-right">Jumlah Biaya</th>
-                            <th class="p-3">Bukti</th>
+                            <th class="p-3 text-center">Bukti</th>
                             <th class="p-3">Keterangan</th>
                         </tr>
                     </thead>
@@ -123,57 +122,47 @@
                         @forelse ($pengeluaran as $keluar)
                         <tr class="hover:bg-gray-50/50 transition">
                             <td class="p-3 text-center text-gray-400 font-mono"></td>
-
                             <td class="p-3 text-center text-gray-600">
                                 {{ \Carbon\Carbon::parse($keluar->biaya_tanggal)->translatedFormat('d M Y') }}
                             </td>
-
                             <td class="p-3 text-gray-700 font-medium">
                                 {{ $keluar->lahan_nama }}
                             </td>
-
                             <td class="p-3 text-gray-600">
                                 {{ $keluar->biaya_jenis ?? '-' }}
                             </td>
-
-                            <td class="p-3 text-justify text-red-600 font-bold">
+                            <td class="p-3 text-right text-red-600 font-bold">
                                 Rp {{ number_format($keluar->biaya_total, 0, ',', '.') }}
                             </td>
-
-                            <td class="p-3">
+                            <td class="p-3 text-center">
                                 @if($keluar->biaya_bukti)
-                                    <a href="{{ Storage::url($keluar->biaya_bukti) }}" target="_blank">
+                                    <a href="{{ Storage::url($keluar->biaya_bukti) }}" target="_blank" class="text-blue-600 underline hover:text-blue-800">
                                         Lihat Bukti
                                     </a>
                                 @else
                                     <span class="text-gray-400">-</span>
                                 @endif
                             </td>
-
-                            <td class="p-3 text-gray-400">
+                            <td class="p-3 text-gray-500">
                                 {{ $keluar->biaya_keterangan ?? '-' }}
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            {{-- KOLOM SUDAH DISESUAIKAN MENJADI BARISAN COLSPAN 5 AGAR TIDAK ERROR --}}
-                            <td colspan="7" class="p-6 text-center text-gray-400 italic bg-gray-50/50">
+                            <td colspan="7" class="p-6 text-center text-gray-400 italic bg-gray-50/50">Belum ada data transaksi pengeluaran.</td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
-
     </div>
 </div>
 
-{{-- Dependensi DataTables & Ekstensi PDFMake (Bentuk Laporan Otomatis Tanpa Server-side) --}}
+{{-- Dependensi DataTables & Ekstensi PDFMake --}}
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-
-{{-- JS Pembuat PDF Dokumen --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 
@@ -192,7 +181,7 @@
             "paginate": { "next": "Next", "previous": "Prev" }
         };
 
-        // Inisialisasi DataTables Pemasukan (5 Kolom Riil)
+        // Inisialisasi DataTables Pemasukan
         tableMasuk = $('#tabelPemasukan').DataTable({
             "pageLength": 5,
             "lengthMenu": [[5, 10, 25, -1], [5, 10, 25, "All"]],
@@ -205,7 +194,6 @@
             "dom": '<"flex justify-between items-center gap-4 mb-2"f>rt<"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4 pt-4 border-t border-gray-100"i p>'
         });
 
-        // Penomoran Urut Otomatis Kolom Ke-0 Pemasukan
         tableMasuk.on('order.dt search.dt draw.dt', function () {
             let info = tableMasuk.page.info();
             tableMasuk.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
@@ -213,7 +201,7 @@
             });
         }).draw();
 
-        // Inisialisasi DataTables Pengeluaran (5 Kolom Riil)
+        // Inisialisasi DataTables Pengeluaran
         tableKeluar = $('#tabelPengeluaran').DataTable({
             "pageLength": 5,
             "lengthMenu": [[5, 10, 25, -1], [5, 10, 25, "All"]],
@@ -226,7 +214,6 @@
             "dom": '<"flex justify-between items-center gap-4 mb-2"f>rt<"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4 pt-4 border-t border-gray-100"i p>'
         });
 
-        // Penomoran Urut Otomatis Kolom Ke-0 Pengeluaran
         tableKeluar.on('order.dt search.dt draw.dt', function () {
             let info = tableKeluar.page.info();
             tableKeluar.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
@@ -234,51 +221,49 @@
             });
         }).draw();
 
-        // Memindahkan kolom pencarian bawaan ke header barisan judul dengan rapi
+        // Pindahkan kolom pencarian bawaan ke barisan judul
         $('.header-tabel-custom-masuk').append($('#tabelPemasukan_wrapper .dataTables_filter'));
         $('.header-tabel-custom-keluar').append($('#tabelPengeluaran_wrapper .dataTables_filter'));
     });
 
-    // FUNGSI UTAMA UNTUK EXPORT LAPORAN KEUANGAN GABUNGAN KE BENTUK PDF RESMI
+    // FUNGSI UTAMA EXPORT LAPORAN GABUNGAN KE PDF
     function exportSemuaLaporan() {
         var namaPetani = $('#namaPetaniCetak').text().trim();
         var totalMasuk = $('#totalMasukCetak').text().trim();
         var totalKeluar = $('#totalKeluarCetak').text().trim();
 
-        // Ambil baris data riil dari tabel
         var dataPemasukan = [];
         tableMasuk.rows({ search: 'applied' }).every(function (rowIdx, tableLoop, rowLoop) {
-            var node = this.node();
+            var cells = $(this.node()).find('td');
             dataPemasukan.push([
                 rowLoop + 1,
-                $(node).find('td').eq(1).text().trim(),
-                $(node).find('td').eq(2).text().trim(),
-                $(node).find('td').eq(3).text().trim(),
-                $(node).find('td').eq(4).text().trim()
+                cells.eq(1).text().trim(),
+                cells.eq(2).text().trim(),
+                { text: cells.eq(3).text().trim(), alignment: 'right' },
+                cells.eq(4).text().trim()
             ]);
         });
-        if (dataPemasukan.length === 0) dataPemasukan.push([{ text: 'Belum ada catatan transaksi.', colspan: 5, alignment: 'center', italic: true }, '', '', '', '']);
+        if (dataPemasukan.length === 0) {
+            dataPemasukan.push([{ text: 'Belum ada catatan transaksi.', colspan: 5, alignment: 'center', italic: true }, '', '', '', '']);
+        }
 
         var dataPengeluaran = [];
         tableKeluar.rows({ search: 'applied' }).every(function (rowIdx, tableLoop, rowLoop) {
-            var node = this.node();
+            var cells = $(this.node()).find('td');
             dataPengeluaran.push([
                 rowLoop + 1,
-                $(node).find('td').eq(1).text().trim(), // tanggal
-                $(node).find('td').eq(2).text().trim(), // lahan
-                $(node).find('td').eq(3).text().trim(), // jenis
-                $(node).find('td').eq(4).text().trim(), // jumlah
-                $(node).find('td').eq(5).text().trim(), // bukti
-                $(node).find('td').eq(6).text().trim()  // keterangan
+                cells.eq(1).text().trim(),
+                cells.eq(2).text().trim(),
+                cells.eq(3).text().trim(),
+                { text: cells.eq(4).text().trim(), alignment: 'right' },
+                cells.eq(5).text().trim(),
+                cells.eq(6).text().trim()
             ]);
         });
-        if (dataPengeluaran.length === 0)
-            dataPengeluaran.push([
-                { text: 'Belum ada catatan transaksi.', colspan: 7, alignment: 'center', italic: true },
-                '', '', '', '', '', ''
-            ]);
+        if (dataPengeluaran.length === 0) {
+            dataPengeluaran.push([{ text: 'Belum ada catatan transaksi.', colspan: 7, alignment: 'center', italic: true }, '', '', '', '', '', '']);
+        }
 
-        // Definisi Struktur Dokumen PDF Laporan Keuangan Ke PDFMake
         var docDefinition = {
             pageSize: 'A4',
             pageOrientation: 'portrait',
@@ -288,8 +273,6 @@
                 { text: 'Sistem Informasi Manajemen Keuangan Petani', style: 'docSub', alignment: 'center' },
                 { canvas: [{ type: 'line', x1: 0, y1: 5, x2: 515, y2: 5, lineWidth: 1.5, lineColor: '#214122' }] },
                 { text: '\n' },
-                
-                // Ringkasan Profil & Finansial Metadata
                 {
                     columns: [
                         { text: [{ text: 'Nama Petani : ', bold: true }, namaPetani], fontSize: 10 },
@@ -313,8 +296,6 @@
                     }
                 },
                 { text: '\n\n' },
-
-                // Bagian Tabel Pertama: Pemasukan
                 { text: '1. Rincian Pendapatan / Pemasukan (Produksi)', style: 'sectionHeader' },
                 {
                     style: 'tableStyle',
@@ -334,13 +315,11 @@
                     }
                 },
                 { text: '\n\n' },
-
-                // Bagian Tabel Kedua: Pengeluaran
                 { text: '2. Rincian Biaya Operasional / Pengeluaran', style: 'sectionHeader' },
                 {
                     style: 'tableStyle',
                     table: {
-                        widths: ['5%', '15%', '15%', '15%', '15%', '15%', '20%'],
+                        widths: ['6%', '15%', '16%', '15%', '17%', '11%', '20%'],
                         headerRows: 1,
                         body: [
                             [
@@ -348,7 +327,7 @@
                                 { text: 'Tanggal', style: 'tableHeaderKeluar' },
                                 { text: 'Asal Lahan', style: 'tableHeaderKeluar' },
                                 { text: 'Jenis Biaya', style: 'tableHeaderKeluar' },
-                                { text: 'Jumlah Biaya', style: 'tableHeaderKeluar' },
+                                { text: 'Jumlah Biaya', style: 'tableHeaderKeluar', alignment: 'right' },
                                 { text: 'Bukti', style: 'tableHeaderKeluar' },
                                 { text: 'Keterangan', style: 'tableHeaderKeluar' }
                             ],
@@ -367,13 +346,11 @@
             }
         };
 
-        // Memulai pembuatan berkas PDF dan memicu browser mengunduh otomatis berkasnya
         pdfMake.createPdf(docDefinition).download('Laporan_Keuangan_' + namaPetani.replace(/\s+/g, '_') + '.pdf');
     }
 </script>
 
 <style>
-    /* Reset & Desain Input Pencarian Bundar Modern Tailwind look-alike */
     .dataTables_wrapper { font-size: 0.75rem; }
     table.dataTable { border-collapse: collapse !important; border-spacing: 0 !important; width: 100% !important; margin: 0 !important; }
     table.dataTable thead th { border-bottom: 1px solid #e5e7eb !important; }
@@ -399,7 +376,7 @@
 
     .dataTables_wrapper .dataTables_info { font-size: 0.85rem !important; color: #6b7280 !important; font-style: italic !important; padding-top: 0 !important; }
 
-    /* Kustomisasi Navigasi Pagination Kotak Biru Internasional (Prev 1 2 Next) */
+    /* Navigasi Pagination Hijau Tema Petani */
     .dataTables_wrapper .dataTables_paginate { padding-top: 0 !important; display: flex !important; gap: 0.25rem !important; }
     .dataTables_wrapper .dataTables_paginate .paginate_button {
         border: 1px solid #d1d5db !important; border-radius: 0.375rem !important; padding: 0.35rem 0.75rem !important;
@@ -408,6 +385,6 @@
     }
     .dataTables_wrapper .dataTables_paginate .paginate_button:hover { background: #f3f4f6 !important; color: #111827 !important; border-color: #9ca3af !important; }
     .dataTables_wrapper .dataTables_paginate .paginate_button.current, 
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover { background: #2563eb !important; color: #ffffff !important; border-color: #2563eb !important; }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover { background: #214122 !important; color: #ffffff !important; border-color: #214122 !important; }
     .dataTables_wrapper .dataTables_paginate .paginate_button.disabled, .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover { background: #f9fafb !important; color: #9ca3af !important; border-color: #e5e7eb !important; cursor: not-allowed !important; }
 </style>

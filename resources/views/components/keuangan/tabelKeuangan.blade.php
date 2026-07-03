@@ -32,7 +32,6 @@
 
     {{-- Filter Bar & Container Tombol Export --}}
     <div class="flex flex-col lg:flex-row justify-between items-center gap-4 mb-4 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
-        {{-- Form Filter Rentang Waktu (Kiri) --}}
         <form action="{{ url()->current() }}" method="GET" class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
             @php
                 $namaBulan = [1=>'Januari', 2=>'Februari', 3=>'Maret', 4=>'April', 5=>'Mei', 6=>'Juni', 7=>'Juli', 8=>'Agustus', 9=>'September', 10=>'Oktober', 11=>'November', 12=>'Desember'];
@@ -74,7 +73,6 @@
             @endif
         </form>
 
-        {{-- Tempat Menampung Tombol Export DataTables --}}
         <div id="exportButtonsContainer" class="flex gap-3"></div>
     </div>
     
@@ -98,10 +96,11 @@
                         <td class="p-4 text-xs text-gray-800 font-medium">
                             {{ $petani->petani_nama }}
                         </td>
-                        <td class="p-4 text-xs text-green-600 font-bold text-justify">
+                        {{-- PERBAIKAN: Mengganti text-justify menjadi text-right pr-10 agar nominal rapi --}}
+                        <td class="p-4 text-xs text-green-600 font-bold text-right pr-10">
                             Rp {{ number_format($petani->total_masuk ?? 0, 0, ',', '.') }}
                         </td>
-                        <td class="p-4 text-xs text-red-500 font-medium text-justify">
+                        <td class="p-4 text-xs text-red-500 font-medium text-right pr-10">
                             Rp {{ number_format($petani->total_keluar ?? 0, 0, ',', '.') }}
                         </td>
                         <td class="p-4">
@@ -125,11 +124,9 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
 
@@ -141,11 +138,10 @@
             $('#keuanganTable').DataTable().destroy(); 
         }
 
-        // Fungsi pembersih HTML & spasi kosong untuk Export Excel & PDF
         var exportFormatHandler = {
             body: function (data, row, column, node) {
                 if (column === 0) {
-                    return row + 1; // Penomoran urut otomatis di excel/pdf
+                    return row + 1; 
                 }
                 if (node !== null && (column === 1 || column === 2 || column === 3)) {
                     let plainText = node.textContent || node.innerText || "";
@@ -159,7 +155,8 @@
             "destroy": true,
             "pageLength": 10,
             "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "Semua"]],
-            "order": [[ 1, "asc" ]],
+            // PERBAIKAN UTAMA: Dikosongkan [] agar tidak menimpa urutan subquery tanggal terbaru dari Controller
+            "order": [], 
             "columnDefs": [ 
                 { "orderable": false, "targets": [0, 4] },
                 { "searchable": false, "targets": [0, 4] }
@@ -203,9 +200,7 @@
                         format: exportFormatHandler
                     },
                     customize: function (doc) {
-                        // Set perbandingan lebar kolom (Total = 100%)
                         doc.content[1].table.widths = ['8%', '42%', '25%', '25%'];
-
                         doc.styles.title = {
                             color: '#214122',
                             fontSize: '15',
@@ -213,8 +208,6 @@
                             bold: true,
                             margin: [0, 0, 0, 20]
                         };
-
-                        // Mengecilkan font di PDF & auto-wrap agar teks panjang tidak terpotong ke kanan
                         doc.styles.tableBodyNormal = { fontSize: 8.5 };
                         doc.styles.tableHeader = { fontSize: 8.5, bold: true };
 
@@ -233,11 +226,8 @@
                             doc.content[1].table.body[j][1].alignment = 'left';
                             doc.content[1].table.body[j][2].alignment = 'right';
                             doc.content[1].table.body[j][3].alignment = 'right';
-                            
-                            // Suntik nomor urut manual di PDF
                             doc.content[1].table.body[j][0].text = j;
 
-                            // Terapkan ukuran font kecil ke seluruh baris data
                             for (var c = 0; c < doc.content[1].table.body[j].length; c++) {
                                 doc.content[1].table.body[j][c].fontSize = 8.5;
                             }
@@ -265,10 +255,8 @@
             "dom": '<"flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-3"B><"flex flex-col sm:flex-row justify-between items-center gap-4 w-full mb-3"l f>rt<"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4 pt-4 border-t border-gray-100"i p>'
         });
 
-        // Event penomoran halaman yang aman dari ancaman data kosong / data berapapun
         table.on('draw.dt', function () {
             let info = table.page.info();
-            // Cek proteksi jika records total di atas 0 baru lakukan iterasi pembuatan nomor urut halaman
             if (info.recordsTotal > 0) {
                 table.column(0, {search: 'applied', order: 'applied'}).nodes().each(function(cell, i) {
                     if (cell) {
@@ -278,69 +266,23 @@
             }
         });
 
-        // Pemicu draw pertama kali untuk mengaktifkan index nomor awal
         table.draw();
-
         table.buttons().container().appendTo('#exportButtonsContainer');
     });
 </script>
 
 <style>
-    /* Styling Filter & Pencarian */
-    .dataTables_wrapper .dataTables_filter input { 
-        border: 1px solid #e5e7eb !important; 
-        border-radius: 9999px !important; 
-        padding: 4px 12px !important; 
-        outline: none;
-    }
+    .dataTables_wrapper .dataTables_filter input { border: 1px solid #e5e7eb !important; border-radius: 9999px !important; padding: 4px 12px !important; outline: none; }
     .dataTables_wrapper .dataTables_filter input:focus { border-color: #214122 !important; }
     .dataTables_wrapper .dataTables_length select { border: 1px solid #e5e7eb !important; border-radius: 0.375rem !important; padding: 2px 8px !important; }
-    
-    /* Styling Tombol Export */
     .dt-buttons .btn-export-excel { background-color: transparent !important; border: 1px solid #10B981 !important; color: #047857 !important; border-radius: 0.5rem !important; padding: 0.5rem 1rem !important; font-weight: 600 !important; cursor: pointer;}
     .dt-buttons .btn-export-excel:hover { background-color: #10B981 !important; color: white !important; }
-    
     .dt-buttons .btn-export-pdf { background-color: transparent !important; border: 1px solid #FCA5A5 !important; color: #DC2626 !important; border-radius: 0.5rem !important; padding: 0.5rem 1rem !important; font-weight: 600 !important; cursor: pointer;}
     .dt-buttons .btn-export-pdf:hover { background-color: #DC2626 !important; color: white !important; }
-
-    /* Modifikasi Khusus Bagian Bawah Tabel (Info & Pagination Modern) */
-    .dataTables_wrapper .dataTables_info {
-        font-size: 0.875rem !important;
-        color: #4b5563 !important;
-        padding-top: 0 !important;
-    }
-    
-    .dataTables_wrapper .dataTables_paginate {
-        padding-top: 0 !important;
-        display: flex !important;
-        gap: 0.25rem !important;
-    }
-    .dataTables_wrapper .dataTables_paginate .paginate_button {
-        border: 1px solid #d1d5db !important;
-        border-radius: 0.375rem !important;
-        padding: 0.375rem 0.75rem !important;
-        margin-left: 0 !important;
-        font-size: 0.875rem !important;
-        background: #ffffff !important;
-        color: #374151 !important;
-        transition: all 0.2s;
-    }
-    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-        background: #f3f4f6 !important;
-        color: #111827 !important;
-        border-color: #9ca3af !important;
-    }
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current, 
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-        background: #214122 !important;
-        color: #ffffff !important;
-        border-color: #214122 !important;
-    }
-    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
-    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
-        background: #f9fafb !important;
-        color: #9ca3af !important;
-        border-color: #e5e7eb !important;
-        cursor: not-allowed !important;
-    }
+    .dataTables_wrapper .dataTables_info { font-size: 0.875rem !important; color: #4b5563 !important; padding-top: 0 !important; }
+    .dataTables_wrapper .dataTables_paginate { padding-top: 0 !important; display: flex !important; gap: 0.25rem !important; }
+    .dataTables_wrapper .dataTables_paginate .paginate_button { border: 1px solid #d1d5db !important; border-radius: 0.375rem !important; padding: 0.375rem 0.75rem !important; margin-left: 0 !important; font-size: 0.875rem !important; background: #ffffff !important; color: #374151 !important; transition: all 0.2s; }
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover { background: #f3f4f6 !important; color: #111827 !important; border-color: #9ca3af !important; }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current, .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover { background: #214122 !important; color: #ffffff !important; border-color: #214122 !important; }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled, .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover { background: #f9fafb !important; color: #9ca3af !important; border-color: #e5e7eb !important; cursor: not-allowed !important; }
 </style>

@@ -3,159 +3,251 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Notifikasi;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
+use Carbon\Carbon;
 
 class NotifikasiController extends Controller
 {
-    /*
-    |-----------------------------------------
-    | GET NOTIFIKASI (UNTUK POPUP / AJAX)
-    |-----------------------------------------
-    */
+    private function produksiQuery($user)
+    {
+        $query = DB::table('produksi')
+            ->join('petani', 'produksi.petani_id', '=', 'petani.petani_id');
+
+        if ($user->user_role === 'admin') {
+            $query->where('petani.desa_id', $user->desa_id);
+        }
+
+        return $query;
+    }
+
+    private function profileUpdateQuery($user)
+    {
+        if (! Schema::hasColumn('petani', 'updated_at')) {
+            return DB::table('produksi')
+                ->selectRaw("0 as id, '' as judul, '' as pesan, now() as created_at, 'profil' as tipe, NULL as jumlah_tbs, '' as lokasi, '' as nama")
+                ->whereRaw('0 = 1');
+        }
+
+        $query = DB::table('petani')
+            ->leftJoin('desa', 'petani.desa_id', '=', 'desa.desa_id')
+            ->select(
+                'petani.petani_id as id',
+                DB::raw("'Update Data Diri' as judul"),
+                DB::raw("CONCAT(petani.petani_nama, ' memperbarui data diri') as pesan"),
+                'petani.updated_at as created_at',
+                DB::raw("'profil' as tipe"),
+                DB::raw('NULL as jumlah_tbs'),
+                DB::raw("COALESCE(desa.desa_nama, '-') as lokasi"),
+                'petani.petani_nama as nama'
+            )
+            ->whereNotNull('petani.updated_at');
+
+        if (Schema::hasColumn('petani', 'created_at')) {
+            $query->whereColumn('petani.updated_at', '>', 'petani.created_at');
+        }
+
+        if ($user->user_role === 'admin') {
+            $query->where('petani.desa_id', $user->desa_id);
+        }
+
+        return $query;
+    }
+
+    private function notificationsQuery($user, $search = null, $tab = 'all')
+    {
+        $userLastRead = $user->updated_at;
+
+        $produksi = $this->produksiQuery($user)
+            ->leftJoin('lahan', 'produksi.lahan_id', '=', 'lahan.lahan_id')
+            ->leftJoin('desa', 'petani.desa_id', '=', 'desa.desa_id')
+            ->select(
+                'produksi.id',
+                DB::raw("'Produksi Baru' as judul"),
+                DB::raw("CONCAT(petani.petani_nama, ' menambahkan data produksi') as pesan"),
+                'produksi.produksi_tanggal as created_at',
+                DB::raw("'produksi' as tipe"),
+                'produksi.jumlah_tbs',
+                DB::raw("COALESCE(lahan.lahan_nama, desa.desa_nama, '-') as lokasi"),
+                'petani.petani_nama as nama'
+            );
+
+        $profile = $this->profileUpdateQuery($user);
+
+        if ($search) {
+            $produksi->where(function ($q) use ($search) {
+                $q->where('petani.petani_nama', 'like', "%{$search}%")
+                    ->orWhere('lahan.lahan_nama', 'like', "%{$search}%")
+                    ->orWhere('desa.desa_nama', 'like', "%{$search}%");
+            });
+
+            if ($profile) {
+                $profile->where(function ($q) use ($search) {
+                    $q->where('petani.petani_nama', 'like', "%{$search}%")
+                        ->orWhere('desa.desa_nama', 'like', "%{$search}%");
+                });
+            }
+        }
+
+        if ($tab === 'produksi') {
+            $baseQuery = DB::query()->fromSub($produksi->orderByDesc('created_at'), 'notifications');
+        } elseif ($tab === 'profil') {
+            $baseQuery = DB::query()->fromSub($profile->orderByDesc('created_at'), 'notifications');
+        } else {
+            $union = $profile ? $produksi->unionAll($profile) : $produksi;
+            $baseQuery = DB::query()->fromSub($union, 'notifications');
+        }
+
+        return $baseQuery->select('*', DB::raw("CASE WHEN created_at <= '{$userLastRead}' THEN 1 ELSE 0 END as is_read"))
+            ->orderByDesc('created_at');
+    }
+
     public function getPopup()
     {
         $user = Auth::user();
-
-        $query = Notifikasi::query();
-
-        if ($user->user_role === 'super_admin') {
-            $query->where('target', 'superadmin');
-        } else {
-            $query->where('target', 'admin')
-                  ->where('user_id', $user->user_id);
+        if (! in_array($user->user_role, ['super_admin', 'admin'])) { 
+            return response()->json(['data' => []], 403); 
         }
 
-        $notifikasi = $query->latest()->take(10)->get();
+        $userLastRead = $user->updated_at;
+        $userIdColumn = Schema::hasColumn('users', 'user_id') ? 'user_id' : 'id';
 
-        return response()->json($notifikasi);
+        $produksi = $this->produksiQuery($user)
+            ->leftJoin('lahan', 'produksi.lahan_id', '=', 'lahan.lahan_id')
+            ->leftJoin('desa', 'petani.desa_id', '=', 'desa.desa_id')
+            ->select(
+                'produksi.id',
+                DB::raw("'Produksi Baru' as judul"),
+                DB::raw("CONCAT(petani.petani_nama, ' menambahkan data produksi') as pesan"),
+                'produksi.produksi_tanggal as created_at',
+                DB::raw("CASE WHEN produksi.produksi_tanggal <= '{$userLastRead}' THEN 1 ELSE 0 END as is_read"),
+                'petani.petani_nama as nama',
+                DB::raw("'produksi' as tipe")
+            )
+            ->orderByDesc('produksi.id')
+            ->take(20)
+            ->get();
+
+        $custom = DB::table('notifikasi')
+            ->where('target', 'admin')
+            ->where(function ($q) use ($user, $userIdColumn) {
+                $q->whereNull('user_id')->orWhere('user_id', $user->{$userIdColumn});
+            })
+            ->select('id', 'judul', 'pesan', 'created_at', 'is_read', DB::raw("NULL as nama"), DB::raw("'custom' as tipe"))
+            ->orderByDesc('created_at')
+            ->take(20)
+            ->get();
+
+        $merged = $custom->concat($produksi)->sortByDesc(function ($item) {
+            return strtotime($item->created_at ?? now());
+        })->values()->take(10)->map(function ($row) {
+            $row->notif_id = $row->tipe . '_' . $row->id;
+            $row->is_read = (bool) $row->is_read;
+            return $row;
+        });
+
+        return response()->json(['data' => $merged]);
     }
 
-    /*
-    |-----------------------------------------
-    | COUNT UNREAD (BADGE)
-    |-----------------------------------------
-    */
     public function count()
     {
         $user = Auth::user();
+        if (! in_array($user->user_role, ['super_admin', 'admin'])) { abort(403); }
 
-        $query = Notifikasi::where('is_read', false);
+        $userLastRead = $user->updated_at;
+        $userIdColumn = Schema::hasColumn('users', 'user_id') ? 'user_id' : 'id';
 
-        if ($user->user_role === 'super_admin') {
-            $query->where('target', 'superadmin');
-        } else {
-            $query->where('target', 'admin')
-                  ->where('user_id', $user->user_id);
-        }
+        $produksiCount = $this->produksiQuery($user)
+            ->whereDate('produksi.produksi_tanggal', today())
+            ->where('produksi.produksi_tanggal', '>', $userLastRead)
+            ->count('produksi.id');
+
+        $customCount = DB::table('notifikasi')
+            ->where('target', 'admin')
+            ->where(function ($q) use ($user, $userIdColumn) {
+                $q->whereNull('user_id')->orWhere('user_id', $user->{$userIdColumn});
+            })
+            ->where(function ($q) {
+                $q->where('is_read', false)->orWhereNull('is_read');
+            })
+            ->count();
 
         return response()->json([
-            'count' => $query->count()
+            'count' => $produksiCount + $customCount,
+            'produksiCount' => $produksiCount,
+            'customCount' => $customCount,
         ]);
     }
 
-    /*
-    |-----------------------------------------
-    | MARK AS READ
-    |-----------------------------------------
-    */
     public function markAsRead($id)
     {
         $user = Auth::user();
+        if (! in_array($user->user_role, ['super_admin', 'admin'])) { abort(403); }
 
-        $notif = Notifikasi::findOrFail($id);
-
-        if (
-            $user->user_role !== 'super_admin' &&
-            $notif->user_id != $user->user_id
-        ) {
-            abort(403);
+        if (str_starts_with($id, 'custom_')) {
+            $realId = str_replace('custom_', '', $id);
+            DB::table('notifikasi')->where('id', $realId)->update(['is_read' => true]);
+        } else {
+            $userIdColumn = Schema::hasColumn('users', 'user_id') ? 'user_id' : 'id';
+            DB::table('users')->where($userIdColumn, $user->{$userIdColumn})->update(['updated_at' => now()]);
         }
 
-        $notif->update([
-            'is_read' => true,
-            'read_at' => now()
-        ]);
-
-        return back()->with('success', 'Notifikasi ditandai dibaca');
+        return response()->json(['success' => true]);
     }
 
-    /*
-    |-----------------------------------------
-    | MARK ALL AS READ
-    |-----------------------------------------
-    */
     public function markAllAsRead()
     {
         $user = Auth::user();
+        if (! in_array($user->user_role, ['super_admin', 'admin'])) { abort(403); }
 
-        $query = Notifikasi::where('is_read', false);
+        $userIdColumn = Schema::hasColumn('users', 'user_id') ? 'user_id' : 'id';
 
-        if ($user->user_role === 'super_admin') {
-            $query->where('target', 'superadmin');
-        } else {
-            $query->where('target', 'admin')
-                ->where('user_id', $user->user_id);
+        if (Schema::hasTable('notifikasi')) {
+            DB::table('notifikasi')
+                ->where('target', 'admin')
+                ->where(function ($q) use ($user, $userIdColumn) {
+                    $q->whereNull('user_id')->orWhere('user_id', $user->{$userIdColumn});
+                })->update(['is_read' => true]);
         }
 
-        $updated = $query->update([
-            'is_read' => true,
-            'read_at' => now()
-        ]);
+        DB::table('users')->where($userIdColumn, $user->{$userIdColumn})->update(['updated_at' => now()]);
 
-        return response()->json([
-            'success' => true,
-            'updated' => $updated
-        ]);
+        return response()->json(['success' => true]);
     }
 
-    /*
-    |-----------------------------------------
-    | HALAMAN LIST NOTIFIKASI
-    |-----------------------------------------
-    */
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
+        if (! in_array($user->user_role, ['super_admin', 'admin'])) { abort(403); }
 
-        $query = Notifikasi::query();
+        $search = $request->input('search');
+        $tab = in_array($request->input('tab'), ['all', 'produksi', 'profil']) ? $request->input('tab') : 'all';
+        $page = max(1, (int) $request->input('page', 1));
+        $perPage = 10;
 
-        if ($user->user_role === 'super_admin') {
-            $query->where('target', 'superadmin');
-        } else {
-            $query->where('target', 'admin')
-                  ->where('user_id', $user->user_id);
-        }
+        $notifsQuery = $this->notificationsQuery($user, $search, $tab);
+        $total = $notifsQuery->count();
 
-        $notifikasi = $query->latest()->paginate(20);
+        $notifs = $notifsQuery->forPage($page, $perPage)->get()
+            ->map(function ($row) {
+                $row->notif_id = $row->tipe . '_' . $row->id;
+                $row->hasil = $row->tipe === 'produksi' ? number_format($row->jumlah_tbs ?? 0, 2, ',', '.') . ' Ton Kelapa Sawit (TBS)' : null;
+                $row->waktu = $row->created_at ? Carbon::parse($row->created_at)->diffForHumans() : '-';
+                return $row;
+            });
 
-        return view('notifikasi.index', compact('notifikasi'));
-    }
+        $counts = $this->count()->getData();
 
-    /*
-    |-----------------------------------------
-    | KIRIM TUGAS (SUPER ADMIN → ADMIN)
-    |-----------------------------------------
-    */
-    public function kirimTugas(Request $request)
-    {
-        $request->validate([
-            'user_id' => 'required|exists:users,user_id',
-            'judul' => 'required|string|max:255',
-            'pesan' => 'required|string'
+        return view('super_admin.notifikasi.index', [
+            'notifs' => $notifs,
+            'unreadCount' => $counts->count,
+            'dailyProductionCount' => $counts->produksiCount,
+            'total' => $total,
+            'page' => $page,
+            'perPage' => $perPage,
+            'search' => $search,
+            'tab' => $tab
         ]);
-
-        Notifikasi::create([
-            'target' => 'admin',
-            'user_id' => $request->user_id,
-            'judul' => $request->judul,
-            'pesan' => $request->pesan,
-            'jenis' => 'tugas',
-            'is_read' => false,
-            'read_at' => null
-        ]);
-
-        return back()->with('success', 'Tugas berhasil dikirim');
     }
 }

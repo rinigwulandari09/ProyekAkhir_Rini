@@ -13,10 +13,18 @@ class LahanController extends Controller
     // Menampilkan Halaman List Lahan
     public function index()
     {
-        $lahans = Lahan::with('petani')->get();
         $user = auth()->user();
 
-        // Mengalihkan view sesuai dengan role user
+        $lahans = Lahan::with('petani');
+
+        if ($user->user_role === 'admin') {
+            $lahans->whereHas('petani', function ($query) use ($user) {
+                $query->where('desa_id', $user->desa_id);
+            });
+        }
+
+        $lahans = $lahans->get();
+
         if ($user->user_role === 'super_admin') {
             return view('super_admin.lahan.index', compact('lahans'));
         } elseif ($user->user_role === 'admin') {
@@ -29,8 +37,14 @@ class LahanController extends Controller
     // Menampilkan Form Input Lahan
     public function create()
     {
-        $petanis = Petani::all(); 
-        return view('admin.lahan.tambah', compact('petanis')); // <-- Pastikan diarahkan ke 'tambah'
+        $user = auth()->user();
+        $petanis = Petani::query();
+
+        if ($user->user_role === 'admin') {
+            $petanis->where('desa_id', $user->desa_id);
+        }
+
+        return view('admin.lahan.tambah', ['petanis' => $petanis->get()]);
     }
     // public function create()
     // {
@@ -72,21 +86,20 @@ class LahanController extends Controller
     public function show($id)
     {
         $lahan = Lahan::with('petani')->findOrFail($id);
-        $role = auth()->user()->user_role;
+        $user = auth()->user();
 
-        // 1. Jika yang login adalah Super Admin
-        if ($role === 'super_admin') {
-            // Mengarah ke folder resources/views/super_Admin/lahan/show.blade.php
+        if ($user->user_role === 'admin' && $lahan->petani && $lahan->petani->desa_id !== $user->desa_id) {
+            abort(403, 'Anda tidak memiliki hak akses untuk melihat lahan ini.');
+        }
+
+        if ($user->user_role === 'super_admin') {
             return view('super_admin.lahan.show', compact('lahan'));
-        } 
-        
-        // 2. Jika yang login adalah Admin Biasa
-        if ($role === 'admin') {
-            // Mengarah ke folder resources/views/lahan/show.blade.php
+        }
+
+        if ($user->user_role === 'admin') {
             return view('admin.lahan.show', compact('lahan'));
         }
 
-        // 3. Jika role lain mencoba masuk
         abort(403, 'Anda tidak memiliki hak akses untuk halaman ini.');
     }
 
@@ -94,8 +107,14 @@ class LahanController extends Controller
     public function edit($id)
     {
         $lahan = Lahan::findOrFail($id);
-        $petanis = Petani::all();
         $user = auth()->user();
+        $petanis = Petani::query();
+
+        if ($user->user_role === 'admin') {
+            $petanis->where('desa_id', $user->desa_id);
+        }
+
+        $petanis = $petanis->get();
 
         if ($user->user_role === 'super_admin') {
             return view('super_admin.lahan.edit', compact('lahan', 'petanis'));
@@ -573,15 +592,10 @@ class LahanController extends Controller
                 */
 
                 Lahan::create([
-
                     'petani_id' => $petani->petani_id,
-
                     'lahan_nama' => $namaLahan,
-
                     'lahan_luas' => (float) $luas,
-
                     'lahan_lokasi' => $petani->desa->desa_nama,
-
                     'area_lahan' => $geojson4326
                 ]);
 

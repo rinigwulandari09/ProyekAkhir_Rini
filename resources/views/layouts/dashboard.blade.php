@@ -64,6 +64,10 @@
                     <x-heroicon-o-banknotes class="w-5 h-5 shrink-0" /> 
                     <span x-show="sidebarOpen">Data Keuangan</span>
                 </a>
+                <a href="#" class="flex items-center gap-3 {{ request()->routeIs('keuangan.*') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition" :class="!sidebarOpen && 'justify-center'">
+                    <x-heroicon-o-document-text class="w-5 h-5 shrink-0" /> 
+                    <span x-show="sidebarOpen">Audit</span>
+                </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="flex items-center gap-3 p-3 rounded-lg w-full text-left hover:bg-[#3D5A3E] transition" :class="!sidebarOpen && 'justify-center'">
@@ -130,109 +134,5 @@
             </main>
         </div>
     </div>
-
-    <script>
-        const btnNotif = document.getElementById('btnNotif');
-        const popupNotif = document.getElementById('popupNotif');
-        const notifBadge = document.getElementById('notifBadge');
-
-        btnNotif.addEventListener('click', function(e) {
-            e.stopPropagation();
-
-            popupNotif.classList.toggle('hidden');
-
-            loadNotifCount();
-            loadNotifList();
-        });
-
-        document.addEventListener('click', function(e) {
-
-            if (
-                !popupNotif.contains(e.target) &&
-                !btnNotif.contains(e.target)
-            ) {
-                popupNotif.classList.add('hidden');
-            }
-
-        });
-
-        function loadNotifCount()
-        {
-            fetch('/notifikasi/count')
-                .then(res => res.json())
-                .then(data => {
-
-                    if (data.count > 0) {
-
-                        notifBadge.classList.remove('hidden');
-                        notifBadge.innerText = data.count;
-
-                    } else {
-
-                        notifBadge.classList.add('hidden');
-
-                    }
-
-                });
-        }
-
-        function loadNotifList()
-        {
-            fetch('/notifikasi/popup')
-                .then(res => res.json())
-                .then(response => {
-
-                    let html = '';
-
-                    if (response.data.length === 0) {
-
-                        html = `
-                            <div class="text-center py-5 text-xs text-gray-400">
-                                Tidak ada notifikasi
-                            </div>
-                        `;
-
-                    } else {
-
-                        response.data.forEach(notif => {
-
-                            html += `
-                            <div class="mb-2 p-3 rounded-lg border ${
-                                notif.is_read
-                                ? 'bg-white'
-                                : 'bg-green-50 border-green-200'
-                            }">
-
-                                <div class="flex justify-between">
-
-                                    <div class="font-bold text-xs">
-                                        ${notif.judul}
-                                    </div>
-
-                                    <div class="text-[10px] text-gray-400">
-                                        ${notif.created_at}
-                                    </div>
-
-                                </div>
-
-                                <div class="text-[11px] text-gray-600 mt-1">
-                                    ${notif.pesan}
-                                </div>
-
-                            </div>
-                            `;
-                        });
-                    }
-
-                    document.getElementById('notifContainer').innerHTML = html;
-                });
-        }
-
-        loadNotifCount();
-
-        setInterval(() => {
-            loadNotifCount();
-        }, 10000);
-        </script>
 </body>
 </html>

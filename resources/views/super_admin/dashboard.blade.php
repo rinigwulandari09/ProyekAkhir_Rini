@@ -135,14 +135,14 @@
 </div>
 
 {{-- Modal Edit Status --}}
-<div id="statusModal" class="fixed inset-0 z-50 hidden bg-black/50 items-center justify-center transition-opacity backdrop-blur-sm">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform scale-95 transition-transform" id="modalContent">
-        <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-            <h3 class="text-lg font-bold text-gray-800">Ubah Status Petani</h3>
-            <button type="button" onclick="closeEditModal()" class="text-gray-400 hover:text-red-500 transition">
+<div id="statusModal" class="fixed inset-0 z-50 hidden bg-black/40 items-center justify-center transition-opacity">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform scale-95 transition-transform border border-[#214122]/20" id="modalContent">
+        <div class="bg-[#214122] px-6 py-4 flex justify-between items-center">
+            <h3 class="text-lg font-bold text-white">Aktivasi Akun Petani</h3>
+            <button type="button" onclick="closeEditModal()" class="text-white hover:text-red-300 transition">
                 <x-heroicon-o-x-mark class="w-6 h-6" />
             </button>
-        </div>
+        </div>  
         
         <form id="formUbahStatus" method="POST" action="">
             @csrf
@@ -155,8 +155,8 @@
                 </div>
                 
                 <div>
-                    <label class="for="petani_status" class="block text-sm font-bold text-gray-700 mb-1">Status Baru</label>
-                    <select id="selectStatus" name="petani_status" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none">
+                    <label for="petani_status" class="block text-sm font-bold text-gray-200 mb-1">Status Baru</label>
+                    <select id="selectStatus" name="petani_status" class="w-full border border-[#214122]/30 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#214122] focus:border-[#214122] outline-none bg-[#f8faf7] text-[#214122]">
                         <option value="Pending">Pending</option>
                         <option value="Aktif">Disetujui</option>
                         <option value="Ditolak">Ditolak</option>
@@ -164,9 +164,9 @@
                 </div>
             </div>
             
-            <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 flex justify-end gap-3">
-                <button type="button" onclick="closeEditModal()" class="px-4 py-2 text-sm font-bold text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">Batal</button>
-                <button type="submit" class="px-4 py-2 text-sm font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 transition shadow-sm">Simpan Perubahan</button>
+            <div class="bg-[#f1f5f0] px-6 py-4 border-t border-[#214122]/10 flex justify-end gap-3">
+                <button type="button" onclick="closeEditModal()" class="px-4 py-2 text-sm font-bold text-[#214122] bg-white border border-[#214122]/20 rounded-lg hover:bg-[#e8f0e8] transition">Batal</button>
+                <button type="submit" class="px-4 py-2 text-sm font-bold text-white bg-[#214122] rounded-lg hover:bg-[#1b3d1b] transition shadow-sm">Simpan Perubahan</button>
             </div>
         </form>
     </div>

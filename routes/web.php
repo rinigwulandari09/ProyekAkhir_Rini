@@ -108,13 +108,8 @@ Route::middleware(['auth'])->group(function () {
 
 
     // --- LAIN-LAIN ---
-    Route::get('/pengingat/tambah', function () {
-        return view('super_admin.pengingat.create');
-    })->name('pengingat.create');
-
-    Route::get('/notifikasi', function () {
-        return view('super_admin.notifikasi.index');
-    })->name('notifikasi.index');
+    Route::get('/pengingat/tambah', [App\Http\Controllers\PengingatController::class, 'create'])->name('pengingat.create');
+    Route::post('/pengingat/send', [App\Http\Controllers\PengingatController::class, 'send'])->name('pengingat.send');
 
     //Lahan Admin
     // Route::get('/admin/lahan', [LahanController::class, 'index'])->name('admin.lahan.index');
@@ -130,14 +125,15 @@ Route::middleware(['auth'])->group(function () {
 
 
     // notifikasi
+    // Notifikasi Routes
+    Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi.index');
     Route::get('/notifikasi/popup', [NotifikasiController::class, 'getPopup']);
-
     Route::get('/notifikasi/count', [NotifikasiController::class, 'count']);
 
-    Route::post('/notifikasi/read/{id}', [NotifikasiController::class, 'markAsRead']);
+    // URL disesuaikan dengan fetch JavaScript kemarin
+    // Pastikan url-nya '/notifikasi/mark-all' sesuai yang diminta JavaScript-mu
+    Route::post('/notifikasi/mark-all', [NotifikasiController::class, 'markAllAsRead'])->name('notifikasi.markAllAsRead');
 
-    Route::post('/notifikasi/mark-all', [NotifikasiController::class, 'markAllAsRead']);
-
-    Route::get('/notifikasi', [NotifikasiController::class, 'index'])
-        ->name('notifikasi.index');
+    // Pastikan juga url read per item sudah terpasang seperti ini
+    Route::post('/notifikasi/read/{id}', [NotifikasiController::class, 'markAsRead'])->name('notifikasi.markAsRead');
     });
