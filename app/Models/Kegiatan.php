@@ -21,4 +21,12 @@ class Kegiatan extends Model
         'satuan',
         'keterangan'
     ];
+
+
+    // relasi ke tabel jenis kegiatan
+    public function jenisKegiatan()
+    {
+        return $this->belongsTo(JenisKegiatan::class, 'id_jenis', 'id_jenis');
+    }
 }
+

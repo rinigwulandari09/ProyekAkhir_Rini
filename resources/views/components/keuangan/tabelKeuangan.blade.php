@@ -84,8 +84,8 @@
                     <tr class="bg-[#D9F99D] border-b border-gray-200">
                         <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center w-12">No</th>
                         <th class="p-4 text-xs font-bold text-gray-700 uppercase">Nama Petani</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-right">Pemasukan (Produksi)</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-right">Pengeluaran (Operasional)</th>
+                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-right">Total Pemasukan (Produksi)</th>
+                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-right">Total Pengeluaran (Operasional)</th>
                         <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -97,14 +97,14 @@
                             {{ $petani->petani_nama }}
                         </td>
                         {{-- PERBAIKAN: Mengganti text-justify menjadi text-right pr-10 agar nominal rapi --}}
-                        <td class="p-4 text-xs text-green-600 font-bold text-right pr-10">
+                        <td class="p-4 text-xs text-green-600 font-bold text-justify pr-10">
                             Rp {{ number_format($petani->total_masuk ?? 0, 0, ',', '.') }}
                         </td>
-                        <td class="p-4 text-xs text-red-500 font-medium text-right pr-10">
+                        <td class="p-4 text-xs text-red-500 font-medium text-justify pr-10">
                             Rp {{ number_format($petani->total_keluar ?? 0, 0, ',', '.') }}
                         </td>
                         <td class="p-4">
-                            <div class="flex justify-center gap-3">
+                            <div class="flex text-justify gap-3">
                                 <a href="{{ route('keuangan.show', $petani->petani_id) }}" class="text-green-700 hover:scale-110 transition" title="Lihat Detail Transaksi">
                                     <x-heroicon-o-pencil-square class="w-5 h-5" />
                                 </a>

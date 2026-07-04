@@ -16,4 +16,10 @@ class JenisKegiatan extends Model
         'nama_jenis',
         'ikon'
     ];
+
+    // relasi ke tabel kegiatan
+    public function kegiatan()
+    {
+        return $this->hasMany(Kegiatan::class, 'id_jenis', 'id_jenis');
+    }
 }

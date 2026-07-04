@@ -99,7 +99,9 @@
                             <p class="text-xs font-bold text-gray-800">Hi, {{ Auth::user()->user_nama }}</p>
                             <p class="text-[9px] text-gray-500 uppercase">{{ Auth::user()->user_role }}</p>
                         </div>
-                        <img src="{{ asset('foto/sawit.png') }}" class="w-8 h-8 rounded-full border-2 border-gray-200 object-cover" alt="User">
+                        <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->user_nama) }}&background=0D9488&color=fff&bold=true" 
+                            class="w-8 h-8 rounded-full border-2 border-gray-200 object-cover" 
+                            alt="{{ Auth::user()->user_nama }}">
                     </div>
                 </div>
             </header>

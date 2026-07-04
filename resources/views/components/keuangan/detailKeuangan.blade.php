@@ -33,6 +33,50 @@
             </button>
         </div>
 
+        {{-- Filter Data Keuangan --}}
+        <div class="flex flex-col lg:flex-row justify-between items-center gap-4 mb-6 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+            <form action="{{ url()->current() }}" method="GET" class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+                @php
+                    $namaBulan = [1=>'Januari', 2=>'Februari', 3=>'Maret', 4=>'April', 5=>'Mei', 6=>'Juni', 7=>'Juli', 8=>'Agustus', 9=>'September', 10=>'Oktober', 11=>'November', 12=>'Desember'];
+                @endphp
+
+                <div class="w-36">
+                    <select name="bulan_awal" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-2 px-3 rounded-xl text-xs font-semibold outline-none focus:ring-1 focus:ring-green-700 cursor-pointer">
+                        <option value="">Dari Bulan</option>
+                        @foreach($namaBulan as $num => $name)
+                            <option value="{{ $num }}" {{ request('bulan_awal') == $num ? 'selected' : '' }}>{{ $name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="w-36">
+                    <select name="bulan_akhir" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-2 px-3 rounded-xl text-xs font-semibold outline-none focus:ring-1 focus:ring-green-700 cursor-pointer">
+                        <option value="">Sampai Bulan</option>
+                        @foreach($namaBulan as $num => $name)
+                            <option value="{{ $num }}" {{ request('bulan_akhir') == $num ? 'selected' : '' }}>{{ $name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="w-28">
+                    <select name="tahun" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-2 px-3 rounded-xl text-xs font-semibold outline-none focus:ring-1 focus:ring-green-700 cursor-pointer">
+                        <option value="">Tahun</option>
+                        @for($y = date('Y'); $y >= 2020; $y--)
+                            <option value="{{ $y }}" {{ request('tahun') == $y ? 'selected' : '' }}>{{ $y }}</option>
+                        @endfor
+                    </select>
+                </div>
+
+                <button type="submit" class="bg-[#214122] text-white px-5 py-2 rounded-xl text-xs font-bold hover:bg-[#325a33] transition cursor-pointer">
+                    Terapkan Filter
+                </button>
+
+                @if(request('bulan_awal') || request('bulan_akhir') || request('tahun'))
+                    <a href="{{ url()->current() }}" class="text-xs text-red-500 hover:underline ml-1">Reset Filter</a>
+                @endif
+            </form>
+        </div>
+
         {{-- Ringkasan Akumulasi Petani Ini --}}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
             <div class="bg-green-50/60 border border-green-100 rounded-xl p-4 flex items-center gap-3">
@@ -66,19 +110,19 @@
                 <table id="tabelPemasukan" class="w-full text-left whitespace-nowrap m-0">
                     <thead>
                         <tr class="bg-[#D9F99D] text-[#214122] text-xs font-bold border-b border-gray-200">
-                            <th class="p-3 text-center w-12">No</th>
-                            <th class="p-3 text-center">Tanggal</th>
+                            <th class="p-3 text-justify w-12">No</th>
+                            <th class="p-3 text-justify">Tanggal</th>
                             <th class="p-3">Asal Lahan</th>
-                            <th class="p-3 text-right">Total Pendapatan</th>
-                            <th class="p-3 text-center">Bukti Nota</th>
+                            <th class="p-3 text-justify">Total Pendapatan</th>
+                            <th class="p-3 text-justify">Bukti Nota</th>
                             <th class="p-3">Keterangan</th>
                         </tr>
                     </thead>
                     <tbody class="text-xs divide-y divide-gray-50">
                         @forelse ($pemasukan as $masuk)
                         <tr class="hover:bg-gray-50/50 transition">
-                            <td class="p-3 text-center text-gray-400 font-mono"></td>
-                            <td class="p-3 text-center text-gray-600">
+                            <td class="p-3 text-justify text-gray-400 font-mono"></td>
+                            <td class="p-3 text-justify text-gray-600" data-order="{{ $masuk->produksi_tanggal }}">
                                 {{ \Carbon\Carbon::parse($masuk->produksi_tanggal)->translatedFormat('d M Y') }}
                             </td>
                             <td class="p-3 text-gray-700 font-medium">{{ $masuk->lahan->lahan_nama ?? '-' }}</td>
@@ -124,20 +168,20 @@
                 <table id="tabelPengeluaran" class="w-full text-left whitespace-nowrap m-0">
                     <thead>
                         <tr class="bg-[#FFE4E6] text-[#991B1B] text-xs font-bold border-b border-gray-200">
-                            <th class="p-3 text-center w-12">No</th>
-                            <th class="p-3 text-center">Tanggal</th>
+                            <th class="p-3 text-justify w-12">No</th>
+                            <th class="p-3 text-justify">Tanggal</th>
                             <th class="p-3">Asal Lahan</th>
                             <th class="p-3">Jenis Biaya</th>
-                            <th class="p-3 text-right">Jumlah Biaya</th>
-                            <th class="p-3 text-center">Bukti</th>
+                            <th class="p-3 text-justify">Jumlah Biaya</th>
+                            <th class="p-3 text-justify">Bukti</th>
                             <th class="p-3">Keterangan</th>
                         </tr>
                     </thead>
                     <tbody class="text-xs divide-y divide-gray-50">
                         @forelse ($pengeluaran as $keluar)
                         <tr class="hover:bg-gray-50/50 transition">
-                            <td class="p-3 text-center text-gray-400 font-mono"></td>
-                            <td class="p-3 text-center text-gray-600">
+                            <td class="p-3 text-justify text-gray-400 font-mono"></td>
+                            <td class="p-3 text-justify text-gray-600" data-order="{{ $keluar->biaya_tanggal }}">
                                 {{ \Carbon\Carbon::parse($keluar->biaya_tanggal)->translatedFormat('d M Y') }}
                             </td>
                             <td class="p-3 text-gray-700 font-medium">

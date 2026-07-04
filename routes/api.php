@@ -31,11 +31,19 @@ Route::post('/biaya-operasional', [BiayaOperasionalController::class, 'store']);
 Route::get('/riwayat-keuangan', [RiwayatKeuanganController::class, 'index']);
 Route::get('/riwayat-keuangan/detail', [RiwayatKeuanganController::class, 'detail']);
 
-// jenis kegiatan
+// jenis  kegiatan
+// Route untuk menampilkan semua jenis kegiatan
 Route::get('/jenis-kegiatan', [JenisKegiatanController::class, 'index']);
+// Route untuk menampilkan detail satu jenis kegiatan berdasarkan id
+Route::get('/jenis-kegiatan/{id}', [JenisKegiatanController::class, 'show']);
 
 // kegiatan 
+// Route untuk menampilkan semua kegiatan dan menyimpan kegiatan baru
+Route::get('/kegiatan', [KegiatanController::class, 'index']);
 Route::post('/kegiatan', [KegiatanController::class, 'store']);
+// Route untuk menampilkan detail satu kegiatan berdasarkan id
+Route::get('/kegiatan/{id}', [KegiatanController::class, 'show']);
+
 
 // lahan
 Route::get('/lahan', [LahanController::class, 'index']);
