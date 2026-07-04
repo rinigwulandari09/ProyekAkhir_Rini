@@ -12,30 +12,30 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
+        // 1. Inisialisasi Query (Tanpa Filter Desa agar menampilkan data KESELURUHAN)
         $jumlahPetaniQuery = DB::table('petani');
+        
         $jumlahLahanQuery = DB::table('lahan')
             ->join('petani', 'lahan.petani_id', '=', 'petani.petani_id');
+            
         $pendapatanBulanIniQuery = DB::table('produksi')
             ->join('petani', 'produksi.petani_id', '=', 'petani.petani_id');
+            
         $petaniPendingQuery = DB::table('petani')->where('petani_status', 'Pending');
+        
         $pemasukanDataQuery = DB::table('produksi')
             ->join('petani', 'produksi.petani_id', '=', 'petani.petani_id');
+            
         $pengeluaranGrafikQuery = DB::table('biaya_operasional')
             ->join('petani', 'biaya_operasional.petani_id', '=', 'petani.petani_id');
+            
         $semuaLahanQuery = DB::table('lahan')
             ->join('petani', 'lahan.petani_id', '=', 'petani.petani_id')
             ->whereNotNull('lahan.area_lahan');
 
-        if ($user->user_role === 'admin') {
-            $jumlahPetaniQuery->where('desa_id', $user->desa_id);
-            $jumlahLahanQuery->where('petani.desa_id', $user->desa_id);
-            $pendapatanBulanIniQuery->where('petani.desa_id', $user->desa_id);
-            $petaniPendingQuery->where('desa_id', $user->desa_id);
-            $pemasukanDataQuery->where('petani.desa_id', $user->desa_id);
-            $pengeluaranGrafikQuery->where('petani.desa_id', $user->desa_id);
-            $semuaLahanQuery->where('petani.desa_id', $user->desa_id);
-        }
+        // --- CATATAN: Filter berdasarkan desa_id DIHAPUS agar Admin Desa bisa melihat data Nasional/Keseluruhan ---
 
+        // 2. Eksekusi Pengambilan Data Keseluruhan
         $jumlahPetani = $jumlahPetaniQuery->count('petani_id');
         $jumlahLahan = $jumlahLahanQuery->sum('lahan_luas');
 
@@ -74,43 +74,20 @@ class DashboardController extends Controller
             ]);
 
         $jumlahProduksiHariIni = DB::table('produksi')
-            ->join('petani', 'produksi.petani_id', '=', 'petani.petani_id');
-
-        if ($user->user_role === 'admin') {
-            $jumlahProduksiHariIni->where('petani.desa_id', $user->desa_id);
-        }
-
-        $jumlahProduksiHariIni = $jumlahProduksiHariIni
+            ->join('petani', 'produksi.petani_id', '=', 'petani.petani_id')
             ->whereDate('produksi_tanggal', today())
             ->count();
 
-        // notifikasi untuk popup diambil secara runtime melalui AJAX dari tabel produksi.
-        // tidak lagi bergantung pada tabel notifikasi.
-
+        // 3. Pengalihan Halaman View sesuai Role (Data yang dikirimkan sekarang sudah SAMA)
         if ($user->user_role === 'super_admin') {
-
             return view('super_admin.dashboard', compact(
-                'jumlahPetani',
-                'jumlahLahan',
-                'pendapatanBulanIni',
-                'petaniPending',
-                'pemasukanGrafik',
-                'pengeluaranGrafik',
-                'semuaLahan',
-                'jumlahProduksiHariIni'
+                'jumlahPetani', 'jumlahLahan', 'pendapatanBulanIni', 'petaniPending',
+                'pemasukanGrafik', 'pengeluaranGrafik', 'semuaLahan', 'jumlahProduksiHariIni'
             ));
-
         } elseif ($user->user_role === 'admin') {
-
             return view('admin.dashboard', compact(
-                'jumlahPetani',
-                'jumlahLahan',
-                'pendapatanBulanIni',
-                'petaniPending',
-                'pemasukanGrafik',
-                'pengeluaranGrafik',
-                'semuaLahan',
-                'jumlahProduksiHariIni'
+                'jumlahPetani', 'jumlahLahan', 'pendapatanBulanIni', 'petaniPending',
+                'pemasukanGrafik', 'pengeluaranGrafik', 'semuaLahan', 'jumlahProduksiHariIni'
             ));
         }
 

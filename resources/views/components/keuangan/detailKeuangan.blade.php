@@ -70,6 +70,7 @@
                             <th class="p-3 text-center">Tanggal</th>
                             <th class="p-3">Asal Lahan</th>
                             <th class="p-3 text-right">Total Pendapatan</th>
+                            <th class="p-3 text-center">Bukti Nota</th>
                             <th class="p-3">Keterangan</th>
                         </tr>
                     </thead>
@@ -81,8 +82,17 @@
                                 {{ \Carbon\Carbon::parse($masuk->produksi_tanggal)->translatedFormat('d M Y') }}
                             </td>
                             <td class="p-3 text-gray-700 font-medium">{{ $masuk->lahan->lahan_nama ?? '-' }}</td>
-                            <td class="p-3 text-right text-green-600 font-bold">
+                            <td class="p-3 text-justify text-green-600 font-bold">
                                 Rp {{ number_format($masuk->total_pendapatan, 0, ',', '.') }}
+                            </td>
+                            <td class="p-3 text-justify">
+                                @if($masuk->produksi_bukti)
+                                    <a href="{{ Storage::url($masuk->produksi_bukti) }}" target="_blank" class="text-blue-600 underline hover:text-blue-800">
+                                        Lihat Bukti
+                                    </a>
+                                @else
+                                    <span class="text-gray-400">-</span>
+                                @endif
                             </td>
                             <td class="p-3 text-gray-500 max-w-50 truncate" title="{{ $masuk->produksi_keterangan ?? $masuk->keterangan }}">
                                 {{ $masuk->produksi_keterangan ?? $masuk->keterangan ?? '-' }}
@@ -90,7 +100,12 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="5" class="p-6 text-center text-gray-400 italic bg-gray-50/50">Belum ada data transaksi pemasukan.</td>
+                            <td class="p-6 text-center text-gray-400 italic bg-gray-50/50">Belum ada data transaksi pemasukan.</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -131,10 +146,10 @@
                             <td class="p-3 text-gray-600">
                                 {{ $keluar->biaya_jenis ?? '-' }}
                             </td>
-                            <td class="p-3 text-right text-red-600 font-bold">
+                            <td class="p-3 text-justify text-red-600 font-bold">
                                 Rp {{ number_format($keluar->biaya_total, 0, ',', '.') }}
                             </td>
-                            <td class="p-3 text-center">
+                            <td class="p-3 text-justify">
                                 @if($keluar->biaya_bukti)
                                     <a href="{{ Storage::url($keluar->biaya_bukti) }}" target="_blank" class="text-blue-600 underline hover:text-blue-800">
                                         Lihat Bukti
@@ -149,7 +164,13 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="p-6 text-center text-gray-400 italic bg-gray-50/50">Belum ada data transaksi pengeluaran.</td>
+                            <td class="p-6 text-center text-gray-400 italic bg-gray-50/50">Belum ada data transaksi pengeluaran.</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -177,6 +198,7 @@
             "info": "Showing _START_ to _END_ of _TOTAL_ entries",
             "infoEmpty": "Showing 0 to 0 of 0 entries",
             "infoFiltered": "(filtered from _MAX_ total entries)",
+            "emptyTable": "Belum ada data transaksi.",
             "zeroRecords": "No matching records found",
             "paginate": { "next": "Next", "previous": "Prev" }
         };
@@ -240,11 +262,12 @@
                 cells.eq(1).text().trim(),
                 cells.eq(2).text().trim(),
                 { text: cells.eq(3).text().trim(), alignment: 'right' },
-                cells.eq(4).text().trim()
+                cells.eq(4).text().trim(),
+                cells.eq(5).text().trim()
             ]);
         });
         if (dataPemasukan.length === 0) {
-            dataPemasukan.push([{ text: 'Belum ada catatan transaksi.', colspan: 5, alignment: 'center', italic: true }, '', '', '', '']);
+            dataPemasukan.push([{ text: 'Belum ada catatan transaksi.', colspan: 6, alignment: 'center', italic: true }, '', '', '', '', '']);
         }
 
         var dataPengeluaran = [];
@@ -300,7 +323,7 @@
                 {
                     style: 'tableStyle',
                     table: {
-                        widths: ['8%', '22%', '25%', '23%', '22%'],
+                        widths: ['6%', '16%', '18%', '18%', '14%', '28%'],
                         headerRows: 1,
                         body: [
                             [
@@ -308,6 +331,7 @@
                                 { text: 'Tanggal', style: 'tableHeaderMasuk' },
                                 { text: 'Asal Lahan', style: 'tableHeaderMasuk' },
                                 { text: 'Total Pendapatan', style: 'tableHeaderMasuk', alignment: 'right' },
+                                { text: 'Bukti Nota', style: 'tableHeaderMasuk' },
                                 { text: 'Keterangan', style: 'tableHeaderMasuk' }
                             ],
                             ...dataPemasukan

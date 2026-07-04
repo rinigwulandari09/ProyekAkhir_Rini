@@ -216,8 +216,8 @@
         // Mengatur auto-focus dan membatasi agar tidak melakukan zoom out terlalu jauh (ngelebar)
         if (polygonGroup.getLayers().length > 0) {
             mapSebaran.fitBounds(polygonGroup.getBounds(), { 
-                padding: [40, 40],
-                maxZoom: 16 // Mengunci level zoom otomatis supaya langsung fokus dekat ke area jalan
+                padding: [40, 40]
+                // maxZoom dihapus atau diperbesar agar jika lahan tersebar antar-desa, peta otomatis zoom-out mencakup semuanya
             });
         }
     });

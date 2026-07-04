@@ -24,22 +24,51 @@ class BiayaOperasionalController extends Controller
 
     public function show($id)
     {
-        $data = BiayaOperasional::with([
+        $biaya = BiayaOperasional::with([
             'petani',
             'lahan'
         ])->find($id);
 
-        if (!$data) {
+        if (!$biaya) {
             return response()->json([
                 'success' => false,
-                'message' => 'Data tidak ditemukan'
+                'message' => 'Data biaya operasional tidak ditemukan'
             ], 404);
         }
 
         return response()->json([
             'success' => true,
-            'data' => $data
-        ]);
+            'message' => 'Detail biaya operasional berhasil diambil',
+            'data' => [
+                'id' => $biaya->id, // atau $biaya->biaya_id sesuai primary key Anda
+                'biaya_tanggal' => $biaya->biaya_tanggal,
+                'biaya_nama' => $biaya->biaya_nama,
+                'biaya_jenis' => $biaya->biaya_jenis,
+                'biaya_jumlah' => $biaya->biaya_jumlah,
+                'biaya_total' => $biaya->biaya_total,
+                'biaya_ket' => $biaya->biaya_ket,
+
+                // PATH GAMBAR
+                'biaya_bukti' => $biaya->biaya_bukti,
+
+                // URL GAMBAR UNTUK ANDROID
+                'biaya_bukti_url' => $biaya->biaya_bukti
+                    ? asset('storage/' . $biaya->biaya_bukti)
+                    : null,
+
+                // DATA PETANI
+                'petani' => [
+                    'id' => $biaya->petani->petani_id ?? null,
+                    'nama' => $biaya->petani->petani_nama ?? null
+                ],
+
+                // DATA LAHAN
+                'lahan' => [
+                    'id' => $biaya->lahan->lahan_id ?? null,
+                    'nama' => $biaya->lahan->lahan_nama ?? null
+                ]
+            ]
+        ], 200);
     }
 
     public function store(Request $request)
@@ -70,7 +99,7 @@ class BiayaOperasionalController extends Controller
             'biaya_nama'    => $request->biaya_nama,
             'biaya_jenis'   => $request->biaya_jenis,
             'biaya_jumlah'  => $request->biaya_jumlah,
-            'biaya_total'   => $request->biaya_jumlah,
+            'biaya_total'   => $request->biaya_total,
             'biaya_ket'     => $request->biaya_ket,
             'petani_id'     => $request->petani_id,
             'lahan_id'      => $request->lahan_id,

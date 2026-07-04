@@ -24,6 +24,7 @@ class NotifikasiController extends Controller
 
     private function profileUpdateQuery($user)
     {
+        // Karena petani tidak memiliki updated_at, return query kosong agar tidak error
         if (! Schema::hasColumn('petani', 'updated_at')) {
             return DB::table('produksi')
                 ->selectRaw("0 as id, '' as judul, '' as pesan, now() as created_at, 'profil' as tipe, NULL as jumlah_tbs, '' as lokasi, '' as nama")
@@ -44,10 +45,6 @@ class NotifikasiController extends Controller
             )
             ->whereNotNull('petani.updated_at');
 
-        if (Schema::hasColumn('petani', 'created_at')) {
-            $query->whereColumn('petani.updated_at', '>', 'petani.created_at');
-        }
-
         if ($user->user_role === 'admin') {
             $query->where('petani.desa_id', $user->desa_id);
         }
@@ -57,7 +54,7 @@ class NotifikasiController extends Controller
 
     private function notificationsQuery($user, $search = null, $tab = 'all')
     {
-        $userLastRead = $user->updated_at;
+        $userLastRead = $user->updated_at ? Carbon::parse($user->updated_at) : now();
 
         $produksi = $this->produksiQuery($user)
             ->leftJoin('lahan', 'produksi.lahan_id', '=', 'lahan.lahan_id')
@@ -66,6 +63,7 @@ class NotifikasiController extends Controller
                 'produksi.id',
                 DB::raw("'Produksi Baru' as judul"),
                 DB::raw("CONCAT(petani.petani_nama, ' menambahkan data produksi') as pesan"),
+                // Gunakan produksi_tanggal sebagai created_at pengganti
                 'produksi.produksi_tanggal as created_at',
                 DB::raw("'produksi' as tipe"),
                 'produksi.jumlah_tbs',
@@ -81,17 +79,10 @@ class NotifikasiController extends Controller
                     ->orWhere('lahan.lahan_nama', 'like', "%{$search}%")
                     ->orWhere('desa.desa_nama', 'like', "%{$search}%");
             });
-
-            if ($profile) {
-                $profile->where(function ($q) use ($search) {
-                    $q->where('petani.petani_nama', 'like', "%{$search}%")
-                        ->orWhere('desa.desa_nama', 'like', "%{$search}%");
-                });
-            }
         }
 
         if ($tab === 'produksi') {
-            $baseQuery = DB::query()->fromSub($produksi->orderByDesc('created_at'), 'notifications');
+            $baseQuery = DB::query()->fromSub($produksi->orderByDesc('id'), 'notifications');
         } elseif ($tab === 'profil') {
             $baseQuery = DB::query()->fromSub($profile->orderByDesc('created_at'), 'notifications');
         } else {
@@ -99,8 +90,15 @@ class NotifikasiController extends Controller
             $baseQuery = DB::query()->fromSub($union, 'notifications');
         }
 
-        return $baseQuery->select('*', DB::raw("CASE WHEN created_at <= '{$userLastRead}' THEN 1 ELSE 0 END as is_read"))
-            ->orderByDesc('created_at');
+        // Penentuan is_read: jika tanggal produksi sebelum hari ini, ATAU hari ini tapi admin sudah klik tandai dibaca hari ini
+        return $baseQuery->select('*', DB::raw("
+            CASE 
+                WHEN created_at < '" . today()->toDateString() . "' THEN 1 
+                WHEN created_at = '" . today()->toDateString() . "' AND DATE('{$userLastRead}') >= '" . today()->toDateString() . "' THEN 1
+                ELSE 0 
+            END as is_read
+        "))
+        ->orderByDesc('id');
     }
 
     public function getPopup()
@@ -110,7 +108,7 @@ class NotifikasiController extends Controller
             return response()->json(['data' => []], 403); 
         }
 
-        $userLastRead = $user->updated_at;
+        $userLastRead = $user->updated_at ? Carbon::parse($user->updated_at) : now();
         $userIdColumn = Schema::hasColumn('users', 'user_id') ? 'user_id' : 'id';
 
         $produksi = $this->produksiQuery($user)
@@ -121,7 +119,13 @@ class NotifikasiController extends Controller
                 DB::raw("'Produksi Baru' as judul"),
                 DB::raw("CONCAT(petani.petani_nama, ' menambahkan data produksi') as pesan"),
                 'produksi.produksi_tanggal as created_at',
-                DB::raw("CASE WHEN produksi.produksi_tanggal <= '{$userLastRead}' THEN 1 ELSE 0 END as is_read"),
+                DB::raw("
+                    CASE 
+                        WHEN produksi.produksi_tanggal < '" . today()->toDateString() . "' THEN 1 
+                        WHEN produksi.produksi_tanggal = '" . today()->toDateString() . "' AND DATE('{$userLastRead}') >= '" . today()->toDateString() . "' THEN 1
+                        ELSE 0 
+                    END as is_read
+                "),
                 'petani.petani_nama as nama',
                 DB::raw("'produksi' as tipe")
             )
@@ -140,7 +144,7 @@ class NotifikasiController extends Controller
             ->get();
 
         $merged = $custom->concat($produksi)->sortByDesc(function ($item) {
-            return strtotime($item->created_at ?? now());
+            return $item->tipe === 'produksi' ? $item->id : strtotime($item->created_at ?? now());
         })->values()->take(10)->map(function ($row) {
             $row->notif_id = $row->tipe . '_' . $row->id;
             $row->is_read = (bool) $row->is_read;
@@ -155,13 +159,19 @@ class NotifikasiController extends Controller
         $user = Auth::user();
         if (! in_array($user->user_role, ['super_admin', 'admin'])) { abort(403); }
 
-        $userLastRead = $user->updated_at;
+        $userLastRead = $user->updated_at ? Carbon::parse($user->updated_at) : null;
         $userIdColumn = Schema::hasColumn('users', 'user_id') ? 'user_id' : 'id';
 
-        $produksiCount = $this->produksiQuery($user)
-            ->whereDate('produksi.produksi_tanggal', today())
-            ->where('produksi.produksi_tanggal', '>', $userLastRead)
-            ->count('produksi.id');
+        // Hitung produksi baru hanya yang diinput HARI INI
+        $produksiQuery = $this->produksiQuery($user)
+            ->whereDate('produksi.produksi_tanggal', today());
+
+        // Jika admin sudah pernah mengklik "tandai dibaca" HARI INI, maka count produksi hari ini menjadi 0
+        if ($userLastRead && $userLastRead->isToday()) {
+            $produksiCount = 0;
+        } else {
+            $produksiCount = $produksiQuery->count('produksi.id');
+        }
 
         $customCount = DB::table('notifikasi')
             ->where('target', 'admin')
@@ -211,6 +221,7 @@ class NotifikasiController extends Controller
                 })->update(['is_read' => true]);
         }
 
+        // Update updated_at milik user menjadi detik ini
         DB::table('users')->where($userIdColumn, $user->{$userIdColumn})->update(['updated_at' => now()]);
 
         return response()->json(['success' => true]);
@@ -233,7 +244,7 @@ class NotifikasiController extends Controller
             ->map(function ($row) {
                 $row->notif_id = $row->tipe . '_' . $row->id;
                 $row->hasil = $row->tipe === 'produksi' ? number_format($row->jumlah_tbs ?? 0, 2, ',', '.') . ' Ton Kelapa Sawit (TBS)' : null;
-                $row->waktu = $row->created_at ? Carbon::parse($row->created_at)->diffForHumans() : '-';
+                $row->waktu = $row->created_at ? Carbon::parse($row->created_at)->translatedFormat('d F Y') : '-';
                 return $row;
             });
 

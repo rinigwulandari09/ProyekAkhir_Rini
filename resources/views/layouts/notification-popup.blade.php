@@ -34,7 +34,6 @@
     document.addEventListener('DOMContentLoaded', function () {
         const btnNotif = document.getElementById('btnNotif');
         const popupNotif = document.getElementById('popupNotif');
-        const notifBadge = document.getElementById('notifBadge') || document.querySelector('.relative span.bg-blue-500');
         const btnCloseNotif = document.getElementById('btnCloseNotif');
 
         if (btnCloseNotif) {
@@ -60,9 +59,8 @@
             });
         }
 
-        // Jalankan penghitung saat pertama kali halaman dibuka
         loadNotifCount();
-        setInterval(loadNotifCount, 15000); // Cek berkala setiap 15 detik
+        setInterval(loadNotifCount, 30000); // Cek berkala setiap 30 detik
     });
 
     function loadNotifCount() {
@@ -115,7 +113,7 @@
 
                         html += `
                             <div onclick="clickMarkAsRead('${notif.notif_id}', this)" 
-                                 class="mb-2 p-3 rounded-lg border text-left cursor-pointer transition duration-200 ${isRead ? 'bg-white border-gray-100 opacity-60' : 'bg-green-50 border-green-200 hover:bg-green-100'}">
+                                 class="notif-item mb-2 p-3 rounded-lg border text-left cursor-pointer transition duration-200 ${isRead ? 'bg-white border-gray-100 opacity-60' : 'bg-green-50 border-green-200 hover:bg-green-100'}">
                                 <div class="flex justify-between items-center">
                                     <div class="font-bold text-xs text-gray-800">${title}</div>
                                     <div class="text-[10px] text-gray-400">${time}</div>
@@ -133,7 +131,7 @@
     function clickMarkAsRead(notifId, element) {
         if (element.classList.contains('opacity-60')) return;
 
-        const csrfToken = '{{ csrf_token() }}' || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
 
         fetch(`/notifikasi/read/${notifId}`, {
             method: 'POST',
@@ -143,16 +141,11 @@
                 'Accept': 'application/json'
             }
         })
-        .then(res => {
-            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-            return res.json();
-        })
+        .then(res => res.json())
         .then(data => {
             if (data.success) {
                 element.classList.remove('bg-green-50', 'border-green-200', 'hover:bg-green-100');
                 element.classList.add('bg-white', 'border-gray-100', 'opacity-60');
-                
-                decrementBadgeCount();
                 loadNotifCount();
             }
         })
@@ -160,7 +153,7 @@
     }
 
     function clickMarkAllAsRead() {
-        const csrfToken = '{{ csrf_token() }}' || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
 
         fetch('/notifikasi/mark-all', {
             method: 'POST',
@@ -170,38 +163,25 @@
                 'Accept': 'application/json'
             }
         })
-        .then(res => {
-            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-            return res.json();
-        })
+        .then(res => res.json())
         .then(data => {
             if (data.success) {
+                // Paksa semua card di dalam DOM popup berubah warna ke putih pudar saat itu juga
+                const activeCards = document.querySelectorAll('.notif-item');
+                activeCards.forEach(card => {
+                    card.classList.remove('bg-green-50', 'border-green-200', 'hover:bg-green-100');
+                    card.classList.add('bg-white', 'border-gray-100', 'opacity-60');
+                });
+
                 const notifBadge = document.getElementById('notifBadge') || document.querySelector('.relative span.bg-blue-500');
                 if (notifBadge) {
                     notifBadge.classList.add('hidden');
                     notifBadge.innerText = '0';
                 }
                 
-                loadNotifList();
                 loadNotifCount();
-                
-                if (document.getElementById('detailUnreadCount')) {
-                    location.reload();
-                }
             }
         })
         .catch(err => console.error('Gagal menandai semua dibaca:', err));
-    }
-
-    function decrementBadgeCount() {
-        const notifBadge = document.getElementById('notifBadge') || document.querySelector('.relative span.bg-blue-500');
-        if (!notifBadge) return;
-
-        let current = parseInt(notifBadge.innerText) || 0;
-        if (current > 1) {
-            notifBadge.innerText = current - 1;
-        } else {
-            notifBadge.classList.add('hidden');
-        }
     }
 </script>
