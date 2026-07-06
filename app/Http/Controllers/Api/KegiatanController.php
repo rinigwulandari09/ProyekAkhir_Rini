@@ -29,12 +29,15 @@ class KegiatanController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'petani_id'  => 'required|integer',
-            'jenis_kegiatan_id'   => 'required|integer',
-            'kegiatan_tanggal'    => 'required|date',
-            'kegiatan_jumlah'     => 'required|numeric',
-            'kegiatan_satuan'     => 'required|string|max:50',
-            'kegiatan_ket' => 'nullable|string'
+            'petani_id' => 'required|integer',
+            'jenis_kegiatan_id' => 'required|integer',
+            'kegiatan_tanggal' => 'required|date',
+            'kegiatan_jumlah' => 'required|numeric',
+            'kegiatan_satuan' => 'required|string|max:50',
+            'kegiatan_ket' => 'nullable|string',
+
+            'lahan_id' => 'required|array',
+            'lahan_id.*' => 'integer',
         ]);
 
         $kegiatan = Kegiatan::create([
