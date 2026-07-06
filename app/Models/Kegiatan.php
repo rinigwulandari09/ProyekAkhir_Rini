@@ -8,12 +8,11 @@ class Kegiatan extends Model
 {
     protected $table = 'kegiatan';
 
-    protected $primaryKey = 'id_kegiatan';
+    protected $primaryKey = 'kegiatan_id';
 
     public $timestamps = false;
 
     protected $fillable = [
-        'kegiatan_id',
         'petani_id',
         'jenis_kegiatan_id',
         'kegiatan_tanggal',
@@ -31,7 +30,7 @@ class Kegiatan extends Model
 
     public function detailLahan()
     {
-        return $this->hasMany(DetailKegiatan::class, 'kegiatan_id', 'id_kegiatan');
+        return $this->hasMany(DetailKegiatan::class, 'kegiatan_id', 'kegiatan_id');
     }
 
     public function jenis()
