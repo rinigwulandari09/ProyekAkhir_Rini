@@ -29,38 +29,40 @@ class KegiatanController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'petani_id' => 'required|integer',
-            'jenis_kegiatan_id' => 'required|integer',
-            'kegiatan_tanggal' => 'required|date',
-            'kegiatan_jumlah' => 'required|numeric',
-            'kegiatan_satuan' => 'required|string|max:50',
-            'kegiatan_ket' => 'nullable|string',
-
-            'lahan_id' => 'required|array',
-            'lahan_id.*' => 'integer',
+            'petani_id'          => 'required|integer',
+            'jenis_kegiatan_id'  => 'required|integer',
+            'kegiatan_tanggal'   => 'required|date',
+            'kegiatan_jumlah'    => 'required|numeric',
+            'kegiatan_satuan'    => 'required|string|max:50',
+            'kegiatan_ket'       => 'nullable|string',
+            'lahan_id'           => 'required|array',
+            'lahan_id.*'         => 'integer',
         ]);
 
         $kegiatan = Kegiatan::create([
-            'petani_id' => $request->petani_id,
-            'jenis_kegiatan_id' => $request->jenis_kegiatan_id,
-            'kegiatan_tanggal' => $request->kegiatan_tanggal,
-            'kegiatan_jumlah' => $request->kegiatan_jumlah,
-            'kegiatan_satuan' => $request->kegiatan_satuan,
-            'kegiatan_ket' => $request->kegiatan_ket,
+            'petani_id'          => $request->petani_id,
+            'jenis_kegiatan_id'  => $request->jenis_kegiatan_id,
+            'kegiatan_tanggal'   => $request->kegiatan_tanggal,
+            'kegiatan_jumlah'    => $request->kegiatan_jumlah,
+            'kegiatan_satuan'    => $request->kegiatan_satuan,
+            'kegiatan_ket'       => $request->kegiatan_ket,
         ]);
 
-        foreach ($request->lahan as $lahanId) {
+        foreach ($request->lahan_id as $lahanId) {
+
             DetailKegiatan::create([
                 'kegiatan_id' => $kegiatan->kegiatan_id,
-                'lahan_id' => $lahanId,
+                'lahan_id'    => $lahanId,
             ]);
+
         }
 
         return response()->json([
             'success' => true,
             'message' => 'Kegiatan berhasil disimpan',
-            'data'    => $kegiatan
+            'data'    => $kegiatan,
         ], 201);
+
     }
 
     /**
