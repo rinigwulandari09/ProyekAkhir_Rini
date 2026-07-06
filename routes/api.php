@@ -44,6 +44,9 @@ Route::post('/kegiatan', [KegiatanController::class, 'store']);
 // Route untuk menampilkan detail satu kegiatan berdasarkan id
 Route::get('/kegiatan/{id}', [KegiatanController::class, 'show']);
 
+Route::get('/kegiatan', [KegiatanController::class, 'riwayat']);
+Route::get('/kegiatan/{id}', [KegiatanController::class, 'detail']);
+
 
 // lahan
 Route::get('/lahan', [LahanController::class, 'index']);

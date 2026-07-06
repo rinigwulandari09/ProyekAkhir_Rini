@@ -13,13 +13,13 @@ class Kegiatan extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'lahan_id',
-        'id_jenis',
+        'kegiatan_id',
         'petani_id',
-        'tanggal',
-        'jumlah',
-        'satuan',
-        'keterangan'
+        'jenis_kegiatan_id',
+        'kegiatan_tanggal',
+        'kegiatan_jumlah',
+        'kegiatan_satuan',
+        'kegiatan_ket'
     ];
 
 
@@ -27,6 +27,16 @@ class Kegiatan extends Model
     public function jenisKegiatan()
     {
         return $this->belongsTo(JenisKegiatan::class, 'id_jenis', 'id_jenis');
+    }
+
+    public function detailLahan()
+    {
+        return $this->hasMany(DetailKegiatan::class, 'kegiatan_id', 'id_kegiatan');
+    }
+
+    public function jenis()
+    {
+        return $this->belongsTo(JenisKegiatan::class, 'jenis_kegiatan_id');
     }
 }
 

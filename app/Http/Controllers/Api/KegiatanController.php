@@ -39,14 +39,20 @@ class KegiatanController extends Controller
         ]);
 
         $kegiatan = Kegiatan::create([
-            'lahan_id'   => $request->lahan_id,
-            'id_jenis'   => $request->id_jenis,
-            'petani_id'  => $request->petani_id,
-            'tanggal'    => $request->tanggal,
-            'jumlah'     => $request->jumlah,
-            'satuan'     => $request->satuan,
-            'keterangan' => $request->keterangan
+            'petani_id' => $request->petani_id,
+            'jenis_kegiatan_id' => $request->jenis_kegiatan_id,
+            'kegiatan_tanggal' => $request->kegiatan_tanggal,
+            'kegiatan_jumlah' => $request->kegiatan_jumlah,
+            'kegiatan_satuan' => $request->kegiatan_satuan,
+            'kegiatan_ket' => $request->kegiatan_ket,
         ]);
+
+        foreach ($request->lahan as $lahanId) {
+            DetailKegiatan::create([
+                'kegiatan_id' => $kegiatan->kegiatan_id,
+                'lahan_id' => $lahanId,
+            ]);
+        }
 
         return response()->json([
             'success' => true,
@@ -76,5 +82,85 @@ class KegiatanController extends Controller
                 'message' => 'Data kegiatan tidak ditemukan'
             ], 404);
         }
+    }
+
+    public function riwayat(Request $request)
+    {
+        $query = Kegiatan::with([
+            'jenis',
+            'detailLahan.lahan'
+        ]);
+
+        if ($request->filled('petani_id')) {
+
+            $query->where(
+                'petani_id',
+                $request->petani_id
+            );
+
+        }
+
+        if ($request->filled('bulan')) {
+
+            $query->whereMonth(
+                'kegiatan_tanggal',
+                $request->bulan
+            );
+
+        }
+
+        if ($request->filled('tahun')) {
+
+            $query->whereYear(
+                'kegiatan_tanggal',
+                $request->tahun
+            );
+
+        }
+
+        if ($request->filled('jenis')) {
+
+            $query->whereHas('jenis', function ($q) use ($request){
+
+                $q->where(
+                    'nama_jenis',
+                    'ILIKE',
+                    '%'.$request->jenis.'%'
+                );
+
+            });
+
+        }
+
+        if ($request->filled('lahan_id')) {
+
+            $query->whereHas('detailLahan', function($q) use ($request){
+
+                $q->where(
+                    'lahan_id',
+                    $request->lahan_id
+                );
+
+            });
+
+        }
+
+        return response()->json(
+
+            $query
+                ->orderByDesc('kegiatan_tanggal')
+                ->get()
+
+        );
+    }
+
+    public function detail($id)
+    {
+        $kegiatan = Kegiatan::with([
+            'jenis',
+            'detailLahan.lahan'
+        ])->findOrFail($id);
+
+        return response()->json($kegiatan);
     }
 }

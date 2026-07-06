@@ -136,4 +136,5 @@ Route::middleware(['auth'])->group(function () {
 
     // Pastikan juga url read per item sudah terpasang seperti ini
     Route::post('/notifikasi/read/{id}', [NotifikasiController::class, 'markAsRead'])->name('notifikasi.markAsRead');
+    Route::post('/tugas/{id}/selesai', [DashboardController::class, 'completeTask'])->name('tugas.complete');
     });

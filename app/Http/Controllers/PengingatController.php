@@ -74,34 +74,27 @@ class PengingatController extends Controller
             }
         }
 
-        // juga simpan di tabel notifikasi jika kategori admin
+        // juga simpan di tabel tugas jika kategori admin
         if ($data['recipient_category'] === 'admin') {
             $now = now();
+            $taskData = [
+                'judul' => 'Tugas dari Superadmin',
+                'pesan' => $data['message'],
+                'deadline' => $data['deadline'] ?? null,
+                'is_read' => false,
+                'read_at' => null,
+                'is_done' => false,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+
             if ($data['recipient_scope'] === 'all') {
-                DB::table('notifikasi')->insert([
-                    'user_id' => null,
-                    'target' => 'admin',
-                    'judul' => 'Tugas dari Superadmin',
-                    'pesan' => $data['message'],
-                    'jenis' => 'tugas',
-                    'is_read' => false,
-                    'read_at' => null,
-                    'created_at' => $now,
-                    'updated_at' => $now,
-                ]);
+                $taskData['user_id'] = null;
             } else {
-                DB::table('notifikasi')->insert([
-                    'user_id' => $data['recipient_id'],
-                    'target' => 'admin',
-                    'judul' => 'Tugas dari Superadmin',
-                    'pesan' => $data['message'],
-                    'jenis' => 'tugas',
-                    'is_read' => false,
-                    'read_at' => null,
-                    'created_at' => $now,
-                    'updated_at' => $now,
-                ]);
+                $taskData['user_id'] = $data['recipient_id'];
             }
+
+            DB::table('tugas')->insert($taskData);
         }
 
         // Atur pesan alert berdasarkan status pengiriman log email

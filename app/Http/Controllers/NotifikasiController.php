@@ -133,14 +133,15 @@ class NotifikasiController extends Controller
             ->take(20)
             ->get();
 
-        $custom = DB::table('notifikasi')
-            ->where('target', 'admin')
+        // Tampilkan semua tugas (termasuk yang sudah masuk sebelumnya) agar popup tidak menghapus riwayat.
+        // Batasi untuk performa: ambil 50 tugas terbaru.
+        $custom = DB::table('tugas')
             ->where(function ($q) use ($user, $userIdColumn) {
                 $q->whereNull('user_id')->orWhere('user_id', $user->{$userIdColumn});
             })
             ->select('id', 'judul', 'pesan', 'created_at', 'is_read', DB::raw("NULL as nama"), DB::raw("'custom' as tipe"))
             ->orderByDesc('created_at')
-            ->take(20)
+            ->take(50)
             ->get();
 
         $merged = $custom->concat($produksi)->sortByDesc(function ($item) {
@@ -162,6 +163,9 @@ class NotifikasiController extends Controller
         $userLastRead = $user->updated_at ? Carbon::parse($user->updated_at) : null;
         $userIdColumn = Schema::hasColumn('users', 'user_id') ? 'user_id' : 'id';
 
+        $retentionDays = 7;
+        $retentionDate = now()->subDays($retentionDays)->toDateString();
+
         // Hitung produksi baru hanya yang diinput HARI INI
         $produksiQuery = $this->produksiQuery($user)
             ->whereDate('produksi.produksi_tanggal', today());
@@ -173,10 +177,17 @@ class NotifikasiController extends Controller
             $produksiCount = $produksiQuery->count('produksi.id');
         }
 
-        $customCount = DB::table('notifikasi')
-            ->where('target', 'admin')
-            ->where(function ($q) use ($user, $userIdColumn) {
+        $customCount = DB::table('tugas')
+            ->where(function ($q) use ($user, $userIdColumn, $retentionDate) {
                 $q->whereNull('user_id')->orWhere('user_id', $user->{$userIdColumn});
+            })
+            ->where(function ($q) use ($retentionDate) {
+                $q->where(function ($q2) {
+                    $q2->where('is_done', false);
+                })->orWhere(function ($q3) use ($retentionDate) {
+                    $q3->where('is_done', true)
+                       ->where('created_at', '>=', $retentionDate);
+                });
             })
             ->where(function ($q) {
                 $q->where('is_read', false)->orWhereNull('is_read');
@@ -197,7 +208,7 @@ class NotifikasiController extends Controller
 
         if (str_starts_with($id, 'custom_')) {
             $realId = str_replace('custom_', '', $id);
-            DB::table('notifikasi')->where('id', $realId)->update(['is_read' => true]);
+            DB::table('tugas')->where('id', $realId)->update(['is_read' => true, 'read_at' => now()]);
         } else {
             $userIdColumn = Schema::hasColumn('users', 'user_id') ? 'user_id' : 'id';
             DB::table('users')->where($userIdColumn, $user->{$userIdColumn})->update(['updated_at' => now()]);
@@ -213,13 +224,17 @@ class NotifikasiController extends Controller
 
         $userIdColumn = Schema::hasColumn('users', 'user_id') ? 'user_id' : 'id';
 
-        if (Schema::hasTable('notifikasi')) {
-            DB::table('notifikasi')
-                ->where('target', 'admin')
-                ->where(function ($q) use ($user, $userIdColumn) {
-                    $q->whereNull('user_id')->orWhere('user_id', $user->{$userIdColumn});
-                })->update(['is_read' => true]);
-        }
+        $retentionDays = 7;
+        $retentionDate = now()->subDays($retentionDays)->toDateString();
+
+        DB::table('tugas')
+            ->where(function ($q) use ($user, $userIdColumn, $retentionDate) {
+                $q->whereNull('user_id')->orWhere('user_id', $user->{$userIdColumn});
+            })
+            ->where(function ($q) use ($retentionDate) {
+                $q->where('is_done', false)
+                  ->orWhere('created_at', '>=', $retentionDate);
+            })->update(['is_read' => true, 'read_at' => now()]);
 
         // Update updated_at milik user menjadi detik ini
         DB::table('users')->where($userIdColumn, $user->{$userIdColumn})->update(['updated_at' => now()]);

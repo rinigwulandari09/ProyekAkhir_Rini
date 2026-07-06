@@ -3,17 +3,11 @@
 @section('title', 'Beranda')
 
 @section('content')
-{{-- Include Leaflet.js Assets & Chart.js --}}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-{{-- Tambahan CSS Buttons --}}
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
-
 <div class="space-y-6">
-    
-    {{-- Statistik Utama --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="bg-[#A0C4E8] p-6 rounded-xl flex items-center justify-between shadow-sm border border-black/5">
             <div>
@@ -44,7 +38,6 @@
         </div>
     </div>
 
-    {{-- Grafik Section --}}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="bg-white p-5 rounded-xl shadow-sm h-80 flex flex-col">
             <p class="text-[11px] font-bold text-gray-500 mb-2 uppercase tracking-wider">Pemasukan Per Bulan</p>
@@ -52,7 +45,6 @@
                 <canvas id="chartPemasukan"></canvas>
             </div>
         </div>
-        
         <div class="bg-white p-5 rounded-xl shadow-sm h-80 flex flex-col">
             <p class="text-[11px] font-bold text-gray-500 mb-2 uppercase tracking-wider">Pengeluaran Per Kategori</p>
             <div class="relative flex-1 w-full h-full flex justify-center">
@@ -61,7 +53,6 @@
         </div>
     </div>
 
-    {{-- Status Audit --}}
     <div class="bg-white p-4 rounded-xl shadow-sm">
         <h3 class="text-[10px] font-bold text-gray-500 mb-4 uppercase tracking-widest">Status Audit RSPO/ISPO</h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -80,27 +71,69 @@
         </div>
     </div>
 
-    {{-- Map Section --}}
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+        <div class="flex items-center justify-between gap-4 mb-4">
+            <div>
+                <h3 class="text-lg font-bold text-gray-900">Pengingat Tugas</h3>
+                <p class="text-sm text-gray-500">Tugas dari Superadmin akan muncul di sini, diurutkan berdasarkan deadline terdekat.</p>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-left text-sm divide-y divide-gray-200">
+                <thead class="bg-gray-100 text-xs uppercase text-gray-500">
+                    <tr>
+                        <th class="px-4 py-3">Judul</th>
+                        <th class="px-4 py-3">Pesan</th>
+                        <th class="px-4 py-3">Deadline</th>
+                        <th class="px-4 py-3">Dibuat</th>
+                        <th class="px-4 py-3">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 bg-white">
+                    @forelse($taskNotifications as $task)
+                        <tr>
+                            <td class="px-4 py-3 text-gray-800">{{ $task->judul }}</td>
+                            <td class="px-4 py-3 text-gray-700">{{ $task->pesan }}</td>
+                            <td class="px-4 py-3 text-gray-700">
+                                {{ $task->deadline ? \Carbon\Carbon::parse($task->deadline)->translatedFormat('d F Y') : '-' }}
+                            </td>
+                            <td class="px-4 py-3 text-gray-700">{{ \Carbon\Carbon::parse($task->created_at)->translatedFormat('d F Y') }}</td>
+                            <td class="px-4 py-3">
+                                <form action="{{ route('tugas.complete', ['id' => $task->id]) }}" method="POST" class="inline">
+                                    @csrf
+                                    <button type="submit" class="inline-flex items-center rounded-full bg-green-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-green-700">
+                                        Tandai Selesai
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="px-4 py-6 text-center text-gray-500">Tidak ada tugas aktif untuk ditampilkan.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
         <div class="flex items-center gap-2 mb-2">
             <x-heroicon-o-map-pin class="w-4 h-4 text-gray-500" />
             <h3 class="text-[10px] font-bold text-gray-500 uppercase">Sebaran Lahan Anggota</h3>
         </div>
-        {{-- Container Peta Sebaran --}}
         <div id="mapSebaran" class="w-full h-96 rounded-lg bg-gray-100 relative border border-gray-200" style="z-index: 1;"></div>
     </div>
-
 </div>
 
-{{-- Script Inisialisasi Chart.js, DataTables & Leaflet --}}
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // --- 1. CONFIG GRAFIK PEMASUKAN (LINE CHART) ---
         const ctxPemasukan = document.getElementById('chartPemasukan').getContext('2d');
-        const dataPemasukan = @json(array_values($pemasukanGrafik)); 
+        const dataPemasukan = @json(array_values($pemasukanGrafik));
 
         new Chart(ctxPemasukan, {
             type: 'line',
@@ -109,7 +142,7 @@
                 datasets: [{
                     label: 'Total Pemasukan (Rp)',
                     data: dataPemasukan,
-                    borderColor: '#234323', 
+                    borderColor: '#234323',
                     backgroundColor: 'rgba(35, 67, 35, 0.1)',
                     borderWidth: 3,
                     fill: true,
@@ -129,7 +162,6 @@
             }
         });
 
-        // --- 2. CONFIG GRAFIK PENGELUARAN (PIE CHART) ---
         const ctxPengeluaran = document.getElementById('chartPengeluaran').getContext('2d');
         const rawPengeluaran = @json($pengeluaranGrafik);
         const labelsPengeluaran = rawPengeluaran.map(item => item.biaya_jenis);
@@ -157,13 +189,7 @@
             }
         });
 
-        // --- 3. CONFIG LEAFLET MAPS ---
-        const mapSebaran = L.map('mapSebaran', {
-            minZoom: 3,
-            maxZoom: 19
-        }).setView([0.65, 101.85], 13);
-
-        // MENGGUNAKAN LAYER DETAIL OPENSTREETMAP (Sama seperti Gambar 1 Anda)
+        const mapSebaran = L.map('mapSebaran', { minZoom: 3, maxZoom: 19 }).setView([0.65, 101.85], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             maxZoom: 19
@@ -176,22 +202,18 @@
             if (lahan.area_lahan) {
                 try {
                     const areaData = typeof lahan.area_lahan === 'string' ? JSON.parse(lahan.area_lahan) : lahan.area_lahan;
-                    
+
                     if (areaData && areaData.type === 'Polygon' && Array.isArray(areaData.coordinates)) {
-                        
                         const polyCoords = areaData.coordinates[0].map(c => [c[1], c[0]]);
 
-                        const isValidWGS84 = polyCoords.every(coord => 
-                            coord[0] > -5 && coord[0] < 10 && 
-                            coord[1] > 95 && coord[1] < 140   
-                        );
+                        const isValidWGS84 = polyCoords.every(coord => coord[0] > -5 && coord[0] < 10 && coord[1] > 95 && coord[1] < 140);
 
                         if (isValidWGS84 && polyCoords.length > 0) {
                             const polygon = L.polygon(polyCoords, {
-                                color: '#15803d',       
-                                fillColor: '#22c55e',   
-                                fillOpacity: 0.4,       
-                                weight: 2.5               
+                                color: '#15803d',
+                                fillColor: '#22c55e',
+                                fillOpacity: 0.4,
+                                weight: 2.5
                             });
 
                             polygon.bindPopup(`
@@ -213,12 +235,8 @@
             }
         });
 
-        // Mengatur auto-focus dan membatasi agar tidak melakukan zoom out terlalu jauh (ngelebar)
         if (polygonGroup.getLayers().length > 0) {
-            mapSebaran.fitBounds(polygonGroup.getBounds(), { 
-                padding: [40, 40]
-                // maxZoom dihapus atau diperbesar agar jika lahan tersebar antar-desa, peta otomatis zoom-out mencakup semuanya
-            });
+            mapSebaran.fitBounds(polygonGroup.getBounds(), { padding: [40, 40] });
         }
     });
 </script>

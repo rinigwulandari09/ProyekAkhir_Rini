@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -78,6 +79,18 @@ class DashboardController extends Controller
             ->whereDate('produksi_tanggal', today())
             ->count();
 
+        $userIdColumn = Schema::hasColumn('users', 'user_id') ? 'user_id' : 'id';
+
+        $taskNotifications = DB::table('tugas')
+            ->where(function ($q) use ($user, $userIdColumn) {
+                $q->whereNull('user_id')
+                  ->orWhere('user_id', $user->{$userIdColumn});
+            })
+            ->where('is_done', false)
+            ->orderByRaw("CASE WHEN deadline IS NULL THEN 1 ELSE 0 END ASC")
+            ->orderBy('deadline', 'asc')
+            ->get(['id', 'judul', 'pesan', 'deadline', 'created_at']);
+
         // 3. Pengalihan Halaman View sesuai Role (Data yang dikirimkan sekarang sudah SAMA)
         if ($user->user_role === 'super_admin') {
             return view('super_admin.dashboard', compact(
@@ -87,7 +100,8 @@ class DashboardController extends Controller
         } elseif ($user->user_role === 'admin') {
             return view('admin.dashboard', compact(
                 'jumlahPetani', 'jumlahLahan', 'pendapatanBulanIni', 'petaniPending',
-                'pemasukanGrafik', 'pengeluaranGrafik', 'semuaLahan', 'jumlahProduksiHariIni'
+                'pemasukanGrafik', 'pengeluaranGrafik', 'semuaLahan', 'jumlahProduksiHariIni',
+                'taskNotifications'
             ));
         }
 
@@ -103,5 +117,34 @@ class DashboardController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Status petani berhasil diperbarui!');
+    }
+
+    public function completeTask($id)
+    {
+        $user = auth()->user();
+        if (! in_array($user->user_role, ['super_admin', 'admin'])) {
+            abort(403);
+        }
+
+        $userIdColumn = Schema::hasColumn('users', 'user_id') ? 'user_id' : 'id';
+        $query = DB::table('tugas')
+            ->where('id', $id)
+            ->where(function ($q) use ($user, $userIdColumn) {
+                $q->whereNull('user_id')
+                  ->orWhere('user_id', $user->{$userIdColumn});
+            });
+
+        $updated = $query->update([
+            'is_done' => true,
+            'is_read' => false,
+            'read_at' => null,
+            'updated_at' => now(),
+        ]);
+
+        if (! $updated) {
+            return redirect()->back()->with('error', 'Tugas tidak ditemukan atau sudah selesai.');
+        }
+
+        return redirect()->back()->with('success', 'Tugas ditandai selesai dan akan tetap muncul di notifikasi sementara.');
     }
 }

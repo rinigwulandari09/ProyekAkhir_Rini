@@ -71,7 +71,6 @@ class ProduksiController extends Controller
         $petani = Petani::find($request->petani_id);
 
         // Catatan: notifikasi produksi untuk superadmin akan diambil secara runtime dari tabel produksi.
-        // Tidak membuat record notifikasi baru di tabel `notifikasi`.
 
         return response()->json([
             'success' => true,
