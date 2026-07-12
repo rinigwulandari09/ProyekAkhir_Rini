@@ -115,11 +115,12 @@
 
         var table = $('#petaniTable').DataTable({
             "destroy": true,
-            "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json"
-            },
             "pageLength": 10,
             "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "Semua"]],
+            "language": {
+                "search": "",                    // Menghapus teks "Search" di luar kotak
+                "searchPlaceholder": "Search..." // Memasukkan tulisan "Search..." ke dalam kotak input
+            },
             "responsive": {
                 "details": {
                     "renderer": function (api, rowIdx, columns) {
@@ -225,27 +226,70 @@
     #petaniTable th, #petaniTable td { white-space: normal !important; word-break: break-word; }
     #petaniTable th { white-space: nowrap; }
 
-    /* =========================================
-       2. KHUSUS MODE HP (max-width: 640px)
-       ========================================= */
-    @media (max-width: 640px) {
-        /* Hilangkan text "Search" & "Entries" HANYA di HP */
-        .dataTables_wrapper .dataTables_length label,
-        .dataTables_wrapper .dataTables_filter label { font-size: 0 !important; gap: 0 !important; }
-        
-        .dataTables_wrapper .dataTables_filter input { width: 130px !important; } 
-        
-        /* Tombol Export Jadi 2 sejajar di HP */
-        .dt-buttons { display: flex !important; flex-direction: row !important; }
-        .dt-buttons .dt-button { flex: 1; display: flex; justify-content: center; }
 
+    /* =========================================
+   2. KHUSUS MODE HP (max-width: 640px)
+   ========================================= */
+    @media (max-width: 640px) {
+        /* 1. Membuat Entries dan Search Sejajar Kesamping */
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter {
+            display: inline-block !important;
+            margin: 0 !important;
+        }
+
+        /* Pembungkus utama Entries & Search kita buat flex sejajar */
+        .dataTables_wrapper .flex-row.items-center.justify-between {
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            width: 100% !important;
+            gap: 0.5rem !important;
+        }
+
+        /* 2. Menghilangkan text label luar yang bikin sempit */
+        .dataTables_wrapper .dataTables_length label {
+            font-size: 0 !important;
+        }
+        
+        /* 3. Menyesuaikan ukuran lebar input di HP agar pas */
+        .dataTables_wrapper .dataTables_length select {
+            width: 70px !important;
+        }
+        
+        .dataTables_wrapper .dataTables_filter input { 
+            width: 100% !important;
+            max-width: 160px !important;
+            font-size: 0.875rem !important;
+            color: #374151 !important;
+        }
+
+        /* 4. Tombol Export Jadi 2 sejajar di HP */
+        .dt-buttons { 
+            display: flex !important; 
+            flex-direction: row !important; 
+            width: 100% !important;
+        }
+        .dt-buttons .dt-button { 
+            flex: 1; 
+            display: flex; 
+            justify-content: center; 
+        }
+
+        /* Info & Pagination tetap di tengah */
         .dataTables_wrapper .dataTables_info, 
-        .dataTables_wrapper .dataTables_paginate { width: 100%; justify-content: center; text-align: center; margin-top: 5px; }
+        .dataTables_wrapper .dataTables_paginate { 
+            width: 100%; 
+            justify-content: center; 
+            text-align: center; 
+            margin-top: 5px; 
+        }
 
         /* CUSTOM ICON PLUS (+) HANYA MUNCUL DI HP */
         table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child {
             position: relative;
-            padding-left: 32px !important; /* Jarak agar angka tidak ketimpa icon */
+            padding-left: 32px !important;
             cursor: pointer;
         }
         table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child::before {
@@ -266,10 +310,6 @@
             font-size: 14px !important;
             line-height: 1 !important;
             box-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
-        }
-        table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td:first-child::before {
-            content: '-' !important;
-            background-color: #EF4444 !important;
         }
     }
 

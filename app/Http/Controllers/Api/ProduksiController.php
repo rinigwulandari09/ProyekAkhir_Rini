@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Produksi;
 use App\Models\Petani;
 use App\Models\User;
+use App\Models\DetailProduksi;
 use Illuminate\Http\Request;
 
 class ProduksiController extends Controller
@@ -31,7 +32,8 @@ class ProduksiController extends Controller
             'jumlah_tbs'       => 'required|numeric',
             'harga_tbs'        => 'required|numeric',
             'petani_id'        => 'required|exists:petani,petani_id',
-            'lahan_id'         => 'required|exists:lahan,lahan_id',
+            'lahan_id'           => 'required|array',
+            'lahan_id.*'         => 'integer',
             'produksi_ket'     => 'nullable|string',
 
             // TAMBAHAN
@@ -60,12 +62,19 @@ class ProduksiController extends Controller
             'total_pendapatan' => $totalPendapatan,
             'status_validasi'  => 'Pending',
             'petani_id'        => $request->petani_id,
-            'lahan_id'         => $request->lahan_id,
             'produksi_ket'     => $request->produksi_ket,
 
             // TAMBAHAN
             'produksi_bukti'   => $fotoPath
         ]);
+        foreach ($request->lahan_id as $lahanId) {
+
+            DetailProduksi::create([
+                'produksi_id' => $produksi->id,
+                'lahan_id'    => $lahanId,
+            ]);
+
+        }
 
         // AMBIL DATA PETANI
         $petani = Petani::find($request->petani_id);
