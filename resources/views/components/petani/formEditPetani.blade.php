@@ -16,12 +16,12 @@
 
         <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-200">
             {{-- Header Card --}}
-            <div class="bg-[#214122] p-5 px-8 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <x-heroicon-o-user-circle class="w-6 h-6 text-white" />
-                    <h2 class="text-lg font-bold text-white tracking-wide">Data Pribadi & Lahan Petani</h2>
+            <div class="bg-[#214122] p-4 sm:p-5 px-6 sm:px-8 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <x-heroicon-o-user-circle class="w-5 h-5 sm:w-6 sm:h-6 text-white shrink-0" />
+                    <h2 class="text-sm sm:text-lg font-bold text-white tracking-wide">Data Pribadi & Lahan Petani</h2>
                 </div>
-                <a href="{{ route('petani.index') }}" class="text-xs bg-white/10 text-white border border-white/20 px-4 py-2 rounded-xl font-semibold hover:bg-white/20 transition flex items-center gap-1.5 shadow-sm">
+                <a href="{{ route('petani.index') }}" class="w-full sm:w-auto text-center justify-center text-xs bg-white/10 text-white border border-white/20 px-4 py-2 rounded-xl font-semibold hover:bg-white/20 transition flex items-center gap-1.5 shadow-sm">
                     <x-heroicon-o-arrow-left class="w-4 h-4" />
                     Kembali
                 </a>
@@ -29,7 +29,7 @@
 
             <div class="p-6 md:p-8 space-y-10">
                 {{-- Section 1: Profil & Informasi Dasar Petani --}}
-                <div class="flex flex-col md:flex-row gap-8 items-start">
+                <div class="flex flex-col md:flex-row gap-6 md:gap-8 items-center md:items-start">
                     <div class="w-full md:w-1/4 flex flex-col items-center gap-3">
                         <img src="https://ui-avatars.com/api/?name={{ urlencode($petani->petani_nama) }}&size=250&background=214122&color=fff&bold=true" 
                              alt="Foto Petani" 
@@ -71,7 +71,7 @@
                             
                             <div class="space-y-1">
                                 <label class="text-xs font-semibold text-gray-400 uppercase block">Ubah Status Akun</label>
-                                <div class="relative max-w-45 mt-1">
+                                <div class="relative w-full sm:max-w-xs mt-1">
                                     <select name="petani_status" class="w-full pl-3 pr-10 py-2 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#214122] focus:border-[#214122] appearance-none cursor-pointer text-sm font-semibold text-gray-700 shadow-sm transition">
                                         <option value="Aktif" {{ $petani->petani_status == 'Aktif' ? 'selected' : '' }}>🟢 Aktif</option>
                                         <option value="Nonaktif" {{ $petani->petani_status == 'Nonaktif' ? 'selected' : '' }}>🔴 Nonaktif</option>
@@ -167,8 +167,8 @@
                 </div>
 
                 {{-- Panel Tombol Aksi Simpan --}}
-                <div class="flex items-center justify-end pt-6 border-t border-gray-100">
-                    <button type="submit" class="bg-[#214122] text-white px-8 py-3 rounded-xl font-bold hover:bg-green-900 active:scale-95 transition shadow-md flex items-center gap-2 text-sm cursor-pointer">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end pt-6 border-t border-gray-100">
+                    <button type="submit" class="w-full sm:w-auto justify-center bg-[#214122] text-white px-8 py-3 rounded-xl font-bold hover:bg-green-900 active:scale-95 transition shadow-md flex items-center gap-2 text-sm cursor-pointer">
                         <x-heroicon-o-check-circle class="w-5 h-5 text-green-400" />
                         Simpan Perubahan
                     </button>

@@ -8,14 +8,14 @@
     </div>
 
     {{-- Container tempat tombol Export --}}
-    <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
-        <div id="exportButtonsContainer" class="flex gap-3"></div>
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+        <div id="exportButtonsContainer" class="flex flex-wrap items-center w-full sm:w-auto gap-2 sm:gap-3"></div>
     </div>
     
     {{-- Table Card --}}
-    <div class="bg-white rounded-2xl shadow-sm p-4 border border-gray-200">
+    <div class="bg-white rounded-2xl shadow-sm p-3 sm:p-4 border border-gray-200">
         <div class="overflow-x-auto">
-            <table id="petaniTable" class="w-full text-left border-collapse whitespace-nowrap">
+            <table id="petaniTable" class="w-full text-left border-collapse display responsive nowrap">
                 <thead>
                     <tr class="bg-[#D9F99D] border-b border-gray-200">
                         <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center w-12">No</th>
@@ -87,12 +87,14 @@
 {{-- DataTables CSS & JS Libraries --}}
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 
 <script>
     $(document).ready(function() {
@@ -100,12 +102,9 @@
         if ($.fn.dataTable && $.fn.dataTable.Buttons) { $.fn.dataTable.Buttons.jszip(window.JSZip); }
         if ($.fn.DataTable.isDataTable('#petaniTable')) { $('#petaniTable').DataTable().destroy(); }
 
-        // Format pembersih teks spasi kosong berlebih pada row data export
         var cleanExportFormat = {
             body: function (data, row, column, node) {
-                if (column === 0) {
-                    return row + 1; // Penomoran urut otomatis saat diexport
-                }
+                if (column === 0) return row + 1;
                 if (node !== null) {
                     let text = node.textContent || node.innerText || "";
                     return text.replace(/\s+/g, ' ').trim();
@@ -116,94 +115,55 @@
 
         var table = $('#petaniTable').DataTable({
             "destroy": true,
-            "language": { "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json" },
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json"
+            },
             "pageLength": 10,
             "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "Semua"]],
+            "responsive": {
+                "details": {
+                    "renderer": function (api, rowIdx, columns) {
+                        var data = $.map(columns, function (col) {
+                            if (col.hidden) {
+                                var value = col.data;
+                                if (value === null || value === undefined || value === '') { value = '-'; }
+                                return '<div class="flex items-start justify-between gap-3 py-1.5 text-xs leading-snug border-b border-gray-200 last:border-0"><span class="font-semibold text-gray-600">' + col.title + '</span><span class="text-gray-700 text-right">' + value + '</span></div>';
+                            }
+                            return '';
+                        }).join('');
+                        return data ? $('<div class="rounded-lg bg-gray-50 p-3 shadow-inner space-y-1 w-full mt-2"></div>').append(data).prop('outerHTML') : false;
+                    }
+                }
+            },
             "order": [[ 1, "asc" ]],
             "columnDefs": [ 
-                { "orderable": false, "targets": [0, 10] },
-                { "searchable": false, "targets": [0, 10] }
+                { "orderable": false, "searchable": false, "targets": [0, 10] },
+                { "className": "text-center all", "targets": 0 }, 
+                { "className": "all", "targets": 1 }, 
+                { "className": "min-tablet", "targets": [2, 3, 4, 5, 6, 7, 8, 9, 10] } 
             ],
             "buttons": [
                 {
                     extend: 'excelHtml5',
-                    text: '<svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path></svg> Export ke Excel',
+                    // Dibungkus div flex memastikan SVG dan Teks sejajar sempurna
+                    text: '<div class="flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path></svg><span>Export Excel</span></div>',
                     className: 'btn-export-excel',
                     title: 'Data_Petani_NotaSawit',
-                    exportOptions: { 
-                        columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-                        format: cleanExportFormat
-                    }
+                    exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], format: cleanExportFormat }
                 },
                 {
                     extend: 'pdfHtml5',
-                    text: '<svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path></svg> Export ke PDF',
+                    text: '<div class="flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path></svg><span>Export PDF</span></div>',
                     className: 'btn-export-pdf',
                     title: 'LAPORAN DAFTAR DATA PETANI SAWIT',
                     filename: 'Data_Petani_NotaSawit',
                     orientation: 'landscape',
                     pageSize: 'A4',
-                    exportOptions: { 
-                        columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-                        format: cleanExportFormat
-                    },
-                    customize: function (doc) {
-                        doc.content[1].table.widths = ['4%', '12%', '10%', '10%', '16%', '7%', '9%', '10%', '14%', '8%'];
-
-                        doc.styles.title = {
-                            color: '#1e293b',
-                            fontSize: '15',
-                            alignment: 'center',
-                            bold: true,
-                            margin: [0, 0, 0, 20]
-                        };
-
-                        doc.styles.tableBodyNormal = { fontSize: 8 };
-                        doc.styles.tableHeader = { fontSize: 8, bold: true };
-
-                        doc.content[1].table.headerRows = 1;
-                        var rowCount = doc.content[1].table.body.length;
-                        
-                        for (var i = 0; i < doc.content[1].table.body[0].length; i++) {
-                            doc.content[1].table.body[0][i].fillColor = '#214122';
-                            doc.content[1].table.body[0][i].color = 'white';
-                            doc.content[1].table.body[0][i].alignment = 'center';
-                            doc.content[1].table.body[0][i].fontSize = 8;
-                        }
-
-                        for (var j = 1; j < rowCount; j++) {
-                            doc.content[1].table.body[j][0].alignment = 'center';
-                            doc.content[1].table.body[j][3].alignment = 'center';
-                            doc.content[1].table.body[j][5].alignment = 'center';
-                            doc.content[1].table.body[j][6].alignment = 'center';
-                            doc.content[1].table.body[j][9].alignment = 'center';
-                            
-                            for (var c = 0; c < doc.content[1].table.body[j].length; c++) {
-                                doc.content[1].table.body[j][c].fontSize = 8;
-                            }
-
-                            if (j % 2 === 0) {
-                                for (var k = 0; k < doc.content[1].table.body[j].length; k++) {
-                                    doc.content[1].table.body[j][k].fillColor = '#f8fafc';
-                                }
-                            }
-                        }
-
-                        var objLayout = {};
-                        objLayout['hLineWidth'] = function(i) { return .5; };
-                        objLayout['vLineWidth'] = function(i) { return .5; };
-                        objLayout['hLineColor'] = function(i) { return '#cbd5e1'; };
-                        objLayout['vLineColor'] = function(i) { return '#cbd5e1'; };
-                        objLayout['paddingLeft'] = function(i) { return 4; };
-                        objLayout['paddingRight'] = function(i) { return 4; };
-                        objLayout['paddingTop'] = function(i) { return 5; };
-                        objLayout['paddingBottom'] = function(i) { return 5; };
-                        doc.content[1].layout = objLayout;
-                    }
+                    exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], format: cleanExportFormat }
                 }
             ],
-            // DOM diperbarui: info (i) di kiri bawah, pagination (p) di kanan bawah. Terbungkus Flexbox Responsif
-            "dom": '<"flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-3"B <"flex items-center gap-4"l f>>rt<"flex flex-col md:flex-row justify-between items-center gap-4 mt-4"i p>'
+            // DOM Layout: L (Length) dan F (Filter) di kiri kanan rapi
+            "dom": '<"flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4" B <"flex flex-row items-center justify-between w-full md:w-auto gap-4" l f> > rt <"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4" i p>'
         });
 
         table.on('order.dt search.dt draw.dt', function () {
@@ -218,66 +178,109 @@
 </script>
 
 <style>
-    /* Custom CSS style DataTables */
-    .dataTables_wrapper .dataTables_filter input { border: 1px solid #e5e7eb !important; border-radius: 9999px !important; padding: 4px 12px !important; outline: none !important; }
+    /* =========================================
+       1. GLOBAL STYLES (TAMPILAN DESKTOP)
+       ========================================= */
+    .dt-buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; width: 100%; }
+    
+    .dt-buttons .dt-button {
+        background-color: transparent !important;
+        border-radius: 0.5rem !important;
+        padding: 0.4rem 0.8rem !important;
+        font-weight: 600 !important;
+        font-size: 0.8rem !important;
+        transition: all 0.2s !important;
+        border: none;
+    }
+    .btn-export-excel { border: 1px solid #10B981 !important; color: #047857 !important; }
+    .btn-export-excel:hover { background-color: #F0FDF4 !important; transform: scale(1.02); }
+    
+    .btn-export-pdf { border: 1px solid #FCA5A5 !important; color: #DC2626 !important; }
+    .btn-export-pdf:hover { background-color: #FEF2F2 !important; transform: scale(1.02); }
+
+    /* MENGATUR LABEL NORMAL DI DESKTOP */
+    .dataTables_wrapper .dataTables_length label,
+    .dataTables_wrapper .dataTables_filter label { 
+        display: inline-flex !important; 
+        align-items: center !important; 
+        gap: 0.5rem !important; 
+        font-size: 0.875rem !important; 
+        color: #374151 !important; 
+        margin: 0 !important; 
+    }
+    
+    /* STYLING INPUT & SELECT */
+    .dataTables_wrapper .dataTables_length select,
+    .dataTables_wrapper .dataTables_filter input { 
+        font-size: 0.875rem !important; 
+        color: #374151 !important; 
+        border: 1px solid #e5e7eb !important; 
+        border-radius: 8px !important; 
+        padding: 4px 12px !important; 
+        margin: 0 !important; 
+        outline: none !important; 
+    }
     .dataTables_wrapper .dataTables_filter input:focus { border-color: #214122 !important; }
-    .dataTables_wrapper .dataTables_length select { border: 1px solid #e5e7eb !important; border-radius: 8px !important; padding: 4px 24px 4px 8px !important; }
-    
-    .dt-buttons .btn-export-excel { background-color: transparent !important; border: 1px solid #10B981 !important; color: #047857 !important; border-radius: 0.5rem !important; padding: 0.5rem 1rem !important; font-weight: 600 !important; font-size: 0.875rem !important; transition: all 0.2s !important; box-shadow: none !important; }
-    .dt-buttons .btn-export-excel:hover { background-color: #F0FDF4 !important; transform: scale(1.02); }
-    
-    .dt-buttons .btn-export-pdf { background-color: transparent !important; border: 1px solid #FCA5A5 !important; color: #DC2626 !important; border-radius: 0.5rem !important; padding: 0.5rem 1rem !important; font-weight: 600 !important; font-size: 0.875rem !important; transition: all 0.2s !important; box-shadow: none !important; }
-    .dt-buttons .btn-export-pdf:hover { background-color: #FEF2F2 !important; transform: scale(1.02); }
-    
-    .dt-buttons { float: none !important; }
 
-    /* Custom Styling Bagian Informasi (Menampilkan X dari Y data) */
-    .dataTables_wrapper .dataTables_info {
-        font-size: 0.875rem !important;
-        color: #6b7280 !important;
-        padding-top: 0 !important;
-    }
-    .dataTables_wrapper .dataTables_info b, 
-    .dataTables_wrapper .dataTables_info strong {
-        font-weight: 700 !important;
-        color: #1f2937 !important;
+    #petaniTable th, #petaniTable td { white-space: normal !important; word-break: break-word; }
+    #petaniTable th { white-space: nowrap; }
+
+    /* =========================================
+       2. KHUSUS MODE HP (max-width: 640px)
+       ========================================= */
+    @media (max-width: 640px) {
+        /* Hilangkan text "Search" & "Entries" HANYA di HP */
+        .dataTables_wrapper .dataTables_length label,
+        .dataTables_wrapper .dataTables_filter label { font-size: 0 !important; gap: 0 !important; }
+        
+        .dataTables_wrapper .dataTables_filter input { width: 130px !important; } 
+        
+        /* Tombol Export Jadi 2 sejajar di HP */
+        .dt-buttons { display: flex !important; flex-direction: row !important; }
+        .dt-buttons .dt-button { flex: 1; display: flex; justify-content: center; }
+
+        .dataTables_wrapper .dataTables_info, 
+        .dataTables_wrapper .dataTables_paginate { width: 100%; justify-content: center; text-align: center; margin-top: 5px; }
+
+        /* CUSTOM ICON PLUS (+) HANYA MUNCUL DI HP */
+        table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child {
+            position: relative;
+            padding-left: 32px !important; /* Jarak agar angka tidak ketimpa icon */
+            cursor: pointer;
+        }
+        table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child::before {
+            content: '+' !important;
+            position: absolute;
+            top: 50% !important;
+            left: 8px !important;
+            transform: translateY(-50%) !important;
+            background-color: #10B981 !important;
+            color: white !important;
+            width: 16px !important;
+            height: 16px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border-radius: 9999px !important;
+            font-weight: bold !important;
+            font-size: 14px !important;
+            line-height: 1 !important;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
+        }
+        table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td:first-child::before {
+            content: '-' !important;
+            background-color: #EF4444 !important;
+        }
     }
 
-    /* Custom Styling Pagination Buttons */
-    .dataTables_wrapper .dataTables_paginate {
-        padding-top: 0 !important;
-        display: flex !important;
-        gap: 0.25rem !important;
-        align-items: center;
-    }
-    .dataTables_wrapper .dataTables_paginate .paginate_button {
-        border: 1px solid #e5e7eb !important;
-        background: #ffffff !important;
-        color: #4b5563 !important;
-        border-radius: 0.375rem !important;
-        padding: 4px 12px !important;
-        font-size: 0.875rem !important;
-        transition: all 0.2s;
-    }
-    /* Tombol Halaman Aktif (Berwarna Biru Cerah) */
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current,
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-        background: #214122 !important;
-        color: #ffffff !important;
-        border-color: #214122 !important;
-    }
-    /* Hover state untuk tombol biasa */
-    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-        background: #f3f4f6 !important;
-        color: #1f2937 !important;
-        border-color: #d1d5db !important;
-    }
-    /* State disabled untuk Prev / Next ketika berada di ujung halaman */
-    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
-    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
-        color: #9ca3af !important;
-        background: #f9fafb !important;
-        border-color: #e5e7eb !important;
-        cursor: not-allowed;
-    }
+    /* =========================================
+       3. STYLE PAGINATION
+       ========================================= */
+    .dataTables_wrapper .dataTables_info { font-size: 0.875rem !important; color: #6b7280 !important; padding-top: 0 !important; }
+    .dataTables_wrapper .dataTables_info b, .dataTables_wrapper .dataTables_info strong { font-weight: 700 !important; color: #1f2937 !important; }
+    .dataTables_wrapper .dataTables_paginate { padding-top: 0 !important; display: flex !important; gap: 0.25rem !important; align-items: center; justify-content: center; }
+    .dataTables_wrapper .dataTables_paginate .paginate_button { border: 1px solid #e5e7eb !important; background: #ffffff !important; color: #4b5563 !important; border-radius: 0.375rem !important; padding: 4px 12px !important; font-size: 0.875rem !important; transition: all 0.2s; }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current, .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover { background: #214122 !important; color: #ffffff !important; border-color: #214122 !important; }
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover { background: #f3f4f6 !important; color: #1f2937 !important; border-color: #d1d5db !important; }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled, .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover { color: #9ca3af !important; background: #f9fafb !important; border-color: #e5e7eb !important; cursor: not-allowed; }
 </style>
