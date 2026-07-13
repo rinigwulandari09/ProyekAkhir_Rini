@@ -163,8 +163,8 @@
                     exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], format: cleanExportFormat }
                 }
             ],
-            // DOM Layout: L (Length) dan F (Filter) di kiri kanan rapi
-            "dom": '<"flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4" B <"flex flex-row items-center justify-between w-full md:w-auto gap-4" l f> > rt <"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4" i p>'
+            // DOM Layout: Buttons & Length di kiri, Search di kanan
+            "dom": '<"flex flex-col md:flex-row md:items-center gap-4 mb-4" <"flex items-center gap-3" B l> <"ml-auto" f> > rt <"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4" i p>'
         });
 
         table.on('order.dt search.dt draw.dt', function () {

@@ -3,19 +3,31 @@
 @section('title', 'Tambah User')
 
 @section('content')
-<div class="max-w-5xl mx-auto">
-    <div class="bg-white rounded-3xl shadow-sm overflow-hidden border border-gray-100">
-        <div class="bg-[#214122] p-6 px-8 flex items-center justify-between">
+<div class="max-w-4xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        
+        <div class="border-b border-slate-100 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-50/50">
             <div class="flex items-center gap-3">
-                <x-heroicon-o-user-plus class="w-6 h-6 text-white" />
-                <h2 class="text-xl font-bold text-white">Tambah Pengguna Baru</h2>
+                <div class="p-2 bg-[#214122] text-white rounded-lg">
+                    <x-heroicon-o-user-plus class="w-5 h-5" />
+                </div>
+                <div>
+                    <h2 class="text-base font-semibold text-slate-900">Tambah Pengguna Baru</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Daftarkan akun petugas atau super admin baru ke dalam sistem.</p>
+                </div>
             </div>
-            <span class="text-green-200 text-xs font-mono bg-green-900/50 px-3 py-1 rounded-full uppercase tracking-tighter">Baru</span>
+            <span class="self-start sm:self-center text-[10px] font-semibold bg-[#214122] text-white px-2.5 py-1 rounded-md uppercase tracking-wider border border-[#214122]/60">
+                Baru
+            </span>
         </div>
 
         @if ($errors->any())
-            <div class="m-6 p-4 bg-red-50 border-none rounded-2xl text-red-700 text-sm italic shadow-sm">
-                <ul class="list-disc ml-5">
+            <div class="m-5 sm:m-6 p-4 bg-rose-50 border border-rose-100 rounded-xl text-rose-800 text-sm shadow-sm">
+                <div class="flex items-center gap-2 mb-2 font-semibold text-rose-900">
+                    <x-heroicon-o-x-circle class="w-5 h-5 text-rose-600" />
+                    <span>Periksa kembali inputan Anda:</span>
+                </div>
+                <ul class="list-disc ml-5 space-y-1 text-rose-700">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -23,103 +35,97 @@
             </div>
         @endif
 
-        <form action="{{ route('user.store') }}" method="POST" class="p-8">
+        <form action="{{ route('user.store') }}" method="POST" class="p-5 sm:p-6 space-y-6">
             @csrf
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                 
-                <div class="space-y-2">
-                    <label class="block text-sm font-bold text-gray-700">Nama Lengkap</label>
+                <div class="space-y-1.5">
+                    <label class="block text-sm font-medium text-slate-700">Nama Lengkap <span class="text-rose-500">*</span></label>
                     <input 
                         type="text" 
                         name="user_nama" 
                         value="{{ old('user_nama') }}" 
                         placeholder="Masukkan nama lengkap"
-                        class="w-full px-5 py-3 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-green-700 transition"
+                        class="w-full px-3.5 py-2 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#214122] focus:ring-4 focus:ring-[#214122]/10 transition"
                         required
                     >
                 </div>
 
-                <div class="space-y-2">
-                    <label class="block text-sm font-bold text-gray-700">Username</label>
-                    <div class="relative">
-                        <input 
-                            type="text" 
-                            name="user_username" 
-                            value="{{ old('user_username') }}" 
-                            placeholder="Contoh: admin01"
-                            class="w-full px-5 py-3 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-green-700 transition"
-                            required
-                        >
-                    </div>
+                <div class="space-y-1.5">
+                    <label class="block text-sm font-medium text-slate-700">Username <span class="text-rose-500">*</span></label>
+                    <input 
+                        type="text" 
+                        name="user_username" 
+                        value="{{ old('user_username') }}" 
+                        placeholder="Contoh: admin01"
+                        class="w-full px-3.5 py-2 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#214122] focus:ring-4 focus:ring-[#214122]/10 transition"
+                        required
+                    >
                 </div>
 
-                <div class="space-y-2">
-                    <label class="block text-sm font-bold text-gray-700">Email</label>
+                <div class="space-y-1.5">
+                    <label class="block text-sm font-medium text-slate-700">Email <span class="text-rose-500">*</span></label>
                     <input 
                         type="email" 
                         name="user_email" 
                         value="{{ old('user_email') }}" 
                         placeholder="alamat_email@domain.com"
-                        class="w-full px-5 py-3 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-green-700 transition"
+                        class="w-full px-3.5 py-2 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#214122] focus:ring-4 focus:ring-[#214122]/10 transition"
                         required
                     >
                 </div>
 
-                <div class="space-y-2">
-                    <label class="block text-sm font-bold text-gray-700">
-                        Desa Tugas
-                    </label>
-
-                    <select
-                        name="desa_id"
-                        class="w-full px-5 py-3 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-green-700"
-                    >
-                        <option value="">-- Pilih Desa --</option>
-
-                        @foreach($desas as $desa)
-                            <option
-                                value="{{ $desa->desa_id }}"
-                                {{ old('desa_id') == $desa->desa_id ? 'selected' : '' }}
-                            >
-                                {{ $desa->desa_nama }}
-                            </option>
-                        @endforeach
-                    </select>
+                <div class="space-y-1.5">
+                    <label class="block text-sm font-medium text-slate-700">Desa Tugas</label>
+                    <div class="relative">
+                        <select
+                            name="desa_id"
+                            class="w-full px-3.5 py-2 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-[#214122] focus:ring-4 focus:ring-[#214122]/10 appearance-none cursor-pointer"
+                        >
+                            <option value="">-- Pilih Desa --</option>
+                            @foreach($desas as $desa)
+                                <option value="{{ $desa->desa_id }}" {{ old('desa_id') == $desa->desa_id ? 'selected' : '' }}>
+                                    {{ $desa->desa_nama }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <x-heroicon-o-chevron-down class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none" />
+                    </div>
                 </div>
 
-                <div class="space-y-2">
-                    <label class="block text-sm font-bold text-gray-700">Role Akses</label>
+                <div class="space-y-1.5">
+                    <label class="block text-sm font-medium text-slate-700">Role Akses <span class="text-rose-500">*</span></label>
                     <div class="relative">
-                        <select name="user_role" class="w-full px-5 py-3 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-green-700 appearance-none cursor-pointer" required>
+                        <select name="user_role" class="w-full px-3.5 py-2 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-[#214122] focus:ring-4 focus:ring-[#214122]/10 appearance-none cursor-pointer" required>
                             <option value="">-- Pilih Role --</option>
                             <option value="admin" {{ old('user_role') == 'admin' ? 'selected' : '' }}> Admin (Petugas)</option>
                             <option value="super_admin" {{ old('user_role') == 'super_admin' ? 'selected' : '' }}> Super Admin (Pemilik)</option>
                         </select>
-                        <x-heroicon-o-chevron-down class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
+                        <x-heroicon-o-chevron-down class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none" />
                     </div>
                 </div>
 
-                <div class="space-y-2">
-                    <label class="block text-sm font-bold text-gray-700">Password</label>
+                <div class="space-y-1.5">
+                    <label class="block text-sm font-medium text-slate-700">Password <span class="text-rose-500">*</span></label>
                     <input 
                         type="password" 
                         name="user_password" 
                         placeholder="Masukkan password akun"
-                        class="w-full px-5 py-3 bg-gray-50 border-0 rounded-2xl focus:ring-2 focus:ring-green-700 transition"
+                        class="w-full px-3.5 py-2 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#214122] focus:ring-4 focus:ring-[#214122]/10 transition"
                         required
                     >
                 </div>
 
             </div>
 
-            <div class="mt-12 flex items-center justify-between border-t border-gray-50 pt-8">
-                <a href="{{ route('user.index') }}" class="text-gray-400 hover:text-gray-600 font-bold flex items-center gap-2 transition">
-                    <x-heroicon-o-arrow-left class="w-5 h-5" />
+            <div class="mt-8 flex flex-col-reverse sm:flex-row items-center justify-between gap-3 border-t border-slate-100 pt-5">
+                <a href="{{ route('user.index') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition">
+                    <x-heroicon-o-arrow-left class="w-4 h-4" />
                     Kembali
                 </a>
-                <button type="submit" class="bg-[#214122] text-white px-10 py-3 rounded-2xl font-bold hover:bg-green-900 transition shadow-lg shadow-green-900/20 flex items-center gap-2 active:scale-95">
-                    <x-heroicon-o-check-circle class="w-5 h-5" />
+                <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#214122]  text-white px-5 py-2 text-sm font-medium rounded-lg hover:bg-[#214122] focus:ring-4 focus:ring-[#214122]/20 active:scale-[0.98] transition shadow-sm">
+                    <x-heroicon-o-check-circle class="w-4 h-4" />
                     Simpan User Baru
                 </button>
             </div>

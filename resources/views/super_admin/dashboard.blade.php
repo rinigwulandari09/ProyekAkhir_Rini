@@ -317,9 +317,6 @@
         "lengthMenu": [5, 10, 25, 50],
         "order": [[ 1, "asc" ]], 
         "dom": '<"flex justify-between items-center mb-4"lf>rt<"flex justify-between items-center mt-4"ip>',
-        "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json"
-        },
         "columnDefs": [
             { "orderable": false, "targets": [0, 4] } 
         ]

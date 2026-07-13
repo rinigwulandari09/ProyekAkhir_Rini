@@ -214,7 +214,7 @@
                     }
                 }
             ],
-            "dom": '<"flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4" B <"flex flex-row items-center justify-between w-full md:w-auto gap-4" l f> > rt <"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4" i p>'
+            "dom": '<"flex flex-col md:flex-row md:items-center gap-4 mb-4" <"flex items-center gap-3" B l> <"ml-auto" f> > rt <"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4" i p>'
         });
 
         table.on('order.dt search.dt draw.dt', function () {

@@ -63,7 +63,7 @@
                         <td class="p-4 text-xs text-gray-600">{{ $user->desa->desa_nama ?? '-' }} </td>
                         
                         {{-- 6. Role --}}
-                        <td class="p-4 text-center">
+                        <td class="p-4 text-justify-center">
                             <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $user->user_role == 'super_admin' ? 'bg-purple-100 text-purple-700 border border-purple-200' : 'bg-blue-100 text-blue-700 border border-blue-200' }}">
                                 {{ str_replace('_', ' ', $user->user_role) }}
                             </span>
@@ -71,7 +71,7 @@
                         
                         {{-- 7. Aksi --}}
                         <td class="p-4">
-                            <div class="flex justify-center gap-3">
+                            <div class="flex justify gap-3">
                                 <a href="{{ route('user.edit', $user->user_id) }}" class="text-green-700 hover:scale-110 transition">
                                     <x-heroicon-o-pencil-square class="w-5 h-5" />
                                 </a>
@@ -178,7 +178,7 @@
                     exportOptions: { columns: [0, 1, 2, 3, 4, 5], format: cleanExportFormat }
                 }
             ],
-            "dom": '<"flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4" B <"flex flex-row items-center justify-between w-full md:w-auto gap-4" l f> > rt <"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4" i p>'
+            "dom": '<"flex flex-col md:flex-row md:items-center gap-4 mb-4" <"flex items-center gap-3" B l> <"ml-auto" f> > rt <"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4" i p>'
         });
 
         table.on('order.dt search.dt draw.dt', function () {
