@@ -163,8 +163,8 @@
                     exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], format: cleanExportFormat }
                 }
             ],
-            // DOM Layout: Buttons & Length di kiri, Search di kanan
-            "dom": '<"flex flex-col md:flex-row md:items-center gap-4 mb-4" <"flex items-center gap-3" B l> <"ml-auto" f> > rt <"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4" i p>'
+            // DOM Layout: Length di kiri, Search di kanan (sejajar di semua device)
+            "dom": '<"hidden" B> <"flex justify-between items-center w-full mb-4 gap-2" l f> rt <"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4" i p>'
         });
 
         table.on('order.dt search.dt draw.dt', function () {
@@ -220,6 +220,13 @@
         padding: 4px 12px !important; 
         margin: 0 !important; 
         outline: none !important; 
+    }
+    .dataTables_wrapper .dataTables_filter input { 
+        padding-left: 32px !important;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239CA3AF'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'%3E%3C/path%3E%3C/svg%3E") !important;
+        background-repeat: no-repeat !important;
+        background-position: 10px center !important;
+        background-size: 16px 16px !important;
     }
     .dataTables_wrapper .dataTables_filter input:focus { border-color: #214122 !important; }
 

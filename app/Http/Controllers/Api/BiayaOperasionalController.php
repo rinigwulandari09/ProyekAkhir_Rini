@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\BiayaOperasional;
+use App\Models\DetailPengeluaran;
 use Illuminate\Http\Request;
 
 class BiayaOperasionalController extends Controller
@@ -79,7 +80,8 @@ class BiayaOperasionalController extends Controller
             'biaya_jenis'   => 'required|string|max:255',
             'biaya_jumlah'  => 'required|numeric',
             'petani_id'     => 'required|exists:petani,petani_id',
-            'lahan_id'      => 'required|exists:lahan,lahan_id',
+            'lahan_id'           => 'required|array',
+            'lahan_id.*'         => 'integer',
             'biaya_ket'     => 'nullable|string',
 
             // Upload bukti
@@ -102,9 +104,17 @@ class BiayaOperasionalController extends Controller
             'biaya_total'   => $request->biaya_total,
             'biaya_ket'     => $request->biaya_ket,
             'petani_id'     => $request->petani_id,
-            'lahan_id'      => $request->lahan_id,
             'biaya_bukti'   => $path
         ]);
+
+        foreach ($request->lahan_id as $lahanId) {
+
+            DetailBiayaOperasional::create([
+                'detail_biaya_operasional_id' => $biaya->id,
+                'lahan_id' => $lahanId,
+            ]);
+
+        }
 
         return response()->json([
             'success' => true,

@@ -427,7 +427,7 @@
     .dataTables_filter label { font-size: 0 !important; position: relative; display: block; }
     .dataTables_filter input[type="search"] {
         border: 1px solid #e5e7eb !important;
-        border-radius: 9999px !important;
+        border-radius: 8px !important;
         padding: 6px 14px 6px 36px !important;
         font-size: 0.75rem !important;
         outline: none !important;
@@ -455,4 +455,23 @@
     .dataTables_wrapper .dataTables_paginate .paginate_button.current, 
     .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover { background: #214122 !important; color: #ffffff !important; border-color: #214122 !important; }
     .dataTables_wrapper .dataTables_paginate .paginate_button.disabled, .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover { background: #f9fafb !important; color: #9ca3af !important; border-color: #e5e7eb !important; cursor: not-allowed !important; }
+
+    /* =========================================
+       KHUSUS MODE HP (max-width: 640px)
+       ========================================= */
+    @media (max-width: 640px) {
+        .dataTables_wrapper .flex.justify-between {
+            width: 100% !important;
+        }
+        .dataTables_filter {
+            width: 100% !important;
+        }
+        .dataTables_filter label {
+            width: 100% !important;
+        }
+        .dataTables_filter input[type="search"] {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+    }
 </style>

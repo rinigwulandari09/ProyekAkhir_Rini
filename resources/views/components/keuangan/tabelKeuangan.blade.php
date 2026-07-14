@@ -262,7 +262,8 @@
                     }
                 }
             ],
-            "dom": '<"flex flex-row items-center justify-between w-full mb-4 gap-4"l f>rt<"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4 pt-4 border-t border-gray-100"i p>'
+            // DOM Layout: Length di kiri, Search di kanan (sejajar di semua device)
+            "dom": '<"hidden" B> <"flex justify-between items-center w-full mb-4 gap-2" l f> rt <"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4 pt-4 border-t border-gray-100" i p>'
         });
 
         table.on('draw.dt', function () {
@@ -294,7 +295,13 @@
     .dataTables_wrapper .dataTables_filter label { display: inline-flex !important; align-items: center !important; gap: 0.5rem !important; font-size: 0.875rem !important; color: #374151 !important; margin: 0 !important; }
     .dataTables_wrapper .dataTables_length select,
     .dataTables_wrapper .dataTables_filter input { font-size: 0.875rem !important; color: #374151 !important; border: 1px solid #e5e7eb !important; border-radius: 8px !important; padding: 4px 12px !important; margin: 0 !important; outline: none !important; }
-    .dataTables_wrapper .dataTables_filter input { border-radius: 9999px !important; }
+    .dataTables_wrapper .dataTables_filter input { 
+        padding-left: 32px !important;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239CA3AF'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'%3E%3C/path%3E%3C/svg%3E") !important;
+        background-repeat: no-repeat !important;
+        background-position: 10px center !important;
+        background-size: 16px 16px !important;
+    }
     .dataTables_wrapper .dataTables_filter input:focus { border-color: #214122 !important; }
 
     #keuanganTable th, #keuanganTable td { white-space: normal !important; word-break: break-word; }
