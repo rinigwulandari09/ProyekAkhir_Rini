@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\BiayaOperasional;
-use App\Models\DetailPengeluaran;
+use App\Models\DetailBiayaOperasional;
 use Illuminate\Http\Request;
 
 class BiayaOperasionalController extends Controller
@@ -39,7 +39,7 @@ class BiayaOperasionalController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Detail biaya operasional berhasil diambil',
+            'message' => 'Detail biaya operasional berhasil diambil ',
             'data' => [
                 'id' => $biaya->id, // atau $biaya->biaya_id sesuai primary key Anda
                 'biaya_tanggal' => $biaya->biaya_tanggal,
