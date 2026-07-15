@@ -110,7 +110,7 @@ class BiayaOperasionalController extends Controller
         foreach ($request->lahan_id as $lahanId) {
 
             DetailBiayaOperasional::create([
-                'detail_biaya_operasional_id' => $biaya->id,
+                'biaya_operasional_id' => $biaya->id,
                 'lahan_id' => $lahanId,
             ]);
 
