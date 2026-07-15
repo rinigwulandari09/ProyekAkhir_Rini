@@ -13,7 +13,7 @@ class DetailBiayaOperasional extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'detail_biaya_operasional_id',
+        'biaya_operasional_id',
         'lahan_id',
     ];
 
