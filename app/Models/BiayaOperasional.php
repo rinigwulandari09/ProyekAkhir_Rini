@@ -39,4 +39,12 @@ class BiayaOperasional extends Model
     {
         return $this->belongsTo(Lahan::class, 'lahan_id', 'lahan_id');
     }
+
+    public function detailBiayaOperasional()
+    {
+        // Parameter pertama: Model target (Detail)
+        // Parameter kedua: Foreign key di tabel detail (biaya_operasional_id)
+        // Parameter ketiga: Local key di tabel ini (id)
+        return $this->hasMany(DetailBiayaOperasional::class, 'biaya_operasional_id', 'id');
+    }
 }

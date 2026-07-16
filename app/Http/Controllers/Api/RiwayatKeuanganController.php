@@ -18,76 +18,72 @@ class RiwayatKeuanganController extends Controller
         $lahanId = $request->lahan_id;
         $tipe = $request->tipe;
 
-        // PEMASUKAN
+        // PEMASUKAN (Diubah menggunakan Join ke tabel detail_produksi)
         $pemasukan = DB::table('produksi')
-            ->join('lahan', 'produksi.lahan_id', '=', 'lahan.lahan_id')
+            ->join('detail_produksi', 'produksi.id', '=', 'detail_produksi.produksi_id')
+            ->join('lahan', 'detail_produksi.lahan_id', '=', 'lahan.lahan_id')
             ->select(
                 'produksi.id',
                 'produksi.produksi_tanggal as tanggal',
                 'produksi.total_pendapatan as nominal',
                 DB::raw("'pemasukan' as tipe"),
                 DB::raw("'Penjualan TBS' as judul"),
-                'lahan.lahan_nama',
+                // Menggabungkan nama-nama lahan produksi
+                DB::raw("string_agg(lahan.lahan_nama, ', ') as lahan_nama"),
                 DB::raw("'produksi' as source_table")
             )
-            ->where('produksi.petani_id', $petaniId);
+            ->where('produksi.petani_id', $petaniId)
+            ->groupBy(
+                'produksi.id',
+                'produksi.produksi_tanggal',
+                'produksi.total_pendapatan'
+            );
 
         
-        // PENGELUARAN
+        // PENGELUARAN (Menggunakan Join ke tabel detail_biaya_operasional)
         $pengeluaran = DB::table('biaya_operasional')
-            ->join('lahan', 'biaya_operasional.lahan_id', '=', 'lahan.lahan_id')
+            ->join('detail_biaya_operasional', 'biaya_operasional.id', '=', 'detail_biaya_operasional.biaya_operasional_id')
+            ->join('lahan', 'detail_biaya_operasional.lahan_id', '=', 'lahan.lahan_id')
             ->select(
                 'biaya_operasional.id',
                 'biaya_operasional.biaya_tanggal as tanggal',
                 'biaya_operasional.biaya_total as nominal',
                 DB::raw("'pengeluaran' as tipe"),
                 'biaya_operasional.biaya_nama as judul',
-                'lahan.lahan_nama',
+                // Menggabungkan nama-nama lahan pengeluaran
+                DB::raw("string_agg(lahan.lahan_nama, ', ') as lahan_nama"), 
                 DB::raw("'biaya' as source_table")
             )
-            ->where('biaya_operasional.petani_id', $petaniId);
+            ->where('biaya_operasional.petani_id', $petaniId)
+            ->groupBy(
+                'biaya_operasional.id', 
+                'biaya_operasional.biaya_tanggal', 
+                'biaya_operasional.biaya_total', 
+                'biaya_operasional.biaya_nama'
+            );
 
         // FILTER BULAN
         if ($bulan) {
-            $pemasukan->whereMonth(
-                'produksi.produksi_tanggal',
-                $bulan
-            );
-            $pengeluaran->whereMonth(
-                'biaya_operasional.biaya_tanggal',
-                $bulan
-            );
+            $pemasukan->whereMonth('produksi.produksi_tanggal', $bulan);
+            $pengeluaran->whereMonth('biaya_operasional.biaya_tanggal', $bulan);
         }
 
         // FILTER TAHUN
         if ($tahun) {
-            $pemasukan->whereYear(
-                'produksi.produksi_tanggal',
-                $tahun
-            );
-            $pengeluaran->whereYear(
-                'biaya_operasional.biaya_tanggal',
-                $tahun
-            );
+            $pemasukan->whereYear('produksi.produksi_tanggal', $tahun);
+            $pengeluaran->whereYear('biaya_operasional.biaya_tanggal', $tahun);
         }
 
         // FILTER LAHAN
         if ($lahanId) {
-            $pemasukan->where(
-                'produksi.lahan_id',
-                $lahanId
-            );
-            $pengeluaran->where(
-                'biaya_operasional.lahan_id',
-                $lahanId
-            );
+            // Filter berdasarkan lahan yang ada di detail masing-masing
+            $pemasukan->where('detail_produksi.lahan_id', $lahanId);
+            $pengeluaran->where('detail_biaya_operasional.lahan_id', $lahanId);
         }
 
         // HANYA PEMASUKAN
         if ($tipe == 'pemasukan') {
-            $data = $pemasukan
-                ->orderByDesc('tanggal')
-                ->get();
+            $data = $pemasukan->orderByDesc('tanggal')->get();
             return response()->json([
                 'success' => true,
                 'data' => $data
@@ -96,10 +92,7 @@ class RiwayatKeuanganController extends Controller
 
         // HANYA PENGELUARAN
         if ($tipe == 'pengeluaran') {
-            $data = $pengeluaran
-                ->orderByDesc('tanggal')
-                ->get();
-
+            $data = $pengeluaran->orderByDesc('tanggal')->get();
             return response()->json([
                 'success' => true,
                 'data' => $data
@@ -107,8 +100,8 @@ class RiwayatKeuanganController extends Controller
         }
 
         // SEMUA
-        $data = $pemasukan
-            ->unionAll($pengeluaran)
+        $data = DB::query()
+            ->fromSub($pemasukan->unionAll($pengeluaran), 'combined_records')
             ->orderByDesc('tanggal')
             ->get();
 
@@ -125,8 +118,8 @@ class RiwayatKeuanganController extends Controller
         $source = $request->source;
 
         if ($source == "produksi") {
-            $data = Produksi::with('lahan')
-                ->findOrFail($id);
+            // Memuat relasi detailProduksi beserta data lahan di dalamnya
+            $data = Produksi::with('detailProduksi.lahan')->findOrFail($id);
 
             return response()->json([
                 'success' => true,
@@ -136,8 +129,8 @@ class RiwayatKeuanganController extends Controller
         }
 
         if ($source == "biaya") {
-            $data = BiayaOperasional::with('lahan')
-                ->findOrFail($id);
+            // Memuat relasi detailBiayaOperasional beserta data lahan di dalamnya
+            $data = BiayaOperasional::with('detailBiayaOperasional.lahan')->findOrFail($id);
 
             return response()->json([
                 'success' => true,

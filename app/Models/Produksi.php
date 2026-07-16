@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+
 class Produksi extends Model
 {
     protected $table = 'produksi';
@@ -33,5 +34,8 @@ class Produksi extends Model
     {
         return $this->belongsTo(Lahan::class,'lahan_id','lahan_id');
     }
+    public function detailProduksi() {
+    return $this->hasMany(DetailProduksi::class, 'produksi_id', 'id');
+}
 
 }
