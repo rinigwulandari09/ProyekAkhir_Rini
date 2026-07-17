@@ -101,55 +101,62 @@ class ProduksiController extends Controller
     }
 
     public function show($id)
-    {
-        $produksi = Produksi::with([
-            'petani',
-            'lahan'
-        ])->find($id);
+{
+    // Kita panggil detail_produksi beserta data lahan yang ada di dalam masing-masing detail
+    $produksi = Produksi::with([
+        'petani',
+        'detailProduksi.lahan' // nested eager loading: mengambil detail dan lahannya
+    ])->find($id);
 
-
-        if (!$produksi) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Data produksi tidak ditemukan'
-            ], 404);
-
-        }
-
+    if (!$produksi) {
         return response()->json([
-            'success' => true,
-            'message' => 'Detail produksi berhasil diambil',
-            'data' => [
-                'id' => $produksi->id,
-                'produksi_tanggal' => $produksi->produksi_tanggal,
-                'jumlah_tbs' => $produksi->jumlah_tbs,
-                'harga_tbs' => $produksi->harga_tbs,
-                'total_pendapatan' => $produksi->total_pendapatan,
-                'status_validasi' => $produksi->status_validasi,
-                'produksi_ket' => $produksi->produksi_ket,
-
-                // PATH GAMBAR
-                'produksi_bukti' => $produksi->produksi_bukti,
-
-                // URL GAMBAR UNTUK ANDROID
-                'produksi_bukti_url' => $produksi->produksi_bukti
-                    ? asset('storage/' . $produksi->produksi_bukti)
-                    : null,
-
-                // DATA PETANI
-                'petani' => [
-                    'id' => $produksi->petani->petani_id ?? null,
-                    'nama' => $produksi->petani->petani_nama ?? null
-                ],
-
-                // DATA LAHAN
-                'lahan' => [
-                    'id' => $produksi->lahan->lahan_id ?? null,
-                    'nama' => $produksi->lahan->lahan_nama ?? null
-                ]
-
-            ]
-
-        ], 200);
+            'success' => false,
+            'message' => 'Data produksi tidak ditemukan'
+        ], 404);
     }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Detail produksi berhasil diambil',
+        'data' => [
+            'id' => $produksi->id,
+            'produksi_tanggal' => $produksi->produksi_tanggal,
+            'jumlah_tbs' => $produksi->jumlah_tbs,
+            'harga_tbs' => $produksi->harga_tbs,
+            'total_pendapatan' => $produksi->total_pendapatan,
+            'status_validasi' => $produksi->status_validasi,
+            'produksi_ket' => $produksi->produksi_ket,
+
+            // PATH GAMBAR
+            'produksi_bukti' => $produksi->produksi_bukti,
+
+            // URL GAMBAR UNTUK ANDROID
+            'produksi_bukti_url' => $produksi->produksi_bukti
+                ? asset('storage/' . $produksi->produksi_bukti)
+                : null,
+
+            // DATA PETANI
+            'petani' => [
+                'id' => $produksi->petani->petani_id ?? null,
+                'nama' => $produksi->petani->petani_nama ?? null
+            ],
+
+            // DATA DETAIL PRODUKSI DAN LAHANNYA
+            'detail_produksi' => $produksi->detailProduksi->map(function ($detail) {
+                return [
+                    'id' => $detail->id,
+                    // Silakan sesuaikan field dari tabel detail_produksi Anda di bawah ini:
+                    'jumlah_tbs_detail' => $detail->jumlah_tbs ?? null, 
+                    'harga_tbs_detail' => $detail->harga_tbs ?? null,
+                    
+                    // DATA LAHAN (Diambil dari relasi per detail produksi)
+                    'lahan' => [
+                        'id' => $detail->lahan->lahan_id ?? null,
+                        'nama' => $detail->lahan->lahan_nama ?? null
+                    ]
+                ];
+            })
+        ]
+    ], 200);
+}
 }

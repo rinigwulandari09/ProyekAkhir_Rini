@@ -24,54 +24,62 @@ class BiayaOperasionalController extends Controller
     }
 
     public function show($id)
-    {
-        $biaya = BiayaOperasional::with([
-            'petani',
-            'lahan'
-        ])->find($id);
+{
+    // Kita panggil detail beserta lahan yang ada di dalam detail tersebut
+    $biaya = BiayaOperasional::with([
+        'petani',
+        'detailBiayaOperasional.lahan' // Mengambil detail beserta data lahannya
+    ])->find($id);
 
-        if (!$biaya) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Data biaya operasional tidak ditemukan'
-            ], 404);
-        }
-
+    if (!$biaya) {
         return response()->json([
-            'success' => true,
-            'message' => 'Detail biaya operasional berhasil diambil ',
-            'data' => [
-                'id' => $biaya->id, // atau $biaya->biaya_id sesuai primary key Anda
-                'biaya_tanggal' => $biaya->biaya_tanggal,
-                'biaya_nama' => $biaya->biaya_nama,
-                'biaya_jenis' => $biaya->biaya_jenis,
-                'biaya_jumlah' => $biaya->biaya_jumlah,
-                'biaya_total' => $biaya->biaya_total,
-                'biaya_ket' => $biaya->biaya_ket,
-
-                // PATH GAMBAR
-                'biaya_bukti' => $biaya->biaya_bukti,
-
-                // URL GAMBAR UNTUK ANDROID
-                'biaya_bukti_url' => $biaya->biaya_bukti
-                    ? asset('storage/' . $biaya->biaya_bukti)
-                    : null,
-
-                // DATA PETANI
-                'petani' => [
-                    'id' => $biaya->petani->petani_id ?? null,
-                    'nama' => $biaya->petani->petani_nama ?? null
-                ],
-
-                // DATA LAHAN
-                'lahan' => [
-                    'id' => $biaya->lahan->lahan_id ?? null,
-                    'nama' => $biaya->lahan->lahan_nama ?? null
-                ]
-            ]
-        ], 200);
+            'success' => false,
+            'message' => 'Data biaya operasional tidak ditemukan'
+        ], 404);
     }
 
+    return response()->json([
+        'success' => true,
+        'message' => 'Detail biaya operasional berhasil diambil',
+        'data' => [
+            'id' => $biaya->id,
+            'biaya_tanggal' => $biaya->biaya_tanggal,
+            'biaya_nama' => $biaya->biaya_nama,
+            'biaya_jenis' => $biaya->biaya_jenis,
+            'biaya_jumlah' => $biaya->biaya_jumlah,
+            'biaya_total' => $biaya->biaya_total,
+            'biaya_ket' => $biaya->biaya_ket,
+
+            // PATH & URL GAMBAR
+            'biaya_bukti' => $biaya->biaya_bukti,
+            'biaya_bukti_url' => $biaya->biaya_bukti
+                ? asset('storage/' . $biaya->biaya_bukti)
+                : null,
+
+            // DATA PETANI
+            'petani' => [
+                'id' => $biaya->petani->petani_id ?? null,
+                'nama' => $biaya->petani->petani_nama ?? null
+            ],
+
+            // DATA DETAIL BIAYA DAN LAHANNYA
+            'detail_biaya' => $biaya->detailBiayaOperasional->map(function ($detail) {
+                return [
+                    'id' => $detail->id,
+                    // Silakan sesuaikan field detail Anda di bawah ini:
+                    'nama_detail' => $detail->nama_detail ?? null, 
+                    'subtotal' => $detail->subtotal ?? null,
+                    
+                    // DATA LAHAN (Sekarang diambil dari per item detail)
+                    'lahan' => [
+                        'id' => $detail->lahan->lahan_id ?? null,
+                        'nama' => $detail->lahan->lahan_nama ?? null
+                    ]
+                ];
+            })
+        ]
+    ], 200);
+}
     public function store(Request $request)
     {
         $request->validate([
