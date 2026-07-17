@@ -23,8 +23,8 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-100 pb-6 mb-6 gap-4">
             <div>
                 <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Informasi Petani</span>
-                <h2 class="text-xl font-extrabold text-gray-800 mt-0.5">
-                    Nama Petani: <span id="namaPetaniCetak" class="font-medium text-gray-600">{{ $petani->petani_nama ?? $petani->nama ?? 'Dhini Handayani' }}</span>
+                <h2 class="text-md font-extrabold text-gray-800 mt-0.5">
+                    Nama Petani : <span id="namaPetaniCetak" class="font-medium text-gray-600">{{ $petani->petani_nama ?? $petani->nama ?? 'Dhini Handayani' }}</span>
                 </h2>
             </div>
             {{-- Tombol Utama pemicu download PDF --}}
@@ -33,47 +33,79 @@
             </button>
         </div>
 
-        {{-- Filter Data Keuangan --}}
-        <div class="flex flex-col lg:flex-row justify-between items-center gap-4 mb-6 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
-            <form action="{{ url()->current() }}" method="GET" class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+        {{-- Filter Bar Modern --}}
+        <div class="bg-gray-50/50 rounded-2xl border border-gray-200 p-4 sm:p-5 mb-6">
+            {{-- Header Mini Filter --}}
+            <div class="flex items-center gap-2 mb-4 text-gray-700">
+                <x-heroicon-o-funnel class="w-4 h-4 text-[#214122]" />
+                <h2 class="text-xs font-bold uppercase tracking-wider text-gray-600">Filter Pencarian Data</h2>
+            </div>
+
+            <form action="{{ url()->current() }}" method="GET" class="space-y-4">
                 @php
                     $namaBulan = [1=>'Januari', 2=>'Februari', 3=>'Maret', 4=>'April', 5=>'Mei', 6=>'Juni', 7=>'Juli', 8=>'Agustus', 9=>'September', 10=>'Oktober', 11=>'November', 12=>'Desember'];
                 @endphp
+                {{-- BARIS FILTER DROPDOWN --}}
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {{-- Dropdown 1 --}}
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-semibold text-gray-500 pl-1">Dari Bulan</label>
+                        <div class="relative">
+                            <select name="bulan_awal" class="w-full bg-white border border-gray-200 text-gray-700 text-sm rounded-xl px-3.5 py-2.5 outline-none focus:border-[#214122] transition appearance-none cursor-pointer">
+                                <option value="">Pilih Bulan</option>
+                                @foreach($namaBulan as $num => $name)
+                                    <option value="{{ $num }}" {{ request('bulan_awal') == $num ? 'selected' : '' }}>{{ $name }}</option>
+                                @endforeach
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-gray-400">
+                                <x-heroicon-o-chevron-down class="w-4 h-4" />
+                            </div>
+                        </div>
+                    </div>
 
-                <div class="w-36">
-                    <select name="bulan_awal" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-2 px-3 rounded-xl text-xs font-semibold outline-none focus:ring-1 focus:ring-green-700 cursor-pointer">
-                        <option value="">Dari Bulan</option>
-                        @foreach($namaBulan as $num => $name)
-                            <option value="{{ $num }}" {{ request('bulan_awal') == $num ? 'selected' : '' }}>{{ $name }}</option>
-                        @endforeach
-                    </select>
+                    {{-- Dropdown 2 --}}
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-semibold text-gray-500 pl-1">Sampai Bulan</label>
+                        <div class="relative">
+                            <select name="bulan_akhir" class="w-full bg-white border border-gray-200 text-gray-700 text-sm rounded-xl px-3.5 py-2.5 outline-none focus:border-[#214122] transition appearance-none cursor-pointer">
+                                <option value="">Pilih Bulan</option>
+                                @foreach($namaBulan as $num => $name)
+                                    <option value="{{ $num }}" {{ request('bulan_akhir') == $num ? 'selected' : '' }}>{{ $name }}</option>
+                                @endforeach
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-gray-400">
+                                <x-heroicon-o-chevron-down class="w-4 h-4" />
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Dropdown 3 --}}
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-semibold text-gray-500 pl-1">Tahun</label>
+                        <div class="relative">
+                            <select name="tahun" class="w-full bg-white border border-gray-200 text-gray-700 text-sm rounded-xl px-3.5 py-2.5 outline-none focus:border-[#214122] transition appearance-none cursor-pointer">
+                                <option value="">Pilih Tahun</option>
+                                @for($y = date('Y'); $y >= 2020; $y--)
+                                    <option value="{{ $y }}" {{ request('tahun') == $y ? 'selected' : '' }}>{{ $y }}</option>
+                                @endfor
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-gray-400">
+                                <x-heroicon-o-chevron-down class="w-4 h-4" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="w-36">
-                    <select name="bulan_akhir" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-2 px-3 rounded-xl text-xs font-semibold outline-none focus:ring-1 focus:ring-green-700 cursor-pointer">
-                        <option value="">Sampai Bulan</option>
-                        @foreach($namaBulan as $num => $name)
-                            <option value="{{ $num }}" {{ request('bulan_akhir') == $num ? 'selected' : '' }}>{{ $name }}</option>
-                        @endforeach
-                    </select>
+                {{-- BARIS TOMBOL AKSI --}}
+                <div class="flex flex-col sm:flex-row items-center gap-3 pt-4 border-t border-gray-100">
+                    <button type="submit" class="w-full sm:w-auto bg-[#214122] text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-[#325a33] transition shadow-sm text-center flex items-center justify-center gap-2">
+                        <x-heroicon-o-magnifying-glass class="w-4 h-4" />
+                        Terapkan Filter
+                    </button>
+                    @if(request('bulan_awal') || request('bulan_akhir') || request('tahun'))
+                        <a href="{{ url()->current() }}" class="text-sm font-semibold text-red-500 hover:text-red-700 hover:underline">Reset Filter</a>
+                    @endif
                 </div>
-
-                <div class="w-28">
-                    <select name="tahun" class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-2 px-3 rounded-xl text-xs font-semibold outline-none focus:ring-1 focus:ring-green-700 cursor-pointer">
-                        <option value="">Tahun</option>
-                        @for($y = date('Y'); $y >= 2020; $y--)
-                            <option value="{{ $y }}" {{ request('tahun') == $y ? 'selected' : '' }}>{{ $y }}</option>
-                        @endfor
-                    </select>
-                </div>
-
-                <button type="submit" class="bg-[#214122] text-white px-5 py-2 rounded-xl text-xs font-bold hover:bg-[#325a33] transition cursor-pointer">
-                    Terapkan Filter
-                </button>
-
-                @if(request('bulan_awal') || request('bulan_akhir') || request('tahun'))
-                    <a href="{{ url()->current() }}" class="text-xs text-red-500 hover:underline ml-1">Reset Filter</a>
-                @endif
             </form>
         </div>
 
@@ -100,134 +132,113 @@
         </div>
 
         {{-- Tabel Pemasukan Section --}}
-        <div class="mb-10 border border-gray-100 rounded-xl p-4 shadow-sm keuangan-wrapper">
+        <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-6 border border-gray-200 mb-6 keuangan-wrapper">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 header-tabel-custom-masuk">
-                <h3 class="font-bold text-gray-700 text-sm flex items-center gap-2">
-                    <span class="w-1.5 h-4 bg-green-600 rounded"></span> Tabel Pemasukan (Produksi)
+                <h3 class="font-bold text-gray-700 text-base flex items-center gap-2">
+                    <span class="w-1.5 h-5 bg-green-600 rounded"></span> Tabel Pemasukan (Produksi)
                 </h3>
             </div>
-            <div class="overflow-x-auto rounded-lg border border-gray-100">
-                <table id="tabelPemasukan" class="w-full text-left whitespace-nowrap m-0">
-                    <thead>
-                        <tr class="bg-[#D9F99D] text-[#214122] text-xs font-bold border-b border-gray-200">
-                            <th class="p-3 text-justify w-12">No</th>
-                            <th class="p-3 text-justify">Tanggal</th>
-                            <th class="p-3">Asal Lahan</th>
-                            <th class="p-3 text-justify">Total Pendapatan</th>
-                            <th class="p-3 text-justify">Bukti Nota</th>
-                            <th class="p-3">Keterangan</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-xs divide-y divide-gray-50">
-                        @forelse ($pemasukan as $masuk)
-                        <tr class="hover:bg-gray-50/50 transition">
-                            <td class="p-3 text-justify text-gray-400 font-mono"></td>
-                            <td class="p-3 text-justify text-gray-600" data-order="{{ $masuk->produksi_tanggal }}">
-                                {{ \Carbon\Carbon::parse($masuk->produksi_tanggal)->translatedFormat('d M Y') }}
-                            </td>
-                            <td class="p-3 text-gray-700 font-medium">{{ $masuk->lahan->lahan_nama ?? '-' }}</td>
-                            <td class="p-3 text-justify text-green-600 font-bold">
-                                Rp {{ number_format($masuk->total_pendapatan, 0, ',', '.') }}
-                            </td>
-                            <td class="p-3 text-justify">
-                                @if($masuk->produksi_bukti)
-                                    <a href="{{ Storage::url($masuk->produksi_bukti) }}" target="_blank" class="text-blue-600 underline hover:text-blue-800">
-                                        Lihat Bukti
-                                    </a>
-                                @else
-                                    <span class="text-gray-400">-</span>
-                                @endif
-                            </td>
-                            <td class="p-3 text-gray-500 max-w-50 truncate" title="{{ $masuk->produksi_keterangan ?? $masuk->keterangan }}">
-                                {{ $masuk->produksi_keterangan ?? $masuk->keterangan ?? '-' }}
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td class="p-6 text-center text-gray-400 italic bg-gray-50/50">Belum ada data transaksi pemasukan.</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+            <table id="tabelPemasukan" class="w-full text-left border-collapse display responsive nowrap">
+                <thead>
+                    <tr class="bg-[#D9F99D] border-b border-gray-200">
+                        <th class="p-4 text-xs font-bold text-[#214122] uppercase text-center w-12">No</th>
+                        <th class="p-4 text-xs font-bold text-[#214122] uppercase">Tanggal</th>
+                        <th class="p-4 text-xs font-bold text-[#214122] uppercase">Asal Lahan</th>
+                        <th class="p-4 text-xs font-bold text-[#214122] uppercase text-right">Total Pendapatan</th>
+                        <th class="p-4 text-xs font-bold text-[#214122] uppercase text-center">Bukti Nota</th>
+                        <th class="p-4 text-xs font-bold text-[#214122] uppercase">Keterangan</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    @foreach ($pemasukan as $masuk)
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="p-4 text-xs text-center text-gray-500 font-mono"></td>
+                        <td class="p-4 text-xs text-gray-800 font-medium" data-order="{{ $masuk->produksi_tanggal }}">
+                            {{ \Carbon\Carbon::parse($masuk->produksi_tanggal)->translatedFormat('d M Y') }}
+                        </td>
+                        <td class="p-4 text-xs text-gray-800 font-medium">{{ $masuk->lahan->lahan_nama ?? '-' }}</td>
+                        <td class="p-4 text-xs text-green-600 font-bold text-right pr-6">
+                            Rp {{ number_format($masuk->total_pendapatan, 0, ',', '.') }}
+                        </td>
+                        <td class="p-4 text-xs text-center">
+                            @if($masuk->produksi_bukti)
+                                <a href="{{ Storage::url($masuk->produksi_bukti) }}" target="_blank" class="text-blue-600 hover:text-blue-800 transition" title="Lihat Bukti">
+                                    <x-heroicon-o-document-text class="w-5 h-5 mx-auto" />
+                                </a>
+                            @else
+                                <span class="text-gray-400">-</span>
+                            @endif
+                        </td>
+                        <td class="p-4 text-xs text-gray-500 max-w-xs truncate" title="{{ $masuk->produksi_keterangan ?? $masuk->keterangan }}">
+                            {{ $masuk->produksi_keterangan ?? $masuk->keterangan ?? '-' }}
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
 
         {{-- Tabel Pengeluaran Section --}}
-        <div class="border border-gray-100 rounded-xl p-4 shadow-sm keuangan-wrapper">
+        <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-6 border border-gray-200 mb-6 keuangan-wrapper">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 header-tabel-custom-keluar">
-                <h3 class="font-bold text-gray-700 text-sm flex items-center gap-2">
-                    <span class="w-1.5 h-4 bg-red-500 rounded"></span> Tabel Pengeluaran (Operasional)
+                <h3 class="font-bold text-gray-700 text-base flex items-center gap-2">
+                    <span class="w-1.5 h-5 bg-red-500 rounded"></span> Tabel Pengeluaran (Operasional)
                 </h3>
             </div>
-            <div class="overflow-x-auto rounded-lg border border-gray-100">
-                <table id="tabelPengeluaran" class="w-full text-left whitespace-nowrap m-0">
-                    <thead>
-                        <tr class="bg-[#FFE4E6] text-[#991B1B] text-xs font-bold border-b border-gray-200">
-                            <th class="p-3 text-justify w-12">No</th>
-                            <th class="p-3 text-justify">Tanggal</th>
-                            <th class="p-3">Asal Lahan</th>
-                            <th class="p-3">Jenis Biaya</th>
-                            <th class="p-3 text-justify">Jumlah Biaya</th>
-                            <th class="p-3 text-justify">Bukti</th>
-                            <th class="p-3">Keterangan</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-xs divide-y divide-gray-50">
-                        @forelse ($pengeluaran as $keluar)
-                        <tr class="hover:bg-gray-50/50 transition">
-                            <td class="p-3 text-justify text-gray-400 font-mono"></td>
-                            <td class="p-3 text-justify text-gray-600" data-order="{{ $keluar->biaya_tanggal }}">
-                                {{ \Carbon\Carbon::parse($keluar->biaya_tanggal)->translatedFormat('d M Y') }}
-                            </td>
-                            <td class="p-3 text-gray-700 font-medium">
-                                {{ $keluar->lahan_nama }}
-                            </td>
-                            <td class="p-3 text-gray-600">
-                                {{ $keluar->biaya_jenis ?? '-' }}
-                            </td>
-                            <td class="p-3 text-justify text-red-600 font-bold">
-                                Rp {{ number_format($keluar->biaya_total, 0, ',', '.') }}
-                            </td>
-                            <td class="p-3 text-justify">
-                                @if($keluar->biaya_bukti)
-                                    <a href="{{ Storage::url($keluar->biaya_bukti) }}" target="_blank" class="text-blue-600 underline hover:text-blue-800">
-                                        Lihat Bukti
-                                    </a>
-                                @else
-                                    <span class="text-gray-400">-</span>
-                                @endif
-                            </td>
-                            <td class="p-3 text-gray-500">
-                                {{ $keluar->biaya_keterangan ?? '-' }}
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td class="p-6 text-center text-gray-400 italic bg-gray-50/50">Belum ada data transaksi pengeluaran.</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+            <table id="tabelPengeluaran" class="w-full text-left border-collapse display responsive nowrap">
+                <thead>
+                    <tr class="bg-[#FFE4E6] border-b border-gray-200">
+                        <th class="p-4 text-xs font-bold text-[#991B1B] uppercase text-center w-12">No</th>
+                        <th class="p-4 text-xs font-bold text-[#991B1B] uppercase">Tanggal</th>
+                        <th class="p-4 text-xs font-bold text-[#991B1B] uppercase">Asal Lahan</th>
+                        <th class="p-4 text-xs font-bold text-[#991B1B] uppercase">Jenis Biaya</th>
+                        <th class="p-4 text-xs font-bold text-[#991B1B] uppercase text-right">Jumlah Biaya</th>
+                        <th class="p-4 text-xs font-bold text-[#991B1B] uppercase text-center">Bukti</th>
+                        <th class="p-4 text-xs font-bold text-[#991B1B] uppercase">Keterangan</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    @foreach ($pengeluaran as $keluar)
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="p-4 text-xs text-center text-gray-500 font-mono"></td>
+                        <td class="p-4 text-xs text-gray-800 font-medium" data-order="{{ $keluar->biaya_tanggal }}">
+                            {{ \Carbon\Carbon::parse($keluar->biaya_tanggal)->translatedFormat('d M Y') }}
+                        </td>
+                        <td class="p-4 text-xs text-gray-800 font-medium">
+                            {{ $keluar->lahan->lahan_nama ?? '-' }}
+                        </td>
+                        <td class="p-4 text-xs text-gray-800 font-medium">
+                            {{ $keluar->biaya_jenis ?? '-' }}
+                        </td>
+                        <td class="p-4 text-xs text-red-500 font-bold text-right pr-6">
+                            Rp {{ number_format($keluar->biaya_total, 0, ',', '.') }}
+                        </td>
+                        <td class="p-4 text-xs text-center">
+                            @if($keluar->biaya_bukti)
+                                <a href="{{ Storage::url($keluar->biaya_bukti) }}" target="_blank" class="text-blue-600 hover:text-blue-800 transition" title="Lihat Bukti">
+                                    <x-heroicon-o-document-text class="w-5 h-5 mx-auto" />
+                                </a>
+                            @else
+                                <span class="text-gray-400">-</span>
+                            @endif
+                        </td>
+                        <td class="p-4 text-xs text-gray-500 max-w-xs truncate" title="{{ $keluar->biaya_keterangan ?? '-' }}">
+                            {{ $keluar->biaya_keterangan ?? '-' }}
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 
 {{-- Dependensi DataTables & Ekstensi PDFMake --}}
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 
@@ -238,7 +249,7 @@
         var konfigurasiBahasa = {
             "search": "",
             "searchPlaceholder": "Search data...",
-            "lengthMenu": "Show _MENU_ entries",
+            "lengthMenu": "<span class='text-gray-500 font-medium'>Show</span> _MENU_ <span class='text-gray-500 font-medium'>entries</span>",
             "info": "Showing _START_ to _END_ of _TOTAL_ entries",
             "infoEmpty": "Showing 0 to 0 of 0 entries",
             "infoFiltered": "(filtered from _MAX_ total entries)",
@@ -247,49 +258,62 @@
             "paginate": { "next": "Next", "previous": "Prev" }
         };
 
-        // Inisialisasi DataTables Pemasukan
-        tableMasuk = $('#tabelPemasukan').DataTable({
+        var dtConfig = {
             "pageLength": 5,
             "lengthMenu": [[5, 10, 25, -1], [5, 10, 25, "All"]],
             "language": konfigurasiBahasa,
             "columnDefs": [
-                { "orderable": false, "targets": 0 },
-                { "searchable": false, "targets": 0 }
+                { "orderable": false, "searchable": false, "targets": 0 },
+                { "className": "text-center all", "targets": 0 }, 
+                { "className": "all", "targets": 1 },            
+                { "className": "min-tablet", "targets": '_all' }
             ],
             "order": [[1, 'desc']],
-            "dom": '<"flex justify-between items-center gap-4 mb-2"f>rt<"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4 pt-4 border-t border-gray-100"i p>'
+            "responsive": {
+                "details": {
+                    "renderer": function (api, rowIdx, columns) {
+                        var data = $.map(columns, function (col) {
+                            if (col.hidden) {
+                                var value = col.data === null || col.data === '' ? '-' : col.data;
+                                return '<div class="flex items-start justify-between gap-3 py-2 text-xs border-b border-gray-100 last:border-0"><span class="font-bold text-gray-600">' + col.title + '</span><span class="text-gray-700 text-right">' + value + '</span></div>';
+                            }
+                            return '';
+                        }).join('');
+                        return data ? $('<div class="rounded-lg bg-gray-50 p-3 shadow-inner w-full mt-2"></div>').append(data) : false;
+                    }
+                }
+            },
+            // DOM: Menyembunyikan length & filter dari layout default agar bisa dipindah manual
+            "dom": '<"hidden" l f>rt<"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4 pt-4 border-t border-gray-100"i p>'
+        };
+
+        // Inisialisasi
+        tableMasuk = $('#tabelPemasukan').DataTable(dtConfig);
+        tableKeluar = $('#tabelPengeluaran').DataTable(dtConfig);
+
+        // Auto Numbering
+        [tableMasuk, tableKeluar].forEach(function(table) {
+            table.on('order.dt search.dt draw.dt', function () {
+                let info = table.page.info();
+                table.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
+                    cell.innerHTML = info.start + i + 1;
+                });
+            }).draw();
         });
 
-        tableMasuk.on('order.dt search.dt draw.dt', function () {
-            let info = tableMasuk.page.info();
-            tableMasuk.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
-                cell.innerHTML = info.start + i + 1;
-            });
-        }).draw();
+        // PINDAHKAN FILTER & ENTRIES KE HEADER TABEL
+        function moveControls(tableId, headerClass) {
+            // Buat container flexbox untuk membungkus Show Entries dan Search
+            let controlsContainer = $('<div class="flex flex-row items-center gap-4 w-full sm:w-auto justify-between sm:justify-end mt-4 sm:mt-0"></div>');
+            $(headerClass).append(controlsContainer);
+            
+            // Pindahkan elemen bawaan datatables ke dalam container baru
+            controlsContainer.append($('#' + tableId + '_length'));
+            controlsContainer.append($('#' + tableId + '_filter'));
+        }
 
-        // Inisialisasi DataTables Pengeluaran
-        tableKeluar = $('#tabelPengeluaran').DataTable({
-            "pageLength": 5,
-            "lengthMenu": [[5, 10, 25, -1], [5, 10, 25, "All"]],
-            "language": konfigurasiBahasa,
-            "columnDefs": [
-                { "orderable": false, "targets": 0 },
-                { "searchable": false, "targets": 0 }
-            ],
-            "order": [[1, 'desc']],
-            "dom": '<"flex justify-between items-center gap-4 mb-2"f>rt<"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4 pt-4 border-t border-gray-100"i p>'
-        });
-
-        tableKeluar.on('order.dt search.dt draw.dt', function () {
-            let info = tableKeluar.page.info();
-            tableKeluar.column(0, {search: 'applied', order: 'applied'}).nodes().each(function (cell, i) {
-                cell.innerHTML = info.start + i + 1;
-            });
-        }).draw();
-
-        // Pindahkan kolom pencarian bawaan ke barisan judul
-        $('.header-tabel-custom-masuk').append($('#tabelPemasukan_wrapper .dataTables_filter'));
-        $('.header-tabel-custom-keluar').append($('#tabelPengeluaran_wrapper .dataTables_filter'));
+        moveControls('tabelPemasukan', '.header-tabel-custom-masuk');
+        moveControls('tabelPengeluaran', '.header-tabel-custom-keluar');
     });
 
     // FUNGSI UTAMA EXPORT LAPORAN GABUNGAN KE PDF
@@ -306,12 +330,11 @@
                 cells.eq(1).text().trim(),
                 cells.eq(2).text().trim(),
                 { text: cells.eq(3).text().trim(), alignment: 'right' },
-                cells.eq(4).text().trim(),
                 cells.eq(5).text().trim()
             ]);
         });
         if (dataPemasukan.length === 0) {
-            dataPemasukan.push([{ text: 'Belum ada catatan transaksi.', colspan: 6, alignment: 'center', italic: true }, '', '', '', '', '']);
+            dataPemasukan.push([{ text: 'Belum ada catatan transaksi.', colspan: 5, alignment: 'center', italic: true }, '', '', '', '']);
         }
 
         var dataPengeluaran = [];
@@ -323,12 +346,11 @@
                 cells.eq(2).text().trim(),
                 cells.eq(3).text().trim(),
                 { text: cells.eq(4).text().trim(), alignment: 'right' },
-                cells.eq(5).text().trim(),
                 cells.eq(6).text().trim()
             ]);
         });
         if (dataPengeluaran.length === 0) {
-            dataPengeluaran.push([{ text: 'Belum ada catatan transaksi.', colspan: 7, alignment: 'center', italic: true }, '', '', '', '', '', '']);
+            dataPengeluaran.push([{ text: 'Belum ada catatan transaksi.', colspan: 6, alignment: 'center', italic: true }, '', '', '', '', '']);
         }
 
         var docDefinition = {
@@ -367,7 +389,7 @@
                 {
                     style: 'tableStyle',
                     table: {
-                        widths: ['6%', '16%', '18%', '18%', '14%', '28%'],
+                        widths: ['6%', '16%', '20%', '23%', '35%'],
                         headerRows: 1,
                         body: [
                             [
@@ -375,7 +397,6 @@
                                 { text: 'Tanggal', style: 'tableHeaderMasuk' },
                                 { text: 'Asal Lahan', style: 'tableHeaderMasuk' },
                                 { text: 'Total Pendapatan', style: 'tableHeaderMasuk', alignment: 'right' },
-                                { text: 'Bukti Nota', style: 'tableHeaderMasuk' },
                                 { text: 'Keterangan', style: 'tableHeaderMasuk' }
                             ],
                             ...dataPemasukan
@@ -387,7 +408,7 @@
                 {
                     style: 'tableStyle',
                     table: {
-                        widths: ['6%', '15%', '16%', '15%', '17%', '11%', '20%'],
+                        widths: ['6%', '15%', '18%', '16%', '18%', '27%'],
                         headerRows: 1,
                         body: [
                             [
@@ -396,7 +417,6 @@
                                 { text: 'Asal Lahan', style: 'tableHeaderKeluar' },
                                 { text: 'Jenis Biaya', style: 'tableHeaderKeluar' },
                                 { text: 'Jumlah Biaya', style: 'tableHeaderKeluar', alignment: 'right' },
-                                { text: 'Bukti', style: 'tableHeaderKeluar' },
                                 { text: 'Keterangan', style: 'tableHeaderKeluar' }
                             ],
                             ...dataPengeluaran
@@ -419,59 +439,141 @@
 </script>
 
 <style>
-    .dataTables_wrapper { font-size: 0.75rem; }
+    /* Reset & Base Tabel */
+    .dataTables_wrapper { font-size: 0.75rem; width: 100%; }
     table.dataTable { border-collapse: collapse !important; border-spacing: 0 !important; width: 100% !important; margin: 0 !important; }
     table.dataTable thead th { border-bottom: 1px solid #e5e7eb !important; }
-
-    .dataTables_filter { float: none !important; text-align: left !important; }
-    .dataTables_filter label { font-size: 0 !important; position: relative; display: block; }
-    .dataTables_filter input[type="search"] {
-        border: 1px solid #e5e7eb !important;
-        border-radius: 8px !important;
-        padding: 6px 14px 6px 36px !important;
-        font-size: 0.75rem !important;
-        outline: none !important;
-        width: 240px !important;
-        margin-left: 0 !important;
-        background-color: #ffffff !important;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'/%3E%3C/svg%3E") !important;
-        background-repeat: no-repeat !important;
-        background-position: 12px center !important;
-        background-size: 16px !important;
-        transition: all 0.2s ease;
-    }
-    .dataTables_filter input[type="search"]:focus { border-color: #214122 !important; box-shadow: 0 0 0 1px #214122 !important; }
-
-    .dataTables_wrapper .dataTables_info { font-size: 0.85rem !important; color: #6b7280 !important; font-style: italic !important; padding-top: 0 !important; }
-
-    /* Navigasi Pagination Hijau Tema Petani */
-    .dataTables_wrapper .dataTables_paginate { padding-top: 0 !important; display: flex !important; gap: 0.25rem !important; }
-    .dataTables_wrapper .dataTables_paginate .paginate_button {
-        border: 1px solid #d1d5db !important; border-radius: 0.375rem !important; padding: 0.35rem 0.75rem !important;
-        margin-left: 0 !important; font-size: 0.85rem !important; background: #ffffff !important; color: #374151 !important;
-        font-weight: 500 !important; transition: all 0.15s ease;
-    }
-    .dataTables_wrapper .dataTables_paginate .paginate_button:hover { background: #f3f4f6 !important; color: #111827 !important; border-color: #9ca3af !important; }
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current, 
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover { background: #214122 !important; color: #ffffff !important; border-color: #214122 !important; }
-    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled, .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover { background: #f9fafb !important; color: #9ca3af !important; border-color: #e5e7eb !important; cursor: not-allowed !important; }
+    
+    #tabelPemasukan th, #tabelPemasukan td, #tabelPengeluaran th, #tabelPengeluaran td { white-space: normal !important; word-break: break-word; }
+    #tabelPemasukan th, #tabelPengeluaran th { white-space: nowrap; }
 
     /* =========================================
-       KHUSUS MODE HP (max-width: 640px)
+       STYLING SHOW ENTRIES & SEARCH (PERBAIKAN)
+       ========================================= */
+    /* Container Show Entries */
+    .dataTables_length { margin: 0 !important; }
+    .dataTables_length label { 
+        display: flex !important; 
+        align-items: center !important; 
+        gap: 0.5rem !important; 
+        font-size: 0.75rem !important; 
+        margin: 0 !important; 
+    }
+    /* Select Dropdown */
+    .dataTables_length select { 
+        font-size: 0.75rem !important; 
+        color: #374151 !important; 
+        border: 1px solid #d1d5db !important; 
+        background-color: #f9fafb !important;
+        border-radius: 0.5rem !important; 
+        padding: 0.25rem 1.5rem 0.25rem 0.75rem !important; 
+        margin: 0 !important; 
+        outline: none !important; 
+        cursor: pointer;
+        transition: border-color 0.2s;
+    }
+    .dataTables_length select:focus { border-color: #214122 !important; box-shadow: 0 0 0 1px #214122 !important; }
+
+    /* Container Search */
+    .dataTables_filter { margin: 0 !important; }
+    .dataTables_filter label { 
+        display: flex !important; 
+        align-items: center !important;
+        font-size: 0 !important; /* Menyembunyikan teks label "Search:" bawaan */
+        margin: 0 !important; 
+    }
+    /* Input Search */
+    .dataTables_filter input[type="search"] {
+        border: 1px solid #d1d5db !important;
+        background-color: #f9fafb !important;
+        border-radius: 9999px !important; /* Bentuk kapsul */
+        padding: 0.35rem 1rem 0.35rem 2.25rem !important;
+        font-size: 0.75rem !important;
+        color: #374151 !important;
+        outline: none !important;
+        width: 180px !important;
+        margin-left: 0 !important;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'/%3E%3C/svg%3E") !important;
+        background-repeat: no-repeat !important;
+        background-position: 0.6rem center !important;
+        background-size: 1rem !important;
+        transition: all 0.2s ease;
+    }
+    .dataTables_filter input[type="search"]:focus { 
+        border-color: #214122 !important; 
+        background-color: #ffffff !important;
+        box-shadow: 0 0 0 1px #214122 !important; 
+    }
+
+   /* =========================================
+       PAGINATION & INFO
+       ========================================= */
+    .dataTables_wrapper .dataTables_info { font-size: 0.8rem !important; color: #6b7280 !important; font-style: italic !important; padding-top: 0 !important; }
+    .dataTables_wrapper .dataTables_paginate { padding-top: 0 !important; display: flex !important; gap: 0.25rem !important; }
+    
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        border: 1px solid #d1d5db !important; 
+        border-radius: 0.375rem !important; 
+        padding: 0.25rem 0.6rem !important;
+        margin-left: 0 !important; 
+        font-size: 0.8rem !important; 
+        background: #ffffff !important; 
+        color: #374151 !important; /* Warna teks normal */
+        font-weight: 500 !important; 
+        transition: all 0.15s ease;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover { 
+        background: #f3f4f6 !important; 
+        color: #111827 !important; 
+        border-color: #9ca3af !important; 
+    }
+
+    /* INI BAGIAN YANG DIPERBAIKI */
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current, 
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover { 
+        background: #214122 !important; /* Hijau Tua Anda */
+        color: #ffffff !important;      /* Teks jadi PUTIH */
+        border-color: #214122 !important; 
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled, 
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover { 
+        background: #f9fafb !important; 
+        color: #9ca3af !important; 
+        border-color: #e5e7eb !important; 
+        cursor: not-allowed !important; 
+    }
+    /* =========================================
+       RESPONSIVE (HP)
        ========================================= */
     @media (max-width: 640px) {
-        .dataTables_wrapper .flex.justify-between {
-            width: 100% !important;
+        .header-tabel-custom-masuk, .header-tabel-custom-keluar { flex-direction: column !important; align-items: flex-start !important; gap: 0.5rem !important; }
+        .header-tabel-custom-masuk > div:last-child, .header-tabel-custom-keluar > div:last-child { 
+            width: 100% !important; 
+            justify-content: space-between !important;
+            margin-top: 0.5rem !important;
         }
-        .dataTables_filter {
-            width: 100% !important;
-        }
-        .dataTables_filter label {
-            width: 100% !important;
-        }
-        .dataTables_filter input[type="search"] {
-            width: 100% !important;
-            max-width: 100% !important;
+
+        /* Sembunyikan teks "Show" dan "entries" agar hanya tampil kotak angkanya di HP */
+        .dataTables_length label { gap: 0 !important; }
+        .dataTables_length label span { display: none !important; }
+        .dataTables_length select { width: 70px !important; padding: 0.25rem 0.5rem !important; text-align: center; margin: 0 !important; }
+
+        /* Pencarian di HP */
+        .dataTables_filter { flex: 1; display: flex; justify-content: flex-end; }
+        .dataTables_filter input[type="search"] { width: 100% !important; max-width: 160px !important; }
+        
+        /* Pagination & Info di HP */
+        .dataTables_wrapper .dataTables_info, 
+        .dataTables_wrapper .dataTables_paginate { width: 100% !important; justify-content: center !important; text-align: center !important; margin-top: 8px !important; flex-wrap: wrap !important; }
+
+        table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child { position: relative; padding-left: 32px !important; cursor: pointer; }
+        table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child::before { 
+            content: '+' !important; position: absolute; top: 50% !important; left: 8px !important; transform: translateY(-50%) !important; 
+            background-color: #10B981 !important; color: white !important; width: 16px !important; height: 16px !important; 
+            display: flex !important; align-items: center !important; justify-content: center !important; border-radius: 9999px !important; 
+            font-weight: bold !important; font-size: 14px !important; line-height: 1 !important; box-shadow: 0 1px 2px rgba(0,0,0,0.2) !important; 
         }
     }
 </style>

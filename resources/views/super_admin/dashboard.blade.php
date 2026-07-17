@@ -86,7 +86,7 @@
             <table id="tabelPetani" class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-[#D9F99D] border-b border-gray-200">
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">No</th>
+                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">No</th>
                         <th class="p-4 text-xs font-bold text-gray-700 uppercase">Nama</th>
                         <th class="p-4 text-xs font-bold text-gray-700 uppercase">Email</th>
                         <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">Status</th>
@@ -96,7 +96,7 @@
                 <tbody class="divide-y divide-gray-100">
                     @foreach($petaniPending as $index => $petani)
                     <tr class="hover:bg-gray-50 transition">
-                        <td class="p-4 text-xs text-center text-gray-500 font-mono"></td>
+                        <td class="p-4 text-xs text-gray-500 font-mono"></td>
                         <td class="p-4 text-xs text-gray-800 font-medium">{{ $petani->petani_nama }}</td>
                         <td class="p-4 text-xs text-gray-500">{{ $petani->petani_email ?? 'tidak ada email' }}</td>
                         <td class="p-4 text-justify">
