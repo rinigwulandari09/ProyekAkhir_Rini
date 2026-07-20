@@ -9,7 +9,7 @@ class AuditInternal extends Model
 {
     use HasFactory;
 
-    protected $table = 'audit_internal';
+    protected $table = 'audit_internal_awal';
     protected $primaryKey = 'id_audit';
     public $timestamps = false; 
     public $incrementing = false;
