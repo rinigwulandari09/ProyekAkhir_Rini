@@ -12,8 +12,11 @@ class AuditInternal extends Model
     protected $table = 'audit_internal';
     protected $primaryKey = 'id_audit';
     public $timestamps = false; 
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
+        'id_audit',
         'user_id',
         'tanggal',
         'desa',
