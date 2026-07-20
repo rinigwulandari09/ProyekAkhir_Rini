@@ -33,11 +33,12 @@ class AuditInternalController extends Controller
             $path = null;
             if ($request->hasFile('file_kunjungan')) {
                 $file = $request->file('file_kunjungan');
-                $filename = time() . '_' . $file->getClientOriginalName();
-                // Store in storage/app/public/audit_internal
-                $path = $file->storeAs('public/audit_internal', $filename);
-                // Ubah format string agar sesuai jika dipanggil di frontend (storage/...)
-                $path = str_replace('public/', 'storage/', $path);
+                $namaFile = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs(
+                    'audit_internal',
+                    $namaFile,
+                    'public'
+                );
             }
 
             $audit = AuditInternal::create([

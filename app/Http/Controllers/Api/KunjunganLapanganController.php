@@ -31,11 +31,12 @@ class KunjunganLapanganController extends Controller
             $path = null;
             if ($request->hasFile('file_kunjungan')) {
                 $file = $request->file('file_kunjungan');
-                $filename = time() . '_' . $file->getClientOriginalName();
-                // Store in storage/app/public/kunjungan_lapangan
-                $path = $file->storeAs('public/kunjungan_lapangan', $filename);
-                // Ubah format string agar sesuai jika dipanggil di frontend (storage/...)
-                $path = str_replace('public/', 'storage/', $path);
+                $namaFile = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs(
+                    'kunjungan_lapangan',
+                    $namaFile,
+                    'public'
+                );
             }
 
             $kunjungan = KunjunganLapangan::create([
