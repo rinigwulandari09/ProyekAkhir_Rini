@@ -107,7 +107,7 @@
                         <td class="p-4">
                             <div class="flex justify gap-3">
                                 <button type="button" title="Edit" class="text-green-700 hover:scale-110 transition"
-                                        onclick="openEditModal('{{ $petani->petani_id }}', '{{ addslashes($petani->petani_nama) }}', '{{ $petani->petani_status }}')">
+                                        onclick="openEditModal('{{ $petani->petani_id }}', '{{ addslashes($petani->petani_nama) }}', '{{ $petani->petani_status }}', '{{ addslashes($petani->petani_email ?? '-') }}', '{{ addslashes($petani->petani_no_hp ?? '-') }}', '{{ addslashes($petani->petani_alamat ?? '-') }}', '{{ addslashes($petani->petani_jenis_kelamin ?? '-') }}')">
                                     <x-heroicon-o-pencil-square class="w-5 h-5" />
                                 </button>
                                 <button title="Hapus" class="text-red-500 hover:scale-110 transition">
@@ -152,6 +152,25 @@
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">Nama Petani</label>
                     <p id="modalNamaPetani" class="text-gray-900 bg-gray-100 px-3 py-2 rounded-lg font-medium"></p>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Email</label>
+                        <p id="modalEmailPetani" class="text-xs text-gray-800 bg-gray-50 px-3 py-2 rounded-lg border border-gray-100 truncate"></p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">No. HP</label>
+                        <p id="modalHpPetani" class="text-xs text-gray-800 bg-gray-50 px-3 py-2 rounded-lg border border-gray-100"></p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Jenis Kelamin</label>
+                        <p id="modalJkPetani" class="text-xs text-gray-800 bg-gray-50 px-3 py-2 rounded-lg border border-gray-100"></p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Alamat</label>
+                        <p id="modalAlamatPetani" class="text-xs text-gray-800 bg-gray-50 px-3 py-2 rounded-lg border border-gray-100 truncate"></p>
+                    </div>
                 </div>
                 
                 <div>
@@ -335,11 +354,17 @@
 
 {{-- Script Modal Edit --}}
 <script>
-    function openEditModal(id, nama, status) {
+    function openEditModal(id, nama, status, email, hp, alamat, jk) {
         const modal = document.getElementById('statusModal');
         const form = document.getElementById('formUbahStatus');
         const namaText = document.getElementById('modalNamaPetani');
         const statusSelect = document.getElementById('selectStatus');
+        
+        document.getElementById('modalEmailPetani').innerText = email;
+        document.getElementById('modalHpPetani').innerText = hp;
+        document.getElementById('modalAlamatPetani').innerText = alamat;
+        document.getElementById('modalAlamatPetani').title = alamat; // tooltip hover untuk alamat panjang
+        document.getElementById('modalJkPetani').innerText = jk;
         
         form.action = `/dashboard/petani/${id}/status`; 
         namaText.innerText = nama;

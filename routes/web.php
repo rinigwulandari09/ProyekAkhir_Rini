@@ -8,6 +8,7 @@ use App\Http\Controllers\PetaniController;
 use App\Http\Controllers\LahanController;
 use App\Http\Controllers\KeuanganController;
 use App\Http\Controllers\NotifikasiController;
+use App\Http\Controllers\AuditInternalController;
 
 Route::get('/', [LoginController::class,'index'])
     ->name('login');
@@ -105,6 +106,11 @@ Route::middleware(['auth'])->group(function () {
     // --- KEUANGAN ---
     Route::get('/keuangan', [KeuanganController::class, 'index'])->name('keuangan.index');
     Route::get('/data-keuangan/{id}', [KeuanganController::class, 'show'])->name('keuangan.show');
+
+    // --- AUDIT INTERNAL ---
+    Route::get('/audit', [AuditInternalController::class, 'index'])->name('audit.index');
+    Route::delete('/audit/kunjungan/{id}', [AuditInternalController::class, 'destroyKunjungan'])->name('audit.kunjungan.destroy');
+    Route::delete('/audit/internal/{id}', [AuditInternalController::class, 'destroyInternal'])->name('audit.internal.destroy');
 
 
     // --- LAIN-LAIN ---

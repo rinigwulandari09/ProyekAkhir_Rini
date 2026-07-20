@@ -1,34 +1,62 @@
-<div class="p-4">
+<div class="p-4 sm:p-5 flex flex-col h-full">
 
-    <div class="flex justify-between items-center border-b pb-2 mb-2">
-        <div>
-            <h3 class="font-bold text-sm text-[#214122]">Notifikasi</h3>
-            <p class="text-[10px] text-gray-500" id="notifSummary">Memuat ringkasan...</p>
+    {{-- Header Notifikasi --}}
+    <div class="flex justify-between items-start sm:items-center border-b border-gray-100 pb-3 mb-3 gap-2">
+        <div class="flex-1">
+            <h3 class="font-bold text-base sm:text-lg text-[#214122]">Notifikasi</h3>
+            <p class="text-[11px] sm:text-xs text-gray-500 mt-0.5" id="notifSummary">Memuat ringkasan...</p>
         </div>
-        <div class="flex items-center gap-2">
-            <button onclick="clickMarkAllAsRead()" class="text-[10px] font-semibold text-green-700 hover:text-green-900 hover:underline">
-                Tandai semua dibaca
+        <div class="flex flex-col sm:flex-row items-end sm:items-center gap-2 sm:gap-3 shrink-0">
+            <button onclick="clickMarkAllAsRead()" class="text-[10px] sm:text-[11px] font-semibold text-green-700 hover:text-green-900 bg-green-50 hover:bg-green-100 px-3 py-1.5 rounded-lg transition-colors border border-green-100">
+                Tandai dibaca
             </button>
-            <button id="btnCloseNotif" class="text-gray-400 hover:text-gray-600">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button id="btnCloseNotif" class="text-gray-400 hover:text-gray-600 bg-gray-50 hover:bg-gray-100 p-1.5 rounded-full transition-colors">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
             </button>
         </div>
     </div>
 
-    <div id="notifContainer" class="max-h-80 overflow-y-auto space-y-2 py-2">
-        <div class="text-center text-xs text-gray-400 py-6">Memuat notifikasi...</div>
+    {{-- Kontainer Daftar Notifikasi --}}
+    <div id="notifContainer" class="max-h-[60vh] sm:max-h-80 overflow-y-auto space-y-2.5 py-1 pr-1 custom-scrollbar">
+        <div class="text-center text-sm text-gray-400 py-8 flex flex-col items-center justify-center space-y-3">
+            <svg class="w-8 h-8 text-gray-300 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+            <span class="animate-pulse">Memuat notifikasi...</span>
+        </div>
     </div>
 
-    <div class="mt-3">
+    {{-- Tombol Bawah --}}
+    <div class="mt-4 pt-3 border-t border-gray-100">
         <a href="{{ route('notifikasi.index') }}"
-           class="block text-center bg-[#214122] text-white text-xs font-bold py-2 rounded-lg hover:bg-[#3D5A3E]">
+           class="flex items-center justify-center gap-2 w-full bg-[#214122] text-white text-xs sm:text-sm font-semibold py-2.5 sm:py-3 rounded-xl hover:bg-green-900 transition-colors shadow-sm">
             Lihat Semua Notifikasi
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+            </svg>
         </a>
     </div>
 
 </div>
+
+<style>
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #e5e7eb;
+    border-radius: 20px;
+}
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+    background-color: #d1d5db;
+}
+</style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -103,7 +131,12 @@
                 const items = response?.data ?? [];
 
                 if (items.length === 0) {
-                    html = `<div class="text-center py-5 text-xs text-gray-400">Tidak ada notifikasi</div>`;
+                    html = `
+                        <div class="flex flex-col items-center justify-center py-10 opacity-60">
+                            <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+                            <span class="text-sm font-medium text-gray-500">Belum ada notifikasi</span>
+                        </div>
+                    `;
                 } else {
                     items.forEach(notif => {
                         const title = notif.judul || 'Notifikasi Baru';
@@ -113,12 +146,23 @@
 
                         html += `
                             <div onclick="clickMarkAsRead('${notif.notif_id}', this)" 
-                                 class="notif-item mb-2 p-3 rounded-lg border text-left cursor-pointer transition duration-200 ${isRead ? 'bg-white border-gray-100 opacity-60' : 'bg-green-50 border-green-200 hover:bg-green-100'}">
-                                <div class="flex justify-between items-center">
-                                    <div class="font-bold text-xs text-gray-800">${title}</div>
-                                    <div class="text-[10px] text-gray-400">${time}</div>
+                                 class="notif-item relative p-3.5 sm:p-4 rounded-xl border text-left cursor-pointer transition-all duration-200 group flex gap-3 ${isRead ? 'bg-gray-50/50 border-transparent hover:bg-gray-100/70' : 'bg-white border-green-200 shadow-sm hover:border-green-300'}">
+                                ${!isRead ? '<span class="absolute top-4 right-4 w-2 h-2 rounded-full bg-green-500 shadow-sm shadow-green-200"></span>' : ''}
+                                <div class="shrink-0 mt-0.5">
+                                    <div class="${isRead ? 'bg-gray-200 text-gray-400' : 'bg-green-100 text-green-600'} p-2 rounded-full transition-colors group-hover:scale-105">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                        </svg>
+                                    </div>
                                 </div>
-                                <div class="text-[11px] text-gray-600 mt-1">${message}</div>
+                                <div class="flex-1 pr-4">
+                                    <div class="font-bold text-xs sm:text-sm ${isRead ? 'text-gray-600' : 'text-gray-800 group-hover:text-[#214122]'} transition-colors leading-tight mb-1">${title}</div>
+                                    <div class="text-[11px] sm:text-xs text-gray-500 leading-relaxed line-clamp-2">${message}</div>
+                                    <div class="text-[10px] sm:text-[11px] text-gray-400 mt-1.5 flex items-center gap-1 font-medium">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        ${time}
+                                    </div>
+                                </div>
                             </div>
                         `;
                     });
@@ -129,7 +173,7 @@
     }
 
     function clickMarkAsRead(notifId, element) {
-        if (element.classList.contains('opacity-60')) return;
+        if (element.classList.contains('bg-gray-50/50')) return;
 
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
 
@@ -144,8 +188,24 @@
         .then(res => res.json())
         .then(data => {
             if (data.success) {
-                element.classList.remove('bg-green-50', 'border-green-200', 'hover:bg-green-100');
-                element.classList.add('bg-white', 'border-gray-100', 'opacity-60');
+                element.classList.remove('bg-white', 'border-green-200', 'shadow-sm', 'hover:border-green-300');
+                element.classList.add('bg-gray-50/50', 'border-transparent', 'hover:bg-gray-100/70');
+                
+                const title = element.querySelector('.font-bold');
+                if(title) {
+                    title.classList.remove('text-gray-800', 'group-hover:text-[#214122]');
+                    title.classList.add('text-gray-600');
+                }
+                
+                const iconBg = element.querySelector('.shrink-0 > div');
+                if(iconBg) {
+                    iconBg.classList.remove('bg-green-100', 'text-green-600');
+                    iconBg.classList.add('bg-gray-200', 'text-gray-400');
+                }
+
+                const dot = element.querySelector('span.bg-green-500');
+                if(dot) dot.remove();
+                
                 loadNotifCount();
             }
         })
@@ -166,11 +226,27 @@
         .then(res => res.json())
         .then(data => {
             if (data.success) {
-                // Paksa semua card di dalam DOM popup berubah warna ke putih pudar saat itu juga
                 const activeCards = document.querySelectorAll('.notif-item');
                 activeCards.forEach(card => {
-                    card.classList.remove('bg-green-50', 'border-green-200', 'hover:bg-green-100');
-                    card.classList.add('bg-white', 'border-gray-100', 'opacity-60');
+                    if(card.classList.contains('bg-white')) {
+                        card.classList.remove('bg-white', 'border-green-200', 'shadow-sm', 'hover:border-green-300');
+                        card.classList.add('bg-gray-50/50', 'border-transparent', 'hover:bg-gray-100/70');
+                        
+                        const title = card.querySelector('.font-bold');
+                        if(title) {
+                            title.classList.remove('text-gray-800', 'group-hover:text-[#214122]');
+                            title.classList.add('text-gray-600');
+                        }
+                        
+                        const iconBg = card.querySelector('.shrink-0 > div');
+                        if(iconBg) {
+                            iconBg.classList.remove('bg-green-100', 'text-green-600');
+                            iconBg.classList.add('bg-gray-200', 'text-gray-400');
+                        }
+
+                        const dot = card.querySelector('span.bg-green-500');
+                        if(dot) dot.remove();
+                    }
                 });
 
                 const notifBadge = document.getElementById('notifBadge') || document.querySelector('.relative span.bg-blue-500');

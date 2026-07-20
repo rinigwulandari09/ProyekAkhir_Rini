@@ -68,7 +68,7 @@
                     <x-heroicon-o-banknotes class="w-5 h-5 shrink-0" /> 
                     <span x-show="sidebarOpen">Data Keuangan</span>
                 </a>
-                <a href="#" class="flex items-center gap-3 {{ request()->routeIs('keuangan.*') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition" :class="!sidebarOpen && 'justify-center'">
+                <a href="{{ route('audit.index') }}" class="flex items-center gap-3 {{ request()->routeIs('audit.*') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition" :class="!sidebarOpen && 'justify-center'">
                     <x-heroicon-o-document-text class="w-5 h-5 shrink-0" /> 
                     <span x-show="sidebarOpen">Audit</span>
                 </a>
