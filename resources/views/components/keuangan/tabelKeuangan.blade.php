@@ -1,31 +1,31 @@
 <div class="p-2">
     {{-- Header Section --}}
-    <div class="flex flex-col md:flex-row justify-between items-start gap-4 mb-6">
-        <div>
-            <h1 class="text-2xl font-bold text-[#214122]">Daftar Keuangan Petani</h1>
-            <p class="text-sm text-gray-500">Ringkasan aktivitas pemasukan (produksi) dan pengeluaran (operasional) seluruh petani.</p>
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-[#214122]">Daftar Keuangan Petani</h1>
+        <p class="text-sm text-gray-500 mt-1">Ringkasan aktivitas pemasukan (produksi) dan pengeluaran (operasional) seluruh petani.</p>
+    </div>
+    
+    {{-- Cards Summary Section --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        {{-- Card Pemasukan --}}
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition duration-300">
+            <div class="bg-green-100 p-3.5 rounded-xl text-green-600 flex items-center justify-center shrink-0">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307L21.75 6.75M21.75 6.75H16.5M21.75 6.75v5.25"></path></svg>
+            </div>
+            <div class="flex-1">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Total Pemasukan</p>
+                <p class="text-2xl font-bold text-gray-800">Rp {{ number_format($totalPemasukanseluruh, 0, ',', '.') }}</p>
+            </div>
         </div>
         
-        <div class="flex flex-wrap gap-4 w-full md:w-auto">
-            {{-- Card Pemasukan --}}
-            <div class="bg-white p-3 px-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 flex-1 md:flex-none">
-                <div class="bg-green-100 p-2 rounded-lg text-green-600 flex">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307L21.75 6.75M21.75 6.75H16.5M21.75 6.75v5.25"></path></svg>
-                </div>
-                <div>
-                    <p class="text-[10px] font-bold text-gray-400 uppercase">Total Pemasukan</p>
-                    <p class="text-lg font-bold text-gray-800">Rp {{ number_format($totalPemasukanseluruh, 0, ',', '.') }}</p>
-                </div>
+        {{-- Card Pengeluaran --}}
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition duration-300">
+            <div class="bg-red-100 p-3.5 rounded-xl text-red-500 flex items-center justify-center shrink-0">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6L9 12.75l4.306-4.307L21.75 17.25M21.75 17.25H16.5M21.75 17.25v-5.25"></path></svg>
             </div>
-            {{-- Card Pengeluaran --}}
-            <div class="bg-white p-3 px-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 flex-1 md:flex-none">
-                <div class="bg-red-100 p-2 rounded-lg text-red-400 flex">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6L9 12.75l4.306-4.307L21.75 17.25M21.75 17.25H16.5M21.75 17.25v-5.25"></path></svg>
-                </div>
-                <div>
-                    <p class="text-[10px] font-bold text-gray-400 uppercase">Total Pengeluaran</p>
-                    <p class="text-lg font-bold text-gray-800">Rp {{ number_format($totalPengeluaranSeluruh, 0, ',', '.') }}</p>
-                </div>
+            <div class="flex-1">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Total Pengeluaran</p>
+                <p class="text-2xl font-bold text-gray-800">Rp {{ number_format($totalPengeluaranSeluruh, 0, ',', '.') }}</p>
             </div>
         </div>
     </div>

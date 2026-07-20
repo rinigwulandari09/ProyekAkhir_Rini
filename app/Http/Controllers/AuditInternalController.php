@@ -23,8 +23,11 @@ class AuditInternalController extends Controller
         $kunjungan = KunjunganLapangan::findOrFail($id);
         
         // Menghapus file fisik jika ada
-        if ($kunjungan->path_file_kunjungan && Storage::disk('public')->exists($kunjungan->path_file_kunjungan)) {
-            Storage::disk('public')->delete($kunjungan->path_file_kunjungan);
+        if ($kunjungan->path_file_kunjungan) {
+            $path = str_replace('storage/', '', $kunjungan->path_file_kunjungan);
+            if (Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+            }
         }
         
         $kunjungan->delete();
@@ -37,8 +40,11 @@ class AuditInternalController extends Controller
         $audit = AuditInternal::findOrFail($id);
         
         // Menghapus file fisik jika ada
-        if ($audit->path_file_kunjungan && Storage::disk('public')->exists($audit->path_file_kunjungan)) {
-            Storage::disk('public')->delete($audit->path_file_kunjungan);
+        if ($audit->path_file_kunjungan) {
+            $path = str_replace('storage/', '', $audit->path_file_kunjungan);
+            if (Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+            }
         }
         
         $audit->delete();
