@@ -10,10 +10,18 @@ use App\Http\Controllers\Api\LahanController;
 use App\Http\Controllers\Api\KegiatanController;
 use App\Http\Controllers\Api\RiwayatKeuanganController;
 use App\Http\Controllers\Api\PengingatController;
+use App\Http\Controllers\Api\KunjunganLapanganController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\PetaniController;
+use App\Http\Controllers\Api\AuditInternalController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/petani', [PetaniController::class, 'getAll']); // Taruh di atas rute {petani_id} agar tidak bentrok
 Route::get('/petani/{petani_id}', [AuthController::class, 'getPetani']);
+
+// users
+Route::get('/users/admins', [UserController::class, 'getAdmins']);
 
 Route::get('/desa', [DesaController::class, 'index']);
 
@@ -55,3 +63,9 @@ Route::post('/lahan', [LahanController::class, 'store']);
 
 // pengingat (send to petani without storing)
 Route::post('/pengingat', [PengingatController::class, 'send']);
+
+// kunjungan lapangan
+Route::post('/kunjungan-lapangan', [KunjunganLapanganController::class, 'store']);
+
+// audit internal
+Route::post('/audit-internal', [AuditInternalController::class, 'store']);
