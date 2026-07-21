@@ -12,6 +12,7 @@ class AuditInternalController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'id_audit' => 'required|string',
             'user_id' => 'required|integer',
             'tanggal' => 'required|date',
             'desa' => 'required|string',
