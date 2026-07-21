@@ -123,4 +123,22 @@ class AuthController extends Controller
             ], 401);
         }
     }
+
+    public function getPetani($petani_id)
+    {
+        $petani = Petani::find($petani_id);
+
+        if (!$petani) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data petani tidak ditemukan'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Detail petani berhasil diambil',
+            'data' => $petani
+        ], 200);
+    }
 }
