@@ -7,6 +7,7 @@ use App\Models\AuditInternal;
 use App\Models\Petani;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 class AuditInternalController extends Controller
 {
@@ -72,7 +73,12 @@ class AuditInternalController extends Controller
 
     public function getNotifications($petani_id)
     {
+        $currentMonth = Carbon::now()->month;
+        $currentYear = Carbon::now()->year;
+
         $audit = \App\Models\AuditInternal::where('petani_id', $petani_id)
+            ->whereMonth('tanggal', $currentMonth)
+            ->whereYear('tanggal', $currentYear)
             ->get()
             ->map(function ($item) {
                 return [
@@ -87,6 +93,8 @@ class AuditInternalController extends Controller
             });
 
         $produksi = \App\Models\Produksi::where('petani_id', $petani_id)
+            ->whereMonth('produksi_tanggal', $currentMonth)
+            ->whereYear('produksi_tanggal', $currentYear)
             ->get()
             ->map(function ($item) {
                 return [
@@ -101,6 +109,8 @@ class AuditInternalController extends Controller
             });
 
         $pengeluaran = \App\Models\BiayaOperasional::where('petani_id', $petani_id)
+            ->whereMonth('biaya_tanggal', $currentMonth)
+            ->whereYear('biaya_tanggal', $currentYear)
             ->get()
             ->map(function ($item) {
                 return [
