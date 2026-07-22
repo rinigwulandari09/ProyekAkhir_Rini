@@ -76,9 +76,11 @@ class AuditInternalController extends Controller
         $currentMonth = Carbon::now()->month;
         $currentYear = Carbon::now()->year;
 
+        $currentMonthStr = str_pad($currentMonth, 2, '0', STR_PAD_LEFT);
+        $likePattern = "{$currentYear}-{$currentMonthStr}-%";
+
         $audit = \App\Models\AuditInternal::where('petani_id', $petani_id)
-            ->whereMonth('tanggal', $currentMonth)
-            ->whereYear('tanggal', $currentYear)
+            ->where('tanggal', 'like', $likePattern)
             ->get()
             ->map(function ($item) {
                 return [
@@ -93,8 +95,7 @@ class AuditInternalController extends Controller
             });
 
         $produksi = \App\Models\Produksi::where('petani_id', $petani_id)
-            ->whereMonth('produksi_tanggal', $currentMonth)
-            ->whereYear('produksi_tanggal', $currentYear)
+            ->where('produksi_tanggal', 'like', $likePattern)
             ->get()
             ->map(function ($item) {
                 return [
@@ -109,8 +110,7 @@ class AuditInternalController extends Controller
             });
 
         $pengeluaran = \App\Models\BiayaOperasional::where('petani_id', $petani_id)
-            ->whereMonth('biaya_tanggal', $currentMonth)
-            ->whereYear('biaya_tanggal', $currentYear)
+            ->where('biaya_tanggal', 'like', $likePattern)
             ->get()
             ->map(function ($item) {
                 return [
