@@ -308,7 +308,9 @@
                                     <hr style="margin: 6px 0; border: 0; border-top: 1px solid #eee;">
                                     <b>Nama Petani:</b> ${lahan.petani_nama || '-'}<br>
                                     <b>Lokasi Lahan:</b> ${lahan.lahan_lokasi || '-'}<br>
-                                    <b>Luas Lahan:</b> ${lahan.lahan_luas || '0'} Ha
+                                    <b>Luas Lahan:</b> ${lahan.lahan_luas || '0'} Ha<br>
+                                    <b>Tahun Tanam:</b> ${lahan.tahun_tanam || '-'}<br>
+                                    <b>No Surat:</b> ${lahan.lahan_no_surat || '-'}
                                 </div>
                             `);
 

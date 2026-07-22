@@ -26,7 +26,9 @@ class Lahan extends Model
         'lahan_nama',
         'lahan_lokasi',
         'lahan_luas',
-        'area_lahan'
+        'area_lahan',
+        'tahun_tanam',
+        'lahan_no_surat'
     ];
 
     protected $casts = [

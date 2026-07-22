@@ -42,7 +42,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 {{-- Luas Lahan --}}
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Luas Lahan (Ha)</label>
@@ -61,6 +61,22 @@
                             </option>
                         @endforeach
                     </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+                {{-- Tahun Tanam --}}
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Tahun Tanam (Opsional)</label>
+                    <input type="number" name="tahun_tanam" value="{{ old('tahun_tanam', $lahan->tahun_tanam) }}"
+                        class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:border-green-600 focus:ring-1 focus:ring-green-600 outline-none" placeholder="Contoh: 2018">
+                </div>
+
+                {{-- No Surat Lahan --}}
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">No Surat Lahan (Opsional)</label>
+                    <input type="text" name="lahan_no_surat" value="{{ old('lahan_no_surat', $lahan->lahan_no_surat) }}"
+                        class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:border-green-600 focus:ring-1 focus:ring-green-600 outline-none" placeholder="Contoh: SHM.123/Desa">
                 </div>
             </div>
 

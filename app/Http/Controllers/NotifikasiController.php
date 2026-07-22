@@ -52,6 +52,27 @@ class NotifikasiController extends Controller
         return $query;
     }
 
+    private function customQuery($user)
+    {
+        $userIdColumn = Schema::hasColumn('users', 'user_id') ? 'user_id' : 'id';
+        
+        return DB::table('tugas')
+            ->where(function ($q) use ($user, $userIdColumn) {
+                $q->whereNull('user_id')->orWhere('user_id', $user->{$userIdColumn});
+            })
+            ->select(
+                'id',
+                'judul',
+                'pesan',
+                'created_at',
+                DB::raw("'custom' as tipe"),
+                DB::raw('NULL as jumlah_tbs'),
+                DB::raw("'-' as lokasi"),
+                DB::raw("'Sistem' as nama"),
+                DB::raw('CAST(is_read AS INTEGER) as is_read_db')
+            );
+    }
+
     private function notificationsQuery($user, $search = null, $tab = 'all')
     {
         $userLastRead = $user->updated_at ? Carbon::parse($user->updated_at) : now();
@@ -68,10 +89,14 @@ class NotifikasiController extends Controller
                 DB::raw("'produksi' as tipe"),
                 'produksi.jumlah_tbs',
                 DB::raw("COALESCE(lahan.lahan_nama, desa.desa_nama, '-') as lokasi"),
-                'petani.petani_nama as nama'
+                'petani.petani_nama as nama',
+                DB::raw("0 as is_read_db")
             );
 
-        $profile = $this->profileUpdateQuery($user);
+        $profile = $this->profileUpdateQuery($user)
+            ->addSelect(DB::raw("0 as is_read_db"));
+
+        $custom = $this->customQuery($user);
 
         if ($search) {
             $produksi->where(function ($q) use ($search) {
@@ -79,25 +104,38 @@ class NotifikasiController extends Controller
                     ->orWhere('lahan.lahan_nama', 'like', "%{$search}%")
                     ->orWhere('desa.desa_nama', 'like', "%{$search}%");
             });
+            $custom->where(function ($q) use ($search) {
+                $q->where('judul', 'like', "%{$search}%")
+                    ->orWhere('pesan', 'like', "%{$search}%");
+            });
         }
 
         if ($tab === 'produksi') {
             $baseQuery = DB::query()->fromSub($produksi->orderByDesc('id'), 'notifications');
         } elseif ($tab === 'profil') {
             $baseQuery = DB::query()->fromSub($profile->orderByDesc('created_at'), 'notifications');
+        } elseif ($tab === 'tugas') {
+            $baseQuery = DB::query()->fromSub($custom->orderByDesc('created_at'), 'notifications');
         } else {
-            $union = $profile ? $produksi->unionAll($profile) : $produksi;
+            $union = $produksi;
+            if ($profile) {
+                $union = $union->unionAll($profile);
+            }
+            $union = $union->unionAll($custom);
+            
             $baseQuery = DB::query()->fromSub($union, 'notifications');
         }
 
-        // Penentuan is_read: jika tanggal produksi sebelum hari ini, ATAU hari ini tapi admin sudah klik tandai dibaca hari ini
+        // Penentuan is_read: hanya dianggap belum terbaca (0) jika tipe selain custom, tanggal dibuat HARI INI, dan user belum ngeklik tandai dibaca HARI INI.
+        // Sisanya (termasuk dummy data masa depan atau masa lalu) dianggap sudah terbaca (1).
         return $baseQuery->select('*', DB::raw("
             CASE 
-                WHEN created_at < '" . today()->toDateString() . "' THEN 1 
-                WHEN created_at = '" . today()->toDateString() . "' AND DATE('{$userLastRead}') >= '" . today()->toDateString() . "' THEN 1
-                ELSE 0 
+                WHEN tipe = 'custom' THEN is_read_db
+                WHEN DATE(created_at) = '" . today()->toDateString() . "' AND (DATE('{$userLastRead}') < '" . today()->toDateString() . "' OR '{$userLastRead}' IS NULL) THEN 0
+                ELSE 1 
             END as is_read
         "))
+        ->orderByDesc('created_at')
         ->orderByDesc('id');
     }
 
@@ -121,9 +159,8 @@ class NotifikasiController extends Controller
                 'produksi.produksi_tanggal as created_at',
                 DB::raw("
                     CASE 
-                        WHEN produksi.produksi_tanggal < '" . today()->toDateString() . "' THEN 1 
-                        WHEN produksi.produksi_tanggal = '" . today()->toDateString() . "' AND DATE('{$userLastRead}') >= '" . today()->toDateString() . "' THEN 1
-                        ELSE 0 
+                        WHEN DATE(produksi.produksi_tanggal) = '" . today()->toDateString() . "' AND (DATE('{$userLastRead}') < '" . today()->toDateString() . "' OR '{$userLastRead}' IS NULL) THEN 0
+                        ELSE 1 
                     END as is_read
                 "),
                 'petani.petani_nama as nama',
@@ -248,7 +285,7 @@ class NotifikasiController extends Controller
         if (! in_array($user->user_role, ['super_admin', 'admin'])) { abort(403); }
 
         $search = $request->input('search');
-        $tab = in_array($request->input('tab'), ['all', 'produksi', 'profil']) ? $request->input('tab') : 'all';
+        $tab = in_array($request->input('tab'), ['all', 'produksi', 'tugas', 'profil']) ? $request->input('tab') : 'all';
         $page = max(1, (int) $request->input('page', 1));
         $perPage = 10;
 
@@ -265,7 +302,9 @@ class NotifikasiController extends Controller
 
         $counts = $this->count()->getData();
 
-        return view('super_admin.notifikasi.index', [
+        $viewName = $user->user_role === 'admin' ? 'admin.notifikasi.index' : 'super_admin.notifikasi.index';
+
+        return view($viewName, [
             'notifs' => $notifs,
             'unreadCount' => $counts->count,
             'dailyProductionCount' => $counts->produksiCount,

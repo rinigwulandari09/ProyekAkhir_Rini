@@ -69,6 +69,8 @@ class LahanController extends Controller
             'lahan_luas'   => 'required|numeric',
             'petani_id'    => 'required',
             'area_lahan'   => 'required|json', // Validasi memastikan bahwa data yang dikirim berformat JSON
+            'tahun_tanam'  => 'nullable|integer',
+            'lahan_no_surat' => 'nullable|string|max:255',
         ]);
 
         Lahan::create([
@@ -76,6 +78,8 @@ class LahanController extends Controller
             'lahan_lokasi' => $request->lahan_lokasi,
             'lahan_luas'   => $request->lahan_luas,
             'petani_id'    => $request->petani_id,
+            'tahun_tanam'  => $request->tahun_tanam,
+            'lahan_no_surat' => $request->lahan_no_surat,
             'area_lahan'   => json_decode($request->area_lahan), // Decode jika model belum otomatis meng-cast ke json
         ]);
 
@@ -132,6 +136,8 @@ class LahanController extends Controller
             'lahan_lokasi' => 'required|string|max:255',
             'lahan_luas'   => 'required|numeric',
             'petani_id'    => 'required',
+            'tahun_tanam'  => 'nullable|integer',
+            'lahan_no_surat' => 'nullable|string|max:255',
         ]);
 
         $lahan = Lahan::findOrFail($id);
@@ -139,6 +145,8 @@ class LahanController extends Controller
             'lahan_lokasi' => $request->lahan_lokasi,
             'lahan_luas'   => $request->lahan_luas,
             'petani_id'    => $request->petani_id,
+            'tahun_tanam'  => $request->tahun_tanam,
+            'lahan_no_surat' => $request->lahan_no_surat,
         ]);
 
         return redirect()->route('lahan.index')->with('success', 'Data lahan berhasil diperbarui!');

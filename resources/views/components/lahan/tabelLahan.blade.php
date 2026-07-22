@@ -60,6 +60,8 @@
                         <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center w-12">No</th>
                         <th class="p-4 text-xs font-bold text-gray-700 uppercase">Nama Pemilik/Petani</th>
                         <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">Luas Lahan</th>
+                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">Tahun Tanam</th>
+                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">No Surat</th>
                         <th class="p-4 text-xs font-bold text-gray-700 uppercase">Lokasi Lahan</th>
                         <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">Aksi</th>
                     </tr>
@@ -72,6 +74,8 @@
                             {{ $lahan->petani ? $lahan->petani->petani_nama : 'Tidak terikat petani' }}
                         </td>
                         <td class="p-4 text-xs text-gray-600 text-center">{{ $lahan->lahan_luas }} Ha</td>
+                        <td class="p-4 text-xs text-gray-600 text-center">{{ $lahan->tahun_tanam ?? '-' }}</td>
+                        <td class="p-4 text-xs text-gray-600">{{ $lahan->lahan_no_surat ?? '-' }}</td>
                         <td class="p-4 text-xs text-gray-600">{{ $lahan->lahan_lokasi }}</td>
                         <td class="p-4">
                             <div class="flex justify-center gap-3 items-center">
@@ -158,10 +162,10 @@
             },
             "order": [[ 1, "asc" ]], 
             "columnDefs": [
-                { "orderable": false, "searchable": false, "targets": [0, 4] },
+                { "orderable": false, "searchable": false, "targets": [0, 6] },
                 { "className": "text-center all", "targets": 0 }, // No wajib tampil di HP
                 { "className": "all", "targets": 1 },            // Nama Pemilik wajib tampil di HP
-                { "className": "min-tablet", "targets": [2, 3, 4] } // Sisanya disembunyikan di HP
+                { "className": "min-tablet", "targets": [2, 3, 4, 5, 6] } // Sisanya disembunyikan di HP
             ],
             "buttons": [
                 {
@@ -169,7 +173,7 @@
                     text: '<div class="flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path></svg><span>Export Excel</span></div>',
                     className: 'btn-export-excel',
                     title: 'Data_Lahan_NotaSawit',
-                    exportOptions: { columns: [0, 1, 2, 3], format: cleanExportFormat }
+                    exportOptions: { columns: [0, 1, 2, 3, 4, 5], format: cleanExportFormat }
                 },
                 {
                     extend: 'pdfHtml5',
@@ -179,9 +183,9 @@
                     filename: 'Data_Lahan_NotaSawit',
                     orientation: 'portrait',
                     pageSize: 'A4',
-                    exportOptions: { columns: [0, 1, 2, 3], format: cleanExportFormat },
+                    exportOptions: { columns: [0, 1, 2, 3, 4, 5], format: cleanExportFormat },
                     customize: function (doc) {
-                        doc.content[1].table.widths = ['10%', '35%', '20%', '35%'];
+                        doc.content[1].table.widths = ['5%', '25%', '15%', '15%', '20%', '20%'];
                         doc.styles.title = { color: '#1e293b', fontSize: '15', alignment: 'center', bold: true, margin: [0, 0, 0, 20] };
                         doc.content[1].table.headerRows = 1;
                         var rowCount = doc.content[1].table.body.length;
@@ -196,7 +200,9 @@
                             doc.content[1].table.body[j][0].alignment = 'center';
                             doc.content[1].table.body[j][1].alignment = 'left';
                             doc.content[1].table.body[j][2].alignment = 'center';
-                            doc.content[1].table.body[j][3].alignment = 'left';
+                            doc.content[1].table.body[j][3].alignment = 'center';
+                            doc.content[1].table.body[j][4].alignment = 'left';
+                            doc.content[1].table.body[j][5].alignment = 'left';
                             if (j % 2 === 0) {
                                 for (var k = 0; k < doc.content[1].table.body[j].length; k++) { doc.content[1].table.body[j][k].fillColor = '#f8fafc'; }
                             }

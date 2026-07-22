@@ -250,19 +250,21 @@
 
                         if (isValidWGS84 && polyCoords.length > 0) {
                             const polygon = L.polygon(polyCoords, {
-                                color: '#15803d',
-                                fillColor: '#22c55e',
+                                color: '#234323',
+                                fillColor: '#234323',
                                 fillOpacity: 0.4,
                                 weight: 2.5
                             });
 
                             polygon.bindPopup(`
                                 <div style="font-family: sans-serif; font-size: 12px; min-width: 170px;">
-                                    <strong style="color: #166534; font-size: 13px;">Detail Lahan Spasial</strong><br>
+                                    <strong style="color: #234323; font-size: 13px;">Detail Lahan Spasial</strong><br>
                                     <hr style="margin: 4px 0; border: 0; border-top: 1px solid #e5e7eb;">
                                     <b>Nama Pemilik:</b> ${lahan.petani_nama || '-'}<br>
                                     <b>Lokasi Lahan:</b> ${lahan.lahan_lokasi || '-'}<br>
-                                    <b>Luas Hamparan:</b> ${lahan.lahan_luas || '0'} Ha
+                                    <b>Luas Hamparan:</b> ${lahan.lahan_luas || '0'} Ha<br>
+                                    <b>Tahun Tanam:</b> ${lahan.tahun_tanam || '-'}<br>
+                                    <b>No Surat:</b> ${lahan.lahan_no_surat || '-'}
                                 </div>
                             `);
 

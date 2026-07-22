@@ -139,6 +139,14 @@
                                             {{ $petani->lahan->lahan_luas ?? '0' }} Ha
                                         </span>
                                     </div>
+                                    <div class="space-y-1">
+                                        <span class="font-semibold text-gray-400 block uppercase tracking-wider">Tahun Tanam</span>
+                                        <span class="text-sm font-bold text-gray-800">{{ $petani->lahan->tahun_tanam ?? '-' }}</span>
+                                    </div>
+                                    <div class="space-y-1">
+                                        <span class="font-semibold text-gray-400 block uppercase tracking-wider">No Surat Lahan</span>
+                                        <span class="text-sm font-bold text-gray-800">{{ $petani->lahan->lahan_no_surat ?? '-' }}</span>
+                                    </div>
                                     <div class="space-y-1 sm:col-span-2">
                                         <span class="font-semibold text-gray-400 block uppercase tracking-wider">Area Spasial (GeoJSON / Koordinat)</span>
                                         <div class="bg-white p-3 rounded-xl border border-gray-200 max-h-24 overflow-y-auto font-mono text-[11px] text-gray-600 shadow-sm">

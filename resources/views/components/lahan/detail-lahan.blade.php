@@ -26,6 +26,14 @@
                     <span class="text-gray-600">: {{ number_format($lahan->lahan_luas, 1, ',', '.') }} Ha</span>
                 </div>
                 <div class="flex">
+                    <span class="w-32 font-bold text-gray-700">Tahun Tanam</span>
+                    <span class="text-gray-600">: {{ $lahan->tahun_tanam ?? '-' }}</span>
+                </div>
+                <div class="flex">
+                    <span class="w-32 font-bold text-gray-700">No Surat</span>
+                    <span class="text-gray-600">: {{ $lahan->lahan_no_surat ?? '-' }}</span>
+                </div>
+                <div class="flex">
                     <span class="w-32 font-bold text-gray-700">Pemilik / Petani</span>
                     <span class="text-gray-600 font-semibold">: {{ $lahan->petani->petani_nama ?? 'Tidak Ada Pemilik' }}</span>
                 </div>
