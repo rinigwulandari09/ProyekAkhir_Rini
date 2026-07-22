@@ -91,6 +91,32 @@ class DashboardController extends Controller
             ->orderBy('deadline', 'asc')
             ->get(['id', 'judul', 'pesan', 'deadline', 'created_at']);
 
+        // Format data untuk kalender
+        $kalenderTugas = DB::table('tugas')
+            ->where(function ($q) use ($user, $userIdColumn) {
+                $q->whereNull('user_id')
+                  ->orWhere('user_id', $user->{$userIdColumn});
+            })
+            ->whereNotNull('deadline')
+            ->get(['id', 'judul', 'pesan', 'deadline', 'is_done']);
+
+        $events = [];
+        foreach ($kalenderTugas as $tugas) {
+            $events[] = [
+                'id' => $tugas->id,
+                'title' => $tugas->judul,
+                'start' => \Carbon\Carbon::parse($tugas->deadline)->format('Y-m-d'),
+                'description' => $tugas->pesan,
+                'backgroundColor' => $tugas->is_done ? '#9CA3AF' : '#234323', // Abu-abu jika selesai, hijau gelap jika belum
+                'borderColor' => $tugas->is_done ? '#9CA3AF' : '#234323',
+                'textColor' => '#ffffff',
+                'extendedProps' => [
+                    'status' => $tugas->is_done ? 'Selesai' : 'Pending'
+                ]
+            ];
+        }
+        $kalenderEvents = json_encode($events);
+
         // 3. Pengalihan Halaman View sesuai Role (Data yang dikirimkan sekarang sudah SAMA)
         if ($user->user_role === 'super_admin') {
             return view('super_admin.dashboard', compact(
@@ -101,7 +127,7 @@ class DashboardController extends Controller
             return view('admin.dashboard', compact(
                 'jumlahPetani', 'jumlahLahan', 'pendapatanBulanIni', 'petaniPending',
                 'pemasukanGrafik', 'pengeluaranGrafik', 'semuaLahan', 'jumlahProduksiHariIni',
-                'taskNotifications'
+                'taskNotifications', 'kalenderEvents'
             ));
         }
 

@@ -4,6 +4,12 @@
     </div>
 
     <div style="padding: 24px; background-color: #ffffff; line-height: 1.6;">
+        @if(!empty($judul))
+        <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 18px; color: #214122;">
+            {{ $judul }}
+        </h3>
+        @endif
+
         <p style="margin-top: 0; margin-bottom: 20px; font-size: 15px; color: #444;">
             {{ $pesan }}
         </p>

@@ -19,7 +19,8 @@ class PengingatMail extends Mailable
 
     public function build()
     {
-        return $this->subject('Informasi / Tugas Baru dari Superadmin')
+        $judul = $this->payload['judul'] ?? 'Informasi / Tugas Baru';
+        return $this->subject('Tugas dari Superadmin: ' . $judul)
             ->view('emails.pengingat')
             ->with($this->payload);
     }

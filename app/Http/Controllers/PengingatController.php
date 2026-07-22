@@ -25,6 +25,7 @@ class PengingatController extends Controller
             'recipient_category' => 'required|in:petani,admin',
             'recipient_scope' => 'required|in:single,all',
             'recipient_id' => 'nullable|integer',
+            'judul' => 'required|string',
             'message' => 'required|string',
             'deadline' => 'nullable|date',
             'priority' => 'nullable|in:normal,urgent'
@@ -62,6 +63,7 @@ class PengingatController extends Controller
                 logger("Mengirim email ke : ".$email);
 
                 Mail::to($email)->send(new PengingatMail([
+                    'judul' => $data['judul'],
                     'pesan' => $data['message'],
                     'deadline' => $data['deadline'] ?? null,
                 ]));
@@ -78,7 +80,7 @@ class PengingatController extends Controller
         if ($data['recipient_category'] === 'admin') {
             $now = now();
             $taskData = [
-                'judul' => 'Tugas dari Superadmin',
+                'judul' => $data['judul'],
                 'pesan' => $data['message'],
                 'deadline' => $data['deadline'] ?? null,
                 'is_read' => false,

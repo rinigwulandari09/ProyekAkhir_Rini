@@ -114,6 +114,15 @@
         </div>
     </div>
 
+    {{-- Kalender Tugas --}}
+    <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-200 mb-6">
+        <div class="flex items-center gap-2 mb-4">
+            <x-heroicon-o-calendar class="w-5 h-5 text-[#234323]" />
+            <h2 class="text-sm font-bold text-gray-700 uppercase tracking-wider">Kalender Audit & Pengingat</h2>
+        </div>
+        <div id="tugasCalendar" class="w-full bg-gray-50 rounded-xl border border-gray-100 p-2 sm:p-4"></div>
+    </div>
+
     <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
         <div class="flex items-center gap-2 mb-2">
             <x-heroicon-o-map-pin class="w-4 h-4 text-gray-500" />
@@ -322,5 +331,107 @@
         table.dataTable.dtr-inline.collapsed > tbody > tr:not(.child) > td:first-child::before { content: '+' !important; position: absolute; top: 50% !important; left: 8px !important; transform: translateY(-50%) !important; background-color: #234323 !important; color: white !important; width: 16px !important; height: 16px !important; display: flex !important; align-items: center !important; justify-content: center !important; border-radius: 9999px !important; font-weight: bold !important; font-size: 14px !important; line-height: 1 !important; box-shadow: 0 1px 2px rgba(0,0,0,0.2) !important; }
         table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td:first-child::before { content: '-' !important; background-color: #dc2626 !important; }
     }
+
+    /* =========================================
+       3. KALENDER CUSTOM CSS
+       ========================================= */
+    .fc { font-family: inherit !important; }
+    .fc-theme-standard td, .fc-theme-standard th { border-color: #f3f4f6 !important; }
+    .fc-col-header-cell { background-color: #f9fafb; padding: 8px 0; font-weight: 600; font-size: 0.875rem; color: #4b5563; text-transform: uppercase; border-bottom: 1px solid #e5e7eb !important; }
+    .fc-daygrid-day-number { color: #374151; font-weight: 500; padding: 4px 8px !important; }
+    .fc-day-today { background-color: #f0fdf4 !important; }
+    .fc-daygrid-event { border-radius: 6px !important; padding: 2px 4px !important; font-size: 0.75rem !important; border: none !important; font-weight: 500; transition: transform 0.2s; cursor: pointer; }
+    .fc-daygrid-event:hover { transform: scale(1.02); opacity: 0.9; }
+    .fc-event-title { font-weight: 600 !important; }
+    
+    /* Toolbar & Buttons */
+    .fc-toolbar-title { font-size: 1.25rem !important; font-weight: 700 !important; color: #1f2937 !important; }
+    .fc-toolbar-chunk { display: flex; align-items: center; gap: 0.75rem; }
+    .fc-button-group { display: flex; gap: 0.25rem; }
+    
+    /* Inactive Button Style (Ghost/Outline) */
+    .fc-button-primary { 
+        background-color: #ffffff !important; 
+        color: #374151 !important;
+        border: 1px solid #d1d5db !important; 
+        border-radius: 6px !important; 
+        text-transform: capitalize !important; 
+        font-weight: 600 !important; 
+        transition: all 0.2s !important; 
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+    }
+    .fc-button-primary:hover { 
+        background-color: #f3f4f6 !important; 
+        border-color: #9ca3af !important; 
+        color: #1f2937 !important;
+    }
+    /* Active Button Style (Filled Dark Green) */
+    .fc-button-primary:not(:disabled):active, 
+    .fc-button-primary:not(:disabled).fc-button-active { 
+        background-color: #234323 !important; 
+        border-color: #234323 !important; 
+        color: #ffffff !important;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.1) !important;
+    }
+    
+    @media (max-width: 640px) {
+        .fc-toolbar { flex-direction: column; gap: 0.75rem; align-items: center; }
+        .fc-toolbar-chunk { display: flex; justify-content: center; width: 100%; flex-wrap: wrap; gap: 0.5rem; }
+        .fc-toolbar-title { font-size: 1.1rem !important; text-align: center; width: 100%; }
+        .fc-button { padding: 0.3rem 0.6rem !important; font-size: 0.75rem !important; }
+        .fc-header-toolbar { margin-bottom: 1rem !important; }
+    }
 </style>
+
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var calendarEl = document.getElementById('tugasCalendar');
+        var kalenderEvents = {!! $kalenderEvents ?? '[]' !!};
+
+        if(calendarEl) {
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: window.innerWidth < 768 ? 'listMonth' : 'dayGridMonth',
+                contentHeight: 'auto', // Membuat kalender tidak terlalu tinggi (menyesuaikan isi)
+                aspectRatio: 1.5, // Membuat rasio lebih proporsional (tidak terlalu kotak besar)
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,listMonth'
+                },
+                events: kalenderEvents,
+                locale: 'id',
+                buttonText: {
+                    today:    'Hari Ini',
+                    month:    'Bulan',
+                    week:     'Minggu',
+                    day:      'Hari',
+                    list:     'Daftar'
+                },
+                eventClick: function(info) {
+                    var isDone = info.event.extendedProps.status === 'Selesai';
+                    var statusHtml = isDone 
+                        ? '<span style="color:#059669;font-weight:bold;">Selesai</span>'
+                        : '<span style="color:#DC2626;font-weight:bold;">Pending</span>';
+                    
+                    alert(
+                        "Tugas: " + info.event.title + "\n" +
+                        "Deskripsi: " + (info.event.extendedProps.description || '-') + "\n" +
+                        "Status: " + info.event.extendedProps.status
+                    );
+                }
+            });
+            calendar.render();
+
+            // Re-render when resizing to handle mobile/desktop views better
+            window.addEventListener('resize', function() {
+                if (window.innerWidth < 768 && calendar.view.type !== 'listMonth') {
+                    calendar.changeView('listMonth');
+                } else if (window.innerWidth >= 768 && calendar.view.type === 'listMonth') {
+                    calendar.changeView('dayGridMonth');
+                }
+            });
+        }
+    });
+</script>
 @endsection

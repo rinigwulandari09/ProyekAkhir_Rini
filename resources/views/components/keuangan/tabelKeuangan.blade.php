@@ -320,6 +320,8 @@
     @media (max-width: 640px) {
         .dataTables_wrapper .dataTables_length,
         .dataTables_wrapper .dataTables_filter { display: inline-block !important; margin: 0 !important; }
+        .dataTables_wrapper .flex-row.items-center.justify-between { display: flex !important; flex-direction: row !important; justify-content: space-between !important; align-items: center !important; width: 100% !important; gap: 0.5rem !important; }
+
         .dataTables_wrapper .dataTables_length label { font-size: 0 !important; }
         .dataTables_wrapper .dataTables_length select { width: 70px !important; }
         .dataTables_wrapper .dataTables_filter input { width: 100% !important; max-width: 160px !important; font-size: 0.875rem !important; color: #374151 !important; }
@@ -329,9 +331,10 @@
 
         #exportButtonsContainer { width: 100% !important; }
         .dt-buttons { width: 100% !important; display: flex !important; flex-direction: row !important; }
-        .dt-buttons .dt-button { flex: 1 !important; display: flex !important; justify-content: center !important; text-center: center !important; }
+        .dt-buttons .dt-button { flex: 1 !important; display: flex !important; justify-content: center !important; text-align: center !important; }
 
-        table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child { position: relative; padding-left: 32px !important; cursor: pointer; }
-        table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child::before { content: '+' !important; position: absolute; top: 50% !important; left: 8px !important; transform: translateY(-50%) !important; background-color: #10B981 !important; color: white !important; width: 16px !important; height: 16px !important; display: flex !important; align-items: center !important; justify-content: center !important; border-radius: 9999px !important; font-weight: bold !important; font-size: 14px !important; line-height: 1 !important; box-shadow: 0 1px 2px rgba(0,0,0,0.2) !important; }
+        table.dataTable.dtr-inline.collapsed > tbody > tr:not(.child) > td:first-child { position: relative; padding-left: 32px !important; cursor: pointer; }
+        table.dataTable.dtr-inline.collapsed > tbody > tr:not(.child) > td:first-child::before { content: '+' !important; position: absolute; top: 50% !important; left: 8px !important; transform: translateY(-50%) !important; background-color: #234323 !important; color: white !important; width: 16px !important; height: 16px !important; display: flex !important; align-items: center !important; justify-content: center !important; border-radius: 9999px !important; font-weight: bold !important; font-size: 14px !important; line-height: 1 !important; box-shadow: 0 1px 2px rgba(0,0,0,0.2) !important; }
+        table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td:first-child::before { content: '-' !important; background-color: #dc2626 !important; }
     }
 </style>

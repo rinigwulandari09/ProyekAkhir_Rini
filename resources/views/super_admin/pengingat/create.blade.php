@@ -88,6 +88,12 @@
                     </div>
                 </div>
 
+                {{-- Judul Pengingat --}}
+                <div class="space-y-2">
+                    <label class="block text-sm font-semibold text-gray-700">Judul Pengingat / Tugas</label>
+                    <input type="text" name="judul" placeholder="Contoh: Jadwal Audit Internal, Persiapan Lahan..." class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-700 outline-none focus:ring-2 focus:ring-[#214122] focus:border-transparent bg-white shadow-sm transition-shadow" required>
+                </div>
+
                 {{-- Pesan Pengingat --}}
                 <div class="space-y-2">
                     <label class="block text-sm font-semibold text-gray-700">Pesan Pengingat</label>
