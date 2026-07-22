@@ -19,6 +19,8 @@ class AuditInternal extends Model
         'desa',
         'nama_auditor',
         'nama_petani',
+        'petani_id',
+        'is_read',
         'path_file_kunjungan'
     ];
 }
