@@ -72,10 +72,53 @@ class AuditInternalController extends Controller
 
     public function getNotifications($petani_id)
     {
-        $notifications = AuditInternal::where('petani_id', $petani_id)
-            ->orderBy('tanggal', 'desc')
-            ->orderBy('id_audit', 'desc')
-            ->get();
+        $audit = \App\Models\AuditInternal::where('petani_id', $petani_id)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id_audit,
+                    'type' => 'audit',
+                    'title' => 'Hasil Audit Internal Baru',
+                    'message' => 'Auditor: ' . $item->nama_auditor,
+                    'tanggal' => $item->tanggal,
+                    'is_read' => $item->is_read,
+                    'data_url' => $item->path_file_kunjungan
+                ];
+            });
+
+        $produksi = \App\Models\Produksi::where('petani_id', $petani_id)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'type' => 'produksi',
+                    'title' => 'Pemasukan Baru',
+                    'message' => 'Pendapatan: Rp ' . number_format($item->total_pendapatan, 0, ',', '.'),
+                    'tanggal' => $item->produksi_tanggal,
+                    'is_read' => $item->is_read ?? 0, // Fallback to 0 if column doesn't exist yet
+                    'data_url' => null
+                ];
+            });
+
+        $pengeluaran = \App\Models\BiayaOperasional::where('petani_id', $petani_id)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'type' => 'pengeluaran',
+                    'title' => 'Pengeluaran Baru',
+                    'message' => 'Total: Rp ' . number_format($item->biaya_total, 0, ',', '.'),
+                    'tanggal' => $item->biaya_tanggal,
+                    'is_read' => $item->is_read ?? 0,
+                    'data_url' => null
+                ];
+            });
+
+        // Merge and Sort by Date Descending
+        $notifications = $audit->concat($produksi)
+                               ->concat($pengeluaran)
+                               ->sortByDesc('tanggal')
+                               ->values();
 
         return response()->json([
             'success' => true,
@@ -84,12 +127,28 @@ class AuditInternalController extends Controller
         ], 200);
     }
 
-    public function markAsRead($id_audit)
+    public function markAsRead(Request $request)
     {
-        $audit = AuditInternal::find($id_audit);
-        if ($audit) {
-            $audit->is_read = 1;
-            $audit->save();
+        $type = $request->input('type');
+        $id = $request->input('id');
+
+        if (!$type || !$id) {
+            return response()->json(['success' => false, 'message' => 'Parameter type dan id wajib diisi'], 400);
+        }
+
+        $record = null;
+
+        if ($type === 'audit') {
+            $record = \App\Models\AuditInternal::find($id);
+        } elseif ($type === 'produksi') {
+            $record = \App\Models\Produksi::find($id);
+        } elseif ($type === 'pengeluaran') {
+            $record = \App\Models\BiayaOperasional::find($id);
+        }
+
+        if ($record) {
+            $record->is_read = 1;
+            $record->save();
 
             return response()->json([
                 'success' => true,
