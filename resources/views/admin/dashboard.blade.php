@@ -79,40 +79,36 @@
             </div>
         </div>
 
-        <div class="overflow-x-auto">
-            <table class="min-w-full text-left text-sm divide-y divide-gray-200">
-                <thead class="bg-gray-100 text-xs uppercase text-gray-500">
-                    <tr>
-                        <th class="px-4 py-3">Judul</th>
-                        <th class="px-4 py-3">Pesan</th>
-                        <th class="px-4 py-3">Deadline</th>
-                        <th class="px-4 py-3">Dibuat</th>
-                        <th class="px-4 py-3">Aksi</th>
+        <div class="overflow-x-auto p-1">
+            <table id="tugasTable" class="w-full text-left border-collapse display responsive nowrap">
+                <thead>
+                    <tr class="bg-[#D9F99D] border-b border-gray-200">
+                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Judul</th>
+                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Pesan</th>
+                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Deadline</th>
+                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Dibuat</th>
+                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200 bg-white">
-                    @forelse($taskNotifications as $task)
-                        <tr>
-                            <td class="px-4 py-3 text-gray-800">{{ $task->judul }}</td>
-                            <td class="px-4 py-3 text-gray-700">{{ $task->pesan }}</td>
-                            <td class="px-4 py-3 text-gray-700">
+                <tbody class="divide-y divide-gray-100 bg-white">
+                    @foreach($taskNotifications as $task)
+                        <tr class="hover:bg-gray-50 transition">
+                            <td class="p-4 text-xs text-gray-800 font-medium">{{ $task->judul }}</td>
+                            <td class="p-4 text-xs text-gray-700">{{ $task->pesan }}</td>
+                            <td class="p-4 text-xs text-gray-700">
                                 {{ $task->deadline ? \Carbon\Carbon::parse($task->deadline)->translatedFormat('d F Y') : '-' }}
                             </td>
-                            <td class="px-4 py-3 text-gray-700">{{ \Carbon\Carbon::parse($task->created_at)->translatedFormat('d F Y') }}</td>
-                            <td class="px-4 py-3">
-                                <form action="{{ route('tugas.complete', ['id' => $task->id]) }}" method="POST" class="inline">
+                            <td class="p-4 text-xs text-gray-700">{{ \Carbon\Carbon::parse($task->created_at)->translatedFormat('d F Y') }}</td>
+                            <td class="p-4 text-center">
+                                <form action="{{ route('tugas.complete', ['id' => $task->id]) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menandai tugas ini sebagai selesai?')">
                                     @csrf
-                                    <button type="submit" class="inline-flex items-center rounded-full bg-green-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-green-700">
+                                    <button type="submit" class="inline-flex items-center rounded-lg bg-[#234323] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#3D5A3E] cursor-pointer shadow-sm active:scale-95">
                                         Tandai Selesai
                                     </button>
                                 </form>
                             </td>
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="px-4 py-6 text-center text-gray-500">Tidak ada tugas aktif untuk ditampilkan.</td>
-                        </tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
         </div>
@@ -127,11 +123,46 @@
     </div>
 </div>
 
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+        if ($.fn.DataTable.isDataTable('#tugasTable')) { $('#tugasTable').DataTable().destroy(); }
+        $('#tugasTable').DataTable({
+            "pageLength": 5, 
+            "lengthMenu": [[5, 10, 25, -1], [5, 10, 25, "All"]],
+            "language": {
+                "search": "",
+                "searchPlaceholder": "Cari tugas...",
+                "emptyTable": "Tidak ada tugas aktif untuk ditampilkan."
+            },
+            "responsive": {
+                "details": {
+                    "renderer": function (api, rowIdx, columns) {
+                        var data = $.map(columns, function (col) {
+                            if (col.hidden) {
+                                var value = col.data;
+                                if (value === null || value === undefined || value === '') { value = '-'; }
+                                return '<div class="flex items-start justify-between gap-3 py-1.5 text-xs leading-snug border-b border-gray-200 last:border-0"><span class="font-semibold text-gray-600">' + col.title + '</span><span class="text-gray-700 text-right">' + value + '</span></div>';
+                            }
+                            return '';
+                        }).join('');
+                        return data ? $('<div class="rounded-lg bg-gray-50 p-3 shadow-inner space-y-1 w-full mt-2"></div>').append(data).prop('outerHTML') : false;
+                    }
+                }
+            },
+            "columnDefs": [
+                { "orderable": false, "searchable": false, "targets": [4] },
+                { "className": "all", "targets": 0 }, 
+                { "className": "min-tablet", "targets": [1, 2, 3, 4] } 
+            ],
+            "dom": '<"flex justify-between items-center w-full mb-4 gap-2" l f> rt <"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4" i p>'
+        });
         const ctxPemasukan = document.getElementById('chartPemasukan').getContext('2d');
         const dataPemasukan = @json(array_values($pemasukanGrafik));
 
@@ -240,4 +271,56 @@
         }
     });
 </script>
+
+<style>
+    /* =========================================
+       1. GLOBAL STYLES (TAMPILAN DESKTOP)
+       ========================================= */
+    .dataTables_wrapper .dataTables_length label,
+    .dataTables_wrapper .dataTables_filter label { display: inline-flex !important; align-items: center !important; gap: 0.5rem !important; font-size: 0.875rem !important; color: #374151 !important; margin: 0 !important; }
+    .dataTables_wrapper .dataTables_length select,
+    .dataTables_wrapper .dataTables_filter input { font-size: 0.875rem !important; color: #374151 !important; border: 1px solid #e5e7eb !important; border-radius: 8px !important; padding: 4px 12px !important; margin: 0 !important; outline: none !important; }
+    .dataTables_wrapper .dataTables_filter input { 
+        padding-left: 32px !important;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239CA3AF'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'%3E%3C/path%3E%3C/svg%3E") !important;
+        background-repeat: no-repeat !important;
+        background-position: 10px center !important;
+        background-size: 16px 16px !important;
+    }
+    .dataTables_wrapper .dataTables_filter input:focus { border-color: #214122 !important; }
+
+    #tugasTable th, #tugasTable td { white-space: normal !important; word-break: break-word; }
+    #tugasTable th { white-space: nowrap; }
+
+    .dataTables_wrapper .dataTables_info { font-size: 0.875rem !important; color: #6b7280 !important; padding-top: 0 !important; }
+    .dataTables_wrapper .dataTables_info b, .dataTables_wrapper .dataTables_info strong { font-weight: 700 !important; color: #1f2937 !important; }
+
+    .dataTables_wrapper .dataTables_paginate { padding-top: 0 !important; display: flex !important; gap: 0.25rem !important; align-items: center; }
+    .dataTables_wrapper .dataTables_paginate .paginate_button { border: 1px solid #e5e7eb !important; background: #ffffff !important; color: #4b5563 !important; border-radius: 0.375rem !important; padding: 4px 12px !important; font-size: 0.875rem !important; transition: all 0.2s; }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover { background: #214122 !important; color: #ffffff !important; border-color: #214122 !important; }
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover { background: #f3f4f6 !important; color: #1f2937 !important; border-color: #d1d5db !important; }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover { color: #9ca3af !important; background: #f9fafb !important; border-color: #e5e7eb !important; cursor: not-allowed; }
+
+    /* =========================================
+       2. KHUSUS MODE HP (max-width: 640px)
+       ========================================= */
+    @media (max-width: 640px) {
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter { display: inline-block !important; margin: 0 !important; }
+        .dataTables_wrapper .flex-row.items-center.justify-between { display: flex !important; flex-direction: row !important; justify-content: space-between !important; align-items: center !important; width: 100% !important; gap: 0.5rem !important; }
+
+        .dataTables_wrapper .dataTables_length label { font-size: 0 !important; }
+        .dataTables_wrapper .dataTables_length select { width: 70px !important; }
+        .dataTables_wrapper .dataTables_filter input { width: 100% !important; max-width: 160px !important; font-size: 0.875rem !important; color: #374151 !important; }
+        
+        .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_paginate { width: 100%; justify-content: center; text-align: center; margin-top: 5px; }
+
+        /* CUSTOM ICON PLUS (+) HANYA MUNCUL DI HP */
+        table.dataTable.dtr-inline.collapsed > tbody > tr:not(.child) > td:first-child { position: relative; padding-left: 32px !important; cursor: pointer; }
+        table.dataTable.dtr-inline.collapsed > tbody > tr:not(.child) > td:first-child::before { content: '+' !important; position: absolute; top: 50% !important; left: 8px !important; transform: translateY(-50%) !important; background-color: #234323 !important; color: white !important; width: 16px !important; height: 16px !important; display: flex !important; align-items: center !important; justify-content: center !important; border-radius: 9999px !important; font-weight: bold !important; font-size: 14px !important; line-height: 1 !important; box-shadow: 0 1px 2px rgba(0,0,0,0.2) !important; }
+        table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td:first-child::before { content: '-' !important; background-color: #dc2626 !important; }
+    }
+</style>
 @endsection

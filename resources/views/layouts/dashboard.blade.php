@@ -81,6 +81,7 @@
                 </form>
             </nav>
 
+            {{-- Mode Sidebar Terbuka --}}
             <div x-show="sidebarOpen" class="m-4 p-4 bg-white rounded-xl text-[10px] text-black shrink-0">
                 <div class="flex items-center gap-2 mb-2 font-bold uppercase">
                     <x-heroicon-o-information-circle class="w-4 h-4 text-[#234323]" /> 
@@ -89,6 +90,13 @@
                 <p class="mb-3 leading-tight">Tambahkan pengingat atau informasi!</p>
                 <a href="{{ route('pengingat.create') }}" class="w-full bg-[#234323] py-2 rounded font-bold text-white hover:bg-[#3D5A3E] transition inline-block text-center">
                     TAMBAH
+                </a>
+            </div>
+
+            {{-- Mode Sidebar Tertutup --}}
+            <div x-show="!sidebarOpen" class="m-4 flex justify-center shrink-0">
+                <a href="{{ route('pengingat.create') }}" class="w-10 h-10 bg-white rounded-xl flex items-center justify-center hover:bg-gray-100 transition shadow-sm" title="Tambah Pengingat">
+                    <x-heroicon-o-information-circle class="w-6 h-6 text-[#234323]" />
                 </a>
             </div>
         </aside>

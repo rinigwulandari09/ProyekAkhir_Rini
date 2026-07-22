@@ -19,9 +19,13 @@
       x-cloak
       x-data="{ 
         sidebarOpen: localStorage.getItem('sidebarOpen') === 'true' || (window.innerWidth > 768 && localStorage.getItem('sidebarOpen') === null),
+        showLogoutConfirm: false,
         toggleSidebar() {
             this.sidebarOpen = !this.sidebarOpen;
             localStorage.setItem('sidebarOpen', this.sidebarOpen);
+        },
+        confirmLogout() {
+            document.getElementById('logoutForm').submit();
         }
       }">
 
@@ -60,18 +64,33 @@
                     <x-heroicon-o-banknotes class="w-5 h-5 shrink-0" /> 
                     <span x-show="sidebarOpen">Data Keuangan</span>
                 </a>
-                <a href="#" class="flex items-center gap-3 {{ request()->routeIs('keuangan.*') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition" :class="!sidebarOpen && 'justify-center'">
-                    <x-heroicon-o-document-text class="w-5 h-5 shrink-0" /> 
-                    <span x-show="sidebarOpen">Audit</span>
-                </a>
-                <form method="POST" action="{{ route('logout') }}">
+                <button @click="showLogoutConfirm = true" class="flex items-center gap-3 p-3 rounded-lg w-full text-left hover:bg-[#3D5A3E] transition" :class="!sidebarOpen && 'justify-center'">
+                    <x-heroicon-o-arrow-left-start-on-rectangle class="w-5 h-5 shrink-0" /> 
+                    <span x-show="sidebarOpen">Keluar</span>
+                </button>
+                <form id="logoutForm" method="POST" action="{{ route('logout') }}" class="hidden">
                     @csrf
-                    <button type="submit" class="flex items-center gap-3 p-3 rounded-lg w-full text-left hover:bg-[#3D5A3E] transition" :class="!sidebarOpen && 'justify-center'">
-                        <x-heroicon-o-arrow-left-start-on-rectangle class="w-5 h-5 shrink-0" /> 
-                        <span x-show="sidebarOpen">Keluar</span>
-                    </button>
                 </form>
             </nav>
+
+            {{-- Widget Bawah Sidebar --}}
+            <div x-show="sidebarOpen" class="m-4 p-4 bg-white/10 rounded-xl text-xs text-white shrink-0 border border-white/10 backdrop-blur-sm">
+                <div class="flex items-center gap-2 mb-2 font-bold uppercase">
+                    <x-heroicon-o-shield-check class="w-4 h-4 text-green-300" /> 
+                    <span>Keamanan Data</span>
+                </div>
+                <p class="mb-3 text-[10px] text-gray-300 leading-tight">Anda login sebagai Admin. Pastikan data lahan & petani tetap rahasia.</p>
+                <!-- <a href="#" class="w-full bg-white/20 py-2 rounded font-semibold text-white hover:bg-white hover:text-[#234323] transition inline-block text-center text-[10px]">
+                    Panduan Penggunaan
+                </a> -->
+            </div>
+
+            {{-- Widget Bawah Sidebar (Mode Tertutup) --}}
+            <div x-show="!sidebarOpen" class="m-4 flex justify-center shrink-0">
+                <a href="#" class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center hover:bg-white hover:text-[#234323] transition text-white shadow-sm border border-white/10" title="Panduan Penggunaan">
+                    <x-heroicon-o-shield-check class="w-6 h-6" />
+                </a>
+            </div>
         </aside>
 
         <div class="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
@@ -109,6 +128,26 @@
             <main class="p-4 md:p-6 overflow-y-auto flex-1 bg-[#F3F4F6]">
                 @yield('content')
             </main>
+        </div>
+    </div>
+    <!-- Modal Konfirmasi Logout -->
+    <div x-show="showLogoutConfirm" 
+         @click="showLogoutConfirm = false"
+         class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+         style="display: none;">
+        <div @click.stop class="bg-white rounded-lg shadow-2xl p-6 w-full max-w-sm">
+            <h3 class="text-lg font-bold text-gray-800 mb-2">Konfirmasi Keluar</h3>
+            <p class="text-gray-600 mb-6">Apakah Anda yakin ingin keluar dari sistem?</p>
+            <div class="flex gap-3 justify-end">
+                <button @click="showLogoutConfirm = false" 
+                        class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition font-medium">
+                    Batal
+                </button>
+                <button @click="confirmLogout()" 
+                        class="px-4 py-2 bg-[#234323] text-white rounded-lg hover:bg-[#3D5A3E] transition font-medium">
+                    Keluar
+                </button>
+            </div>
         </div>
     </div>
 </body>
