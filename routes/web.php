@@ -110,7 +110,9 @@ Route::middleware(['auth'])->group(function () {
     // --- AUDIT INTERNAL ---
     Route::get('/audit', [AuditInternalController::class, 'index'])->name('audit.index');
     Route::delete('/audit/kunjungan/{id}', [AuditInternalController::class, 'destroyKunjungan'])->name('audit.kunjungan.destroy');
+    Route::put('/audit/kunjungan/{id}/status', [AuditInternalController::class, 'updateStatusKunjungan'])->name('audit.kunjungan.updateStatus');
     Route::delete('/audit/internal/{id}', [AuditInternalController::class, 'destroyInternal'])->name('audit.internal.destroy');
+    Route::put('/audit/internal/{id}/status', [AuditInternalController::class, 'updateStatus'])->name('audit.internal.updateStatus');
 
 
     // --- LAIN-LAIN ---
@@ -136,11 +138,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/notifikasi/popup', [NotifikasiController::class, 'getPopup']);
     Route::get('/notifikasi/count', [NotifikasiController::class, 'count']);
 
-    // URL disesuaikan dengan fetch JavaScript kemarin
-    // Pastikan url-nya '/notifikasi/mark-all' sesuai yang diminta JavaScript-mu
     Route::post('/notifikasi/mark-all', [NotifikasiController::class, 'markAllAsRead'])->name('notifikasi.markAllAsRead');
 
-    // Pastikan juga url read per item sudah terpasang seperti ini
+    // notif
     Route::post('/notifikasi/read/{id}', [NotifikasiController::class, 'markAsRead'])->name('notifikasi.markAsRead');
     Route::post('/tugas/{id}/selesai', [DashboardController::class, 'completeTask'])->name('tugas.complete');
     });

@@ -9,13 +9,73 @@ use Illuminate\Support\Facades\Storage;
 
 class AuditInternalController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Mengambil data kunjungan dan audit
-        $kunjungan = KunjunganLapangan::orderBy('tanggal_kunjungan', 'desc')->get();
-        $audit = AuditInternal::orderBy('tanggal', 'desc')->get();
+        $bulanAwal = $request->input('dari_bulan');
+        $bulanAkhir = $request->input('sampai_bulan');
+        $tahun = $request->input('tahun');
+        $status = $request->input('status');
 
-        return view('super_admin.Audit.index', compact('kunjungan', 'audit'));
+        $user = auth()->user();
+        $isAdmin = $user && $user->user_role === 'admin';
+        $adminId = $isAdmin ? $user->user_id : null;
+        $adminName = $isAdmin ? $user->user_nama : null;
+
+        // Kunjungan Query
+        $kunjunganQuery = KunjunganLapangan::query();
+
+        // Admin Filter for Kunjungan
+        if ($isAdmin && $adminName) {
+            $kunjunganQuery->where('nama_auditor', 'like', "%{$adminName}%");
+        }
+        if ($bulanAwal && $bulanAkhir) {
+            $kunjunganQuery->whereMonth('tanggal_kunjungan', '>=', $bulanAwal)
+                           ->whereMonth('tanggal_kunjungan', '<=', $bulanAkhir);
+        }
+        if ($tahun) {
+            $kunjunganQuery->whereYear('tanggal_kunjungan', $tahun);
+        }
+        if ($status) {
+            if ($status === 'Menunggu Konfirmasi') {
+                $kunjunganQuery->where(function($q) {
+                    $q->whereNull('status')->orWhere('status', '');
+                });
+            } else {
+                $kunjunganQuery->where('status', $status);
+            }
+        }
+        $kunjungan = $kunjunganQuery->orderBy('tanggal_kunjungan', 'desc')->get();
+
+        // Audit Query
+        $auditQuery = AuditInternal::query();
+
+        // Admin Filter for Audit
+        if ($isAdmin && $adminId) {
+            $auditQuery->where('user_id', $adminId);
+        }
+        if ($bulanAwal && $bulanAkhir) {
+            $auditQuery->whereMonth('tanggal', '>=', $bulanAwal)
+                       ->whereMonth('tanggal', '<=', $bulanAkhir);
+        }
+        if ($tahun) {
+            $auditQuery->whereYear('tanggal', $tahun);
+        }
+        if ($status) {
+            if ($status === 'Menunggu Konfirmasi') {
+                $auditQuery->where(function($q) {
+                    $q->whereNull('status_audit')->orWhere('status_audit', '');
+                });
+            } else {
+                $auditQuery->where('status_audit', $status);
+            }
+        }
+        $audit = $auditQuery->orderBy('tanggal', 'desc')->get();
+
+        if ($isAdmin) {
+            return view('admin.Audit.index', compact('kunjungan', 'audit', 'bulanAwal', 'bulanAkhir', 'tahun', 'status'));
+        }
+
+        return view('super_admin.Audit.index', compact('kunjungan', 'audit', 'bulanAwal', 'bulanAkhir', 'tahun', 'status'));
     }
 
     public function destroyKunjungan($id)
@@ -35,6 +95,28 @@ class AuditInternalController extends Controller
         return redirect()->route('audit.index')->with('success', 'Data kunjungan lapangan berhasil dihapus.');
     }
 
+    public function updateStatusKunjungan(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|string|in:Lulus,Perlu Perbaikan',
+            'keterangan' => 'nullable|string'
+        ]);
+
+        $kunjungan = KunjunganLapangan::findOrFail($id);
+        
+        $kunjungan->status = $request->status;
+        
+        if ($request->status === 'Lulus') {
+            $kunjungan->keterangan = null;
+        } else {
+            $kunjungan->keterangan = $request->keterangan;
+        }
+
+        $kunjungan->save();
+
+        return redirect()->route('audit.index')->with('success', 'Status kunjungan lapangan berhasil diperbarui.');
+    }
+
     public function destroyInternal($id)
     {
         $audit = AuditInternal::findOrFail($id);
@@ -50,5 +132,27 @@ class AuditInternalController extends Controller
         $audit->delete();
 
         return redirect()->route('audit.index')->with('success', 'Data audit internal berhasil dihapus.');
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status_audit' => 'required|string|in:Lulus,Perlu Perbaikan',
+            'keterangan' => 'nullable|string'
+        ]);
+
+        $audit = AuditInternal::findOrFail($id);
+        
+        $audit->status_audit = $request->status_audit;
+        
+        if ($request->status_audit === 'Lulus') {
+            $audit->keterangan = null;
+        } else {
+            $audit->keterangan = $request->keterangan;
+        }
+
+        $audit->save();
+
+        return redirect()->route('audit.index')->with('success', 'Status audit internal berhasil diperbarui.');
     }
 }

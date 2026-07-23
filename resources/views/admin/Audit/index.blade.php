@@ -1,6 +1,6 @@
-@extends('layouts.dashboard')
+@extends('layouts.admin')
 
-@section('title', 'Data Audit - Super Admin')
+@section('title', 'Data Audit - Admin')
 
 @section('content')
     <div x-data="{ activeTab: new URLSearchParams(location.search).get('tab') || 'audit' }" class="space-y-4">

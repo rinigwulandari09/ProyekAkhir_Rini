@@ -64,6 +64,10 @@
                     <x-heroicon-o-banknotes class="w-5 h-5 shrink-0" /> 
                     <span x-show="sidebarOpen">Data Keuangan</span>
                 </a>
+                <a href="{{ route('audit.index') }}" class="flex items-center gap-3 {{ request()->routeIs('audit.*') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition" :class="!sidebarOpen && 'justify-center'">
+                    <x-heroicon-o-document-text class="w-5 h-5 shrink-0" /> 
+                    <span x-show="sidebarOpen">Audit</span>
+                </a>
                 <button @click="showLogoutConfirm = true" class="flex items-center gap-3 p-3 rounded-lg w-full text-left hover:bg-[#3D5A3E] transition" :class="!sidebarOpen && 'justify-center'">
                     <x-heroicon-o-arrow-left-start-on-rectangle class="w-5 h-5 shrink-0" /> 
                     <span x-show="sidebarOpen">Keluar</span>

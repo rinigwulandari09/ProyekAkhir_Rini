@@ -7,9 +7,52 @@
         </div>
     </div>
 
-    {{-- Container tempat tombol Export --}}
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-        <div id="exportButtonsContainer" class="flex flex-wrap items-center w-full sm:w-auto gap-2 sm:gap-3"></div>
+    {{-- Container tempat tombol Export dan Filter --}}
+    <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-3 mb-4">
+        <div id="exportButtonsContainer" class="flex flex-wrap items-center w-full xl:w-auto gap-2"></div>
+
+        <form action="{{ route('audit.index') }}" method="GET" class="flex flex-wrap items-center gap-2 w-full xl:w-auto">
+            <input type="hidden" name="tab" value="kunjungan">
+            
+            <select name="dari_bulan" class="text-xs border-gray-300 text-gray-600 rounded-lg py-1.5 pl-2 pr-6 focus:ring-[#234323] focus:border-[#234323] shadow-sm">
+                <option value="">Dari Bln</option>
+                @for ($m=1; $m<=12; $m++)
+                    <option value="{{ $m }}" {{ request('dari_bulan') == $m && request('tab') == 'kunjungan' ? 'selected' : '' }}>{{ date('M', mktime(0, 0, 0, $m, 1)) }}</option>
+                @endfor
+            </select>
+
+            <select name="sampai_bulan" class="text-xs border-gray-300 text-gray-600 rounded-lg py-1.5 pl-2 pr-6 focus:ring-[#234323] focus:border-[#234323] shadow-sm">
+                <option value="">Sampai Bln</option>
+                @for ($m=1; $m<=12; $m++)
+                    <option value="{{ $m }}" {{ request('sampai_bulan') == $m && request('tab') == 'kunjungan' ? 'selected' : '' }}>{{ date('M', mktime(0, 0, 0, $m, 1)) }}</option>
+                @endfor
+            </select>
+
+            <select name="tahun" class="text-xs border-gray-300 text-gray-600 rounded-lg py-1.5 pl-2 pr-6 focus:ring-[#234323] focus:border-[#234323] shadow-sm">
+                <option value="">Tahun</option>
+                @php $currentYear = date('Y'); @endphp
+                @for ($y = $currentYear + 2; $y >= 2023; $y--)
+                    <option value="{{ $y }}" {{ request('tahun') == $y && request('tab') == 'kunjungan' ? 'selected' : '' }}>{{ $y }}</option>
+                @endfor
+            </select>
+
+            <select name="status" class="text-xs border-gray-300 text-gray-600 rounded-lg py-1.5 pl-2 pr-6 focus:ring-[#234323] focus:border-[#234323] shadow-sm">
+                <option value="">Semua Status</option>
+                <option value="Menunggu Konfirmasi" {{ request('status') == 'Menunggu Konfirmasi' && request('tab') == 'kunjungan' ? 'selected' : '' }}>Menunggu Konfirmasi</option>
+                <option value="Lulus" {{ request('status') == 'Lulus' && request('tab') == 'kunjungan' ? 'selected' : '' }}>Lulus</option>
+                <option value="Perlu Perbaikan" {{ request('status') == 'Perlu Perbaikan' && request('tab') == 'kunjungan' ? 'selected' : '' }}>Perlu Perbaikan</option>
+            </select>
+
+            <button type="submit" class="bg-[#214122] text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-green-900 transition shadow-sm">
+                Filter
+            </button>
+            
+            @if(request()->hasAny(['dari_bulan', 'sampai_bulan', 'tahun', 'status']) && request('tab') == 'kunjungan')
+                <a href="{{ route('audit.index', ['tab' => 'kunjungan']) }}" class="bg-gray-100 text-gray-700 border border-gray-300 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-gray-200 transition shadow-sm">
+                    Reset
+                </a>
+            @endif
+        </form>
     </div>
     
     {{-- Table Card --}}
@@ -23,6 +66,8 @@
                         <th class="p-4 text-xs font-bold text-gray-700 uppercase">Desa Kebun</th>
                         <th class="p-4 text-xs font-bold text-gray-700 uppercase">Desa Kepengurusan</th>
                         <th class="p-4 text-xs font-bold text-gray-700 uppercase">Nama Auditor</th>
+                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Status</th>
+                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Keterangan</th>
                         <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -42,6 +87,21 @@
                         <td class="p-4 text-xs text-gray-600">{{ $k->desa_kebun ?? '-' }}</td>
                         <td class="p-4 text-xs text-gray-800">{{ $k->desa_kepengurusan ?? '-' }}</td>
                         <td class="p-4 text-xs text-gray-500">{{ $k->nama_auditor ?? '-' }}</td>
+                        <td class="p-4 text-xs">
+                            @php
+                                $displayStatusK = $k->status ?: 'Menunggu Konfirmasi';
+                                $statusColorK = match(strtolower($displayStatusK)) {
+                                    'disetujui', 'lolos', 'lulus', 'selesai' => 'bg-green-50 text-green-700 border-green-200',
+                                    'ditolak', 'tidak lolos', 'gagal', 'perlu perbaikan' => 'bg-red-50 text-red-700 border-red-200',
+                                    'proses', 'pending', 'menunggu', 'menunggu konfirmasi' => 'bg-yellow-50 text-yellow-700 border-yellow-200',
+                                    default => 'bg-gray-50 text-gray-700 border-gray-200'
+                                };
+                            @endphp
+                            <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold border {{ $statusColorK }} whitespace-nowrap">
+                                {{ $displayStatusK }}
+                            </span>
+                        </td>
+                        <td class="p-4 text-xs text-gray-600 max-w-xs truncate" title="{{ $k->keterangan }}">{{ $k->keterangan ?? '-' }}</td>
                         <td class="p-4">
                             <div class="flex justify-center gap-3">
                                 @if($k->path_file_kunjungan)
@@ -49,6 +109,13 @@
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75"></path></svg>
                                 </a>
                                 @endif
+                                <button type="button" 
+                                        data-id="{{ $k->id_kunjungan }}"
+                                        data-status="{{ $k->status ?: '' }}"
+                                        data-keterangan="{{ $k->keterangan ?? '' }}"
+                                        class="btn-edit-status-kunjungan text-yellow-500 hover:scale-110 transition" title="Ubah Status">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"></path></svg>
+                                </button>
                                 <form action="{{ route('audit.kunjungan.destroy', $k->id_kunjungan) }}" method="POST" onsubmit="return confirm('Yakin hapus?')">
                                     @csrf
                                     @method('DELETE')
@@ -120,10 +187,10 @@
             },
             "order": [[ 1, "desc" ]],
             "columnDefs": [ 
-                { "orderable": false, "searchable": false, "targets": [0, 5] },
+                { "orderable": false, "searchable": false, "targets": [0, 7] },
                 { "className": "text-center all", "targets": 0 }, 
                 { "className": "all", "targets": 1 }, 
-                { "className": "min-tablet", "targets": [2, 3, 4, 5] } 
+                { "className": "min-tablet", "targets": [2, 3, 4, 5, 6, 7] } 
             ],
             "buttons": [
                 {
@@ -131,7 +198,7 @@
                     text: '<div class="flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path></svg><span>Export Excel</span></div>',
                     className: 'btn-export-excel',
                     title: 'Data_Kunjungan_Lapangan',
-                    exportOptions: { columns: [0, 1, 2, 3, 4], format: cleanExportFormat }
+                    exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6], format: cleanExportFormat }
                 },
                 {
                     extend: 'pdfHtml5',
@@ -141,7 +208,7 @@
                     filename: 'Data_Kunjungan_Lapangan',
                     orientation: 'landscape',
                     pageSize: 'A4',
-                    exportOptions: { columns: [0, 1, 2, 3, 4], format: cleanExportFormat }
+                    exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6], format: cleanExportFormat }
                 }
             ],
             "dom": '<"hidden" B> <"flex justify-between items-center w-full mb-4 gap-2" l f> rt <"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4" i p>'
@@ -267,3 +334,101 @@
     .dataTables_wrapper .dataTables_paginate .paginate_button:hover { background: #f3f4f6 !important; color: #1f2937 !important; border-color: #d1d5db !important; }
     .dataTables_wrapper .dataTables_paginate .paginate_button.disabled, .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover { color: #9ca3af !important; background: #f9fafb !important; border-color: #e5e7eb !important; cursor: not-allowed; }
 </style>
+
+{{-- Modal Update Status Kunjungan --}}
+<div id="editStatusKunjunganModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        {{-- Background overlay --}}
+        <div class="fixed inset-0 transition-opacity bg-black/50" aria-hidden="true" onclick="closeEditStatusKunjunganModal()"></div>
+
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+        <div class="relative inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-xl shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6 z-10">
+            <div class="sm:flex sm:items-start">
+                <div class="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-[#234323]/10 rounded-full sm:mx-0 sm:h-10 sm:w-10">
+                    <svg class="w-6 h-6 text-[#234323]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                    <h3 class="text-lg font-medium leading-6 text-gray-900" id="modal-title">Ubah Status Kunjungan Lapangan</h3>
+                    <div class="mt-4">
+                        <form id="editStatusKunjunganForm" method="POST">
+                            @csrf
+                            @method('PUT')
+                            
+                            <div class="mb-4">
+                                <label for="status_kunjungan" class="block text-sm font-medium text-gray-700 mb-1">Status Kunjungan</label>
+                                <select id="status_kunjungan" name="status" onchange="toggleKeteranganKunjunganField()" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#234323] focus:border-[#234323] sm:text-sm">
+                                    <option value="" disabled selected hidden>Pilih Status...</option>
+                                    <option value="Lulus">Lulus</option>
+                                    <option value="Perlu Perbaikan">Perlu Perbaikan</option>
+                                </select>
+                            </div>
+
+                            <div id="keterangan_kunjungan_container" class="mb-4 hidden">
+                                <label for="keterangan_kunjungan" class="block text-sm font-medium text-gray-700 mb-1">Keterangan / Alasan Perbaikan</label>
+                                <textarea id="keterangan_kunjungan" name="keterangan" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#234323] focus:border-[#234323] sm:text-sm" placeholder="Tuliskan keterangan detail di sini..."></textarea>
+                            </div>
+
+                            <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                                <button type="submit" class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-[#234323] border border-transparent rounded-lg shadow-sm hover:bg-[#3D5A3E] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#234323] sm:ml-3 sm:w-auto sm:text-sm">
+                                    Simpan Perubahan
+                                </button>
+                                <button type="button" onclick="closeEditStatusKunjunganModal()" class="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#234323] sm:mt-0 sm:w-auto sm:text-sm">
+                                    Batal
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Event delegation
+    $(document).on('click', '.btn-edit-status-kunjungan', function(e) {
+        e.preventDefault();
+        const id = $(this).data('id');
+        const status = $(this).data('status');
+        const keterangan = $(this).data('keterangan');
+        
+        openEditStatusKunjunganModal(id, status, keterangan);
+    });
+
+    function openEditStatusKunjunganModal(id, currentStatus, currentKeterangan) {
+        const form = document.getElementById('editStatusKunjunganForm');
+        form.action = `/audit/kunjungan/${id}/status`;
+        
+        const statusSelect = document.getElementById('status_kunjungan');
+        const keteranganInput = document.getElementById('keterangan_kunjungan');
+        
+        if (!currentStatus) {
+            statusSelect.value = '';
+        } else if (currentStatus === 'Perlu Perbaikan' || currentStatus === 'Tidak Lolos' || currentStatus === 'Gagal') {
+            statusSelect.value = 'Perlu Perbaikan';
+        } else {
+            statusSelect.value = 'Lulus';
+        }
+
+        keteranganInput.value = currentKeterangan || '';
+        
+        toggleKeteranganKunjunganField();
+        
+        document.getElementById('editStatusKunjunganModal').classList.remove('hidden');
+    }
+
+    function closeEditStatusKunjunganModal() {
+        document.getElementById('editStatusKunjunganModal').classList.add('hidden');
+    }
+
+    function toggleKeteranganKunjunganField() {
+        const status = document.getElementById('status_kunjungan').value;
+        const container = document.getElementById('keterangan_kunjungan_container');
+        if (status === 'Perlu Perbaikan') {
+            container.classList.remove('hidden');
+        } else {
+            container.classList.add('hidden');
+        }
+    }
+</script>

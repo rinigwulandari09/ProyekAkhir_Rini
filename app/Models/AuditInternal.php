@@ -21,6 +21,8 @@ class AuditInternal extends Model
         'nama_petani',
         'petani_id',
         'is_read',
-        'path_file_kunjungan'
+        'path_file_kunjungan',
+        'status_audit',
+        'keterangan'
     ];
 }

@@ -18,6 +18,8 @@ class KunjunganLapangan extends Model
         'desa_kebun',
         'desa_kepengurusan',
         'nama_auditor',
-        'path_file_kunjungan'
+        'path_file_kunjungan',
+        'status',
+        'keterangan'
     ];
 }
