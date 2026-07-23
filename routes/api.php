@@ -75,3 +75,4 @@ Route::put('/notifications/read', [AuditInternalController::class, 'markAsRead']
 
 // dashboard
 Route::get('/dashboard', [DashboardApiController::class, 'index']);
+Route::get('/dashboard/petani/{petani_id}', [DashboardApiController::class, 'petaniSummary']);

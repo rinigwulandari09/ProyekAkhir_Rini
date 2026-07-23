@@ -69,4 +69,59 @@ class DashboardApiController extends Controller
             ], 500);
         }
     }
+
+    public function petaniSummary($petani_id)
+    {
+        try {
+            $now = Carbon::now();
+            $currentMonth = $now->month;
+            $currentYear = $now->year;
+
+            $lastMonthDate = $now->copy()->subMonth();
+            $lastMonth = $lastMonthDate->month;
+            $lastMonthYear = $lastMonthDate->year;
+
+            // Pemasukan
+            $pemasukanBulanIni = DB::table('produksi')
+                ->where('petani_id', $petani_id)
+                ->whereMonth('produksi_tanggal', $currentMonth)
+                ->whereYear('produksi_tanggal', $currentYear)
+                ->sum('total_pendapatan');
+
+            $pemasukanBulanLalu = DB::table('produksi')
+                ->where('petani_id', $petani_id)
+                ->whereMonth('produksi_tanggal', $lastMonth)
+                ->whereYear('produksi_tanggal', $lastMonthYear)
+                ->sum('total_pendapatan');
+
+            // Pengeluaran
+            $pengeluaranBulanIni = DB::table('biaya_operasional')
+                ->where('petani_id', $petani_id)
+                ->whereMonth('biaya_tanggal', $currentMonth)
+                ->whereYear('biaya_tanggal', $currentYear)
+                ->sum('biaya_total');
+
+            $pengeluaranBulanLalu = DB::table('biaya_operasional')
+                ->where('petani_id', $petani_id)
+                ->whereMonth('biaya_tanggal', $lastMonth)
+                ->whereYear('biaya_tanggal', $lastMonthYear)
+                ->sum('biaya_total');
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'pemasukan_bulan_ini' => (float) $pemasukanBulanIni,
+                    'pemasukan_bulan_lalu' => (float) $pemasukanBulanLalu,
+                    'pengeluaran_bulan_ini' => (float) $pengeluaranBulanIni,
+                    'pengeluaran_bulan_lalu' => (float) $pengeluaranBulanLalu,
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengambil summary petani: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }
