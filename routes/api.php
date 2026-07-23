@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\KunjunganLapanganController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\PetaniController;
 use App\Http\Controllers\Api\AuditInternalController;
+use App\Http\Controllers\Api\DashboardApiController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -71,3 +72,6 @@ Route::post('/kunjungan-lapangan', [KunjunganLapanganController::class, 'store']
 Route::post('/audit-internal', [AuditInternalController::class, 'store']);
 Route::get('/audit-internal/petani/{petani_id}', [AuditInternalController::class, 'getNotifications']);
 Route::put('/notifications/read', [AuditInternalController::class, 'markAsRead']);
+
+// dashboard
+Route::get('/dashboard', [DashboardApiController::class, 'index']);
