@@ -12,6 +12,14 @@ class DashboardApiController extends Controller
     public function index()
     {
         try {
+            // Jumlah Petani
+            $jumlahPetani = DB::table('petani')->count('petani_id');
+            
+            // Jumlah Luas Lahan
+            $jumlahLahan = DB::table('lahan')
+                ->join('petani', 'lahan.petani_id', '=', 'petani.petani_id')
+                ->sum('lahan_luas');
+
             // Pemasukan per bulan
             $pemasukanDataQuery = DB::table('produksi')
                 ->join('petani', 'produksi.petani_id', '=', 'petani.petani_id');
@@ -48,6 +56,8 @@ class DashboardApiController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => [
+                    'jumlah_petani' => $jumlahPetani,
+                    'jumlah_lahan' => (float)$jumlahLahan,
                     'pemasukan' => array_values($pemasukanGrafik), // 12 item (Jan-Dec)
                     'pengeluaran' => $pengeluaranGrafik
                 ]
