@@ -59,7 +59,11 @@ class DashboardApiController extends Controller
                     'jumlah_petani' => $jumlahPetani,
                     'jumlah_lahan' => (float)$jumlahLahan,
                     'pemasukan' => array_values($pemasukanGrafik), // 12 item (Jan-Dec)
-                    'pengeluaran' => $pengeluaranGrafik
+                    'pengeluaran' => $pengeluaranGrafik,
+                    'pengingat' => DB::table('tugas')
+                                    ->whereNotNull('deadline')
+                                    ->orderBy('deadline', 'asc')
+                                    ->get(['id', 'judul', 'pesan', 'deadline', 'is_done'])
                 ]
             ]);
         } catch (\Exception $e) {
