@@ -46,7 +46,7 @@ class PetaniController extends Controller
         if ($request->hasFile('petani_profil')) {
             $file = $request->file('petani_profil');
             $fileName = time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
-            $file->storeAs('public/petani', $fileName);
+            $file->storeAs('petani', $fileName, 'public');
             $petani->petani_profil = 'petani/'.$fileName;
             $message .= ' Foto profil diunggah.';
         } else {
