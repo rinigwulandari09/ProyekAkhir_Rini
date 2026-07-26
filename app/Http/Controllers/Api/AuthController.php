@@ -123,6 +123,12 @@ class AuthController extends Controller
                 'message' => 'PIN salah'
             ], 401);
         }
+
+        // JIKA USERNAME TIDAK DITEMUKAN DI KEDUANYA
+        return response()->json([
+            'success' => false,
+            'message' => 'Username tidak ditemukan'
+        ], 404);
     }
 
     public function getPetani($petani_id)
