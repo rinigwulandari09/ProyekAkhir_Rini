@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash; // <-- Tambahkan ini
 use App\Models\User;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -22,16 +23,33 @@ class LoginController extends Controller
             'user_password' => 'required',
         ]);
 
-        $credentials = [
-            'user_username' => $request->user_username,
-            'password'      => $request->user_password,
-        ];
+        // 1. Cari user admin berdasarkan username
+        $user = User::where('user_username', $request->user_username)->first();
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-            return redirect()->route('dashboard');
+        if ($user) {
+            $inputPassword = $request->user_password;
+            $inputPasswordSha256 = hash('sha256', $inputPassword);
+            $isPasswordValid = false;
+
+            // 2. Cek apakah password cocok dengan:
+            // - SHA-256 (dari mobile)
+            // - Teks biasa (plain text)
+            // - Standar Bcrypt Laravel (Hash::check)
+            if ($user->user_password == $inputPassword || 
+                $user->user_password == $inputPasswordSha256 || 
+                Hash::check($inputPassword, $user->user_password)) {
+                $isPasswordValid = true;
+            }
+
+            // 3. Jika valid, login-kan secara manual menggunakan Auth::login()
+            if ($isPasswordValid) {
+                Auth::login($user);
+                $request->session()->regenerate();
+                return redirect()->route('dashboard');
+            }
         }
 
+        // Jika user tidak ditemukan atau password salah
         return back()
             ->withErrors([
                 'user_username' => 'Username atau Password salah'
@@ -48,34 +66,24 @@ class LoginController extends Controller
     }
 
     // FITUR GOOGLE OAUTH
-    // Mengalihkan pengguna ke halaman login Google.
     public function redirectToGoogle()
     {
         return Socialite::driver('google')->redirect();
     }
-
    
-    // Menangani respon balik (callback) dari Google setelah pengguna login.
     public function handleGoogleCallback(Request $request)
     {
         try {
             $googleUser = Socialite::driver('google')->user();
             
-            // Cari user berdasarkan email yang didapat dari Google
-            // (Asumsi: di tabel users kamu ada kolom 'user_email')
             $user = User::where('user_email', $googleUser->getEmail())->first();
 
             if ($user) {
-                // Login-kan user jika ditemukan di database
                 Auth::login($user);
-                
-                // Regenerasi session seperti pada method authenticate bawaanmu
                 $request->session()->regenerate();
-                
                 return redirect()->route('dashboard');
             }
 
-            // Jika email Google tidak terdaftar di database (bukan Super Admin/Admin sah)
             return redirect()->route('login')
                 ->withErrors(['user_username' => 'Akun Google Anda tidak terdaftar sebagai Admin.']);
 

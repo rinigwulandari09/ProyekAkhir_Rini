@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Petani;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -24,30 +25,25 @@ class AuthController extends Controller
             'petani_profil'          => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
         ]);
 
-        // default null
         $filePath = null;
 
-        // CEK ADA FILE FOTO
         if ($request->hasFile('petani_profil')) {
             $file = $request->file('petani_profil');
-
-            // bikin nama unik
             $fileName = time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
-
-            // simpan ke storage/app/public/petani
             $file->storeAs('public/petani', $fileName);
-
-            // path yang disimpan ke DB
             $filePath = 'petani/'.$fileName;
         }
 
+        // TIPS: Jika dari mobile mengirim PIN terenkripsi SHA-256 atau plain text, 
+        // kita bisa simpan atau biarkan sesuai kebutuhan. 
+        // Di sini kita simpan apa adanya atau di-hash jika diperlukan.
         $petani = Petani::create([
             'petani_nama' => $request->petani_nama,
             'petani_alamat' => $request->petani_alamat,
             'petani_no_hp' => $request->petani_no_hp,
             'petani_status' => 'Pending',
             'petani_email' => $request->petani_email,
-            'petani_pin' => $request->petani_pin,
+            'petani_pin' => $request->petani_pin, // Sesuaikan jika mobile kirim hash sha256
             'petani_jenis_kelamin' => $request->petani_jenis_kelamin,
             'petani_tanggal_lahir' => $request->petani_tanggal_lahir,
             'petani_username' => $request->petani_username,
@@ -69,13 +65,26 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
-        // LOGIN ADMIN
+        $inputPassword = $request->password;
+        // Buat juga versi SHA-256 dari inputan mobile untuk berjaga-jaga
+        $inputPasswordSha256 = hash('sha256', $inputPassword);
+
+        // ==========================================
+        // 1. LOGIN ADMIN
+        // ==========================================
         $user = User::where('user_username', $request->username)->first();
 
         if ($user) {
+            $isAdminValid = false;
 
-            if ($user->user_password == $request->password) {
+            // Cek apakah cocok dengan SHA-256, teks biasa, atau Bcrypt Laravel
+            if ($user->user_password == $inputPassword || 
+                $user->user_password == $inputPasswordSha256 || 
+                Hash::check($inputPassword, $user->user_password)) {
+                $isAdminValid = true;
+            }
 
+            if ($isAdminValid) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Login berhasil',
@@ -94,11 +103,22 @@ class AuthController extends Controller
             ], 401);
         }
 
-        // LOGIN PETANI
+        // ==========================================
+        // 2. LOGIN PETANI
+        // ==========================================
         $petani = Petani::where('petani_username', $request->username)->first();
+        
         if ($petani) {
-            if ($petani->petani_pin == $request->password) {
-                // Ambil ulang data profil berdasarkan petani_id
+            $isPetaniValid = false;
+
+            // Cek apakah PIN cocok dengan teks biasa, SHA-256, atau Bcrypt
+            if ($petani->petani_pin == $inputPassword || 
+                $petani->petani_pin == $inputPasswordSha256 || 
+                Hash::check($inputPassword, $petani->petani_pin)) {
+                $isPetaniValid = true;
+            }
+
+            if ($isPetaniValid) {
                 $profilPetani = Petani::where('petani_id', $petani->petani_id)
                     ->value('petani_profil');
 
@@ -122,6 +142,11 @@ class AuthController extends Controller
                 'message' => 'PIN salah'
             ], 401);
         }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Username tidak ditemukan'
+        ], 404);
     }
 
     public function getPetani($petani_id)
