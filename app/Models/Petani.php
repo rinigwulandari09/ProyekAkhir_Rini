@@ -22,7 +22,8 @@ class Petani extends Model
         'petani_jenis_kelamin',
         'petani_tanggal_lahir',
         'petani_username',
-        'desa_id'
+        'desa_id',
+        'petani_profil'
     ];
 
     // relasi ke tabel lahan

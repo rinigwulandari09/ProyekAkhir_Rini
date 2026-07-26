@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Petani;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class PetaniController extends Controller
 {
@@ -69,4 +70,26 @@ class PetaniController extends Controller
         ], 200);
     }
 
+    public function ubahPin(Request $request, $petani_id)
+    {
+        $petani = Petani::find($petani_id);
+        if (!$petani) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data petani tidak ditemukan'
+            ], 404);
+        }
+
+        $request->validate([
+            'pin_baru' => 'required|numeric|digits:6',
+        ]);
+
+        $petani->petani_pin = Hash::make($request->pin_baru);
+        $petani->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'PIN berhasil diubah'
+        ], 200);
+    }
 }
