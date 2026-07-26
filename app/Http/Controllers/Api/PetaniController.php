@@ -42,11 +42,15 @@ class PetaniController extends Controller
             'petani_profil'          => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
         ]);
 
+        $message = 'Profil berhasil diperbarui.';
         if ($request->hasFile('petani_profil')) {
             $file = $request->file('petani_profil');
             $fileName = time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
             $file->storeAs('public/petani', $fileName);
             $petani->petani_profil = 'petani/'.$fileName;
+            $message .= ' Foto profil diunggah.';
+        } else {
+            $message .= ' Tidak ada foto yang diunggah dari Android.';
         }
 
         $petani->petani_nama = $request->petani_nama;
@@ -60,7 +64,7 @@ class PetaniController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Profil berhasil diperbarui',
+            'message' => $message,
             'data' => $petani
         ], 200);
     }
