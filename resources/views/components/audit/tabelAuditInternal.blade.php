@@ -14,21 +14,21 @@
         <form action="{{ route('audit.index') }}" method="GET" class="flex flex-wrap items-center gap-2 w-full xl:w-auto">
             <input type="hidden" name="tab" value="audit">
             
-            <select name="dari_bulan" class="text-xs border-gray-300 text-gray-600 rounded-lg py-1.5 pl-2 pr-6 focus:ring-[#234323] focus:border-[#234323] shadow-sm">
+            <select name="dari_bulan" class="bg-white border-gray-200 text-gray-700 rounded-lg py-2 pl-3 pr-8 text-xs font-medium focus:ring-2 focus:ring-[#234323]/20 focus:border-[#234323] hover:border-[#234323] hover:shadow-md transition-all duration-300 shadow-sm cursor-pointer outline-none">
                 <option value="">Dari Bln</option>
                 @for ($m=1; $m<=12; $m++)
                     <option value="{{ $m }}" {{ request('dari_bulan') == $m && request('tab', 'audit') == 'audit' ? 'selected' : '' }}>{{ date('M', mktime(0, 0, 0, $m, 1)) }}</option>
                 @endfor
             </select>
 
-            <select name="sampai_bulan" class="text-xs border-gray-300 text-gray-600 rounded-lg py-1.5 pl-2 pr-6 focus:ring-[#234323] focus:border-[#234323] shadow-sm">
+            <select name="sampai_bulan" class="bg-white border-gray-200 text-gray-700 rounded-lg py-2 pl-3 pr-8 text-xs font-medium focus:ring-2 focus:ring-[#234323]/20 focus:border-[#234323] hover:border-[#234323] hover:shadow-md transition-all duration-300 shadow-sm cursor-pointer outline-none">
                 <option value="">Sampai Bln</option>
                 @for ($m=1; $m<=12; $m++)
                     <option value="{{ $m }}" {{ request('sampai_bulan') == $m && request('tab', 'audit') == 'audit' ? 'selected' : '' }}>{{ date('M', mktime(0, 0, 0, $m, 1)) }}</option>
                 @endfor
             </select>
 
-            <select name="tahun" class="text-xs border-gray-300 text-gray-600 rounded-lg py-1.5 pl-2 pr-6 focus:ring-[#234323] focus:border-[#234323] shadow-sm">
+            <select name="tahun" class="bg-white border-gray-200 text-gray-700 rounded-lg py-2 pl-3 pr-8 text-xs font-medium focus:ring-2 focus:ring-[#234323]/20 focus:border-[#234323] hover:border-[#234323] hover:shadow-md transition-all duration-300 shadow-sm cursor-pointer outline-none">
                 <option value="">Tahun</option>
                 @php $currentYear = date('Y'); @endphp
                 @for ($y = $currentYear + 2; $y >= 2023; $y--)
@@ -36,19 +36,19 @@
                 @endfor
             </select>
 
-            <select name="status" class="text-xs border-gray-300 text-gray-600 rounded-lg py-1.5 pl-2 pr-6 focus:ring-[#234323] focus:border-[#234323] shadow-sm">
+            <select name="status" class="bg-white border-gray-200 text-gray-700 rounded-lg py-2 pl-3 pr-8 text-xs font-medium focus:ring-2 focus:ring-[#234323]/20 focus:border-[#234323] hover:border-[#234323] hover:shadow-md transition-all duration-300 shadow-sm cursor-pointer outline-none">
                 <option value="">Semua Status</option>
                 <option value="Menunggu Konfirmasi" {{ request('status') == 'Menunggu Konfirmasi' && request('tab', 'audit') == 'audit' ? 'selected' : '' }}>Menunggu Konfirmasi</option>
                 <option value="Lulus" {{ request('status') == 'Lulus' && request('tab', 'audit') == 'audit' ? 'selected' : '' }}>Lulus</option>
                 <option value="Perlu Perbaikan" {{ request('status') == 'Perlu Perbaikan' && request('tab', 'audit') == 'audit' ? 'selected' : '' }}>Perlu Perbaikan</option>
             </select>
 
-            <button type="submit" class="bg-[#214122] text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-green-900 transition shadow-sm">
+            <button type="submit" class="bg-[#214122] text-white px-4 py-2 rounded-lg text-xs font-bold tracking-wide hover:bg-[#1a331a] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 shadow-sm">
                 Filter
             </button>
             
             @if(request()->hasAny(['dari_bulan', 'sampai_bulan', 'tahun', 'status']) && request('tab', 'audit') == 'audit')
-                <a href="{{ route('audit.index', ['tab' => 'audit']) }}" class="bg-gray-100 text-gray-700 border border-gray-300 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-gray-200 transition shadow-sm">
+                <a href="{{ route('audit.index', ['tab' => 'audit']) }}" class="bg-white text-gray-700 border border-gray-200 px-4 py-2 rounded-lg text-xs font-bold tracking-wide hover:bg-gray-50 hover:border-gray-300 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 shadow-sm">
                     Reset
                 </a>
             @endif
@@ -57,7 +57,7 @@
     
     {{-- Table Card --}}
     <div class="bg-white rounded-2xl shadow-sm p-3 sm:p-4 border border-gray-200">
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto w-full">
             <table id="auditTable" class="w-full text-left border-collapse display responsive nowrap" style="width: 100%">
                 <thead>
                     <tr class="bg-[#D9F99D] border-b border-gray-200">
@@ -103,7 +103,7 @@
                         </td>
                         <td class="p-4 text-xs text-gray-600 max-w-xs truncate" title="{{ $a->keterangan }}">{{ $a->keterangan ?? '-' }}</td>
                         <td class="p-4">
-                            <div class="flex items-justify gap-3">
+                            <div class="flex justify-center gap-3">
                                 @if($a->path_file_kunjungan)
                                 <a href="{{ Storage::url(str_replace(['storage/', 'public/'], '', $a->path_file_kunjungan)) }}" target="_blank" class="text-blue-600 hover:scale-110 transition" title="Lihat File">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75"></path></svg>
@@ -274,14 +274,12 @@
 
     function openEditStatusModal(id, currentStatus, currentKeterangan) {
         const form = document.getElementById('editStatusForm');
-        // Update the form action dynamically
+
         form.action = `/audit/internal/${id}/status`;
         
         const statusSelect = document.getElementById('status_audit');
         const keteranganInput = document.getElementById('keterangan');
-        
-        // Handle variations of 'Lulus' like 'Lolos', 'Selesai' etc if needed, 
-        // but default is Lulus vs Perlu Perbaikan
+
         if (!currentStatus) {
             statusSelect.value = '';
         } else if (currentStatus === 'Perlu Perbaikan' || currentStatus === 'Tidak Lolos' || currentStatus === 'Gagal') {

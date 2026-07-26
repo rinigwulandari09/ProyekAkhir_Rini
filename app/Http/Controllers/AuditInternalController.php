@@ -29,11 +29,11 @@ class AuditInternalController extends Controller
             $kunjunganQuery->where('nama_auditor', 'like', "%{$adminName}%");
         }
         if ($bulanAwal && $bulanAkhir) {
-            $kunjunganQuery->whereMonth('tanggal_kunjungan', '>=', $bulanAwal)
-                           ->whereMonth('tanggal_kunjungan', '<=', $bulanAkhir);
+            $kunjunganQuery->whereRaw('EXTRACT(MONTH FROM CAST(tanggal_kunjungan AS DATE)) >= ?', [$bulanAwal])
+                           ->whereRaw('EXTRACT(MONTH FROM CAST(tanggal_kunjungan AS DATE)) <= ?', [$bulanAkhir]);
         }
         if ($tahun) {
-            $kunjunganQuery->whereYear('tanggal_kunjungan', $tahun);
+            $kunjunganQuery->whereRaw('EXTRACT(YEAR FROM CAST(tanggal_kunjungan AS DATE)) = ?', [$tahun]);
         }
         if ($status) {
             if ($status === 'Menunggu Konfirmasi') {
@@ -54,11 +54,11 @@ class AuditInternalController extends Controller
             $auditQuery->where('user_id', $adminId);
         }
         if ($bulanAwal && $bulanAkhir) {
-            $auditQuery->whereMonth('tanggal', '>=', $bulanAwal)
-                       ->whereMonth('tanggal', '<=', $bulanAkhir);
+            $auditQuery->whereRaw('EXTRACT(MONTH FROM CAST(tanggal AS DATE)) >= ?', [$bulanAwal])
+                       ->whereRaw('EXTRACT(MONTH FROM CAST(tanggal AS DATE)) <= ?', [$bulanAkhir]);
         }
         if ($tahun) {
-            $auditQuery->whereYear('tanggal', $tahun);
+            $auditQuery->whereRaw('EXTRACT(YEAR FROM CAST(tanggal AS DATE)) = ?', [$tahun]);
         }
         if ($status) {
             if ($status === 'Menunggu Konfirmasi') {

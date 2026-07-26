@@ -69,16 +69,16 @@
                 <tbody class="divide-y divide-gray-100">
                     @foreach($lahans as $lahan)
                     <tr class="hover:bg-gray-50 transition">
-                        <td class="p-4 text-xs text-center text-gray-500 font-mono"></td>
+                        <td class="p-4 text-xs text-justify text-gray-500 font-mono"></td>
                         <td class="p-4 text-xs text-gray-800 font-medium">
                             {{ $lahan->petani ? $lahan->petani->petani_nama : 'Tidak terikat petani' }}
                         </td>
-                        <td class="p-4 text-xs text-gray-600 text-center">{{ $lahan->lahan_luas }} Ha</td>
-                        <td class="p-4 text-xs text-gray-600 text-center">{{ $lahan->tahun_tanam ?? '-' }}</td>
+                        <td class="p-4 text-xs text-gray-600 text-justify">{{ $lahan->lahan_luas }} Ha</td>
+                        <td class="p-4 text-xs text-gray-600 text-justify">{{ $lahan->tahun_tanam ?? '-' }}</td>
                         <td class="p-4 text-xs text-gray-600">{{ $lahan->lahan_no_surat ?? '-' }}</td>
                         <td class="p-4 text-xs text-gray-600">{{ $lahan->lahan_lokasi }}</td>
                         <td class="p-4">
-                            <div class="flex justify-center gap-3 items-center">
+                            <div class="flex justify-center gap-3 items-justify">
                                 <a href="{{ route('lahan.show', $lahan->lahan_id) }}" class="text-blue-600 hover:scale-110 transition" title="Lihat Peta / Detail">
                                     <x-heroicon-o-map-pin class="w-5 h-5" />
                                 </a>

@@ -44,7 +44,7 @@
                 <div class="w-10 h-10 bg-white p-1 rounded-full flex items-center justify-center overflow-hidden shrink-0">
                     <img src="{{ asset('foto/logo.png') }}" alt="Sawit" class="w-full h-full object-contain" />
                 </div>
-                <span x-show="sidebarOpen" class="tracking-wider text-lg font-bold whitespace-nowrap">NOTASAWIT</span>
+                <span x-show="sidebarOpen" class="tracking-wider text-lg font-bold whitespace-nowrap font-poppins">NOTASAWIT</span>
             </div>
 
             <nav class="flex-1 p-3 space-y-1 mt-4 text-sm overflow-y-auto">
@@ -103,7 +103,7 @@
                     <button @click="toggleSidebar()" class="p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                     </button>
-                    <h2 class="font-bold text-gray-700 text-sm md:text-base">Dashboard Admin</h2>
+                    <h2 class="font-bold text-gray-700 text-sm md:text-base font-poppins">Dashboard Admin</h2>
                 </div>
                 
                 <div class="flex items-center gap-3 md:gap-4">
@@ -140,7 +140,7 @@
          class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
          style="display: none;">
         <div @click.stop class="bg-white rounded-lg shadow-2xl p-6 w-full max-w-sm">
-            <h3 class="text-lg font-bold text-gray-800 mb-2">Konfirmasi Keluar</h3>
+            <h3 class="text-lg font-bold text-gray-800 mb-2 font-poppins">Konfirmasi Keluar</h3>
             <p class="text-gray-600 mb-6">Apakah Anda yakin ingin keluar dari sistem?</p>
             <div class="flex gap-3 justify-end">
                 <button @click="showLogoutConfirm = false" 

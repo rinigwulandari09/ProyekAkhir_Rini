@@ -32,7 +32,7 @@ class UserController extends Controller
             'user_nama' => 'required|string|max:255',
             'user_username' => 'required|string|unique:users,user_username',
             'user_email' => 'required|email|max:255|unique:users,user_email', // Validasi email baru & unik
-            'user_password' => 'required|min:6',
+            'user_password' => 'required|digits:6',
             'user_role' => 'required|in:super_admin,admin',
             'desa_id' => 'nullable|exists:desa,desa_id',
         ], [
@@ -41,7 +41,7 @@ class UserController extends Controller
             'user_email.email' => 'Format email tidak valid.',
             'user_email.unique' => 'Email ini sudah terdaftar di Supabase!',
             'user_password.required' => 'Password wajib diisi.',
-            'user_password.min' => 'Password minimal harus 6 karakter.'
+            'user_password.digits' => 'Password harus berupa 6 angka.'
         ]);
 
         User::create([
@@ -77,11 +77,11 @@ class UserController extends Controller
             'user_email' => 'required|email|max:255|unique:users,user_email,'.$id.',user_id', // Pengecualian unique untuk email
             'user_role' => 'required|in:super_admin,admin',
             'desa_id' => 'nullable|exists:desa,desa_id',
-            'user_password' => 'nullable|min:6', // Validasi password jika diisi saat edit
+            'user_password' => 'nullable|digits:6', // Validasi password jika diisi saat edit
         ], [
             'user_username.unique' => 'Username ini sudah digunakan oleh user lain!',
             'user_email.unique' => 'Email ini sudah digunakan oleh user lain!',
-            'user_password.min' => 'Password baru minimal harus 6 karakter.'
+            'user_password.digits' => 'Password baru harus berupa 6 angka.'
         ]);
 
         $data = [

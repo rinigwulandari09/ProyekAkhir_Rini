@@ -43,15 +43,14 @@
 
                 <div class="space-y-1.5">
                     <label class="block text-sm font-medium text-slate-700">Username <span class="text-rose-500">*</span></label>
-                        <input 
-                            type="text" 
-                            name="user_username" 
-                            value="{{ old('user_username', $user->user_username) }}" 
-                            class="w-full px-3.5 py-2 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#214122] focus:ring-4 focus:ring-[#214122]/10 transition"
-                            placeholder="username_baru"
-                            required
-                        >
-                    </div>
+                    <input 
+                        type="text" 
+                        name="user_username" 
+                        value="{{ old('user_username', $user->user_username) }}" 
+                        class="w-full px-3.5 py-2 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#214122] focus:ring-4 focus:ring-[#214122]/10 transition"
+                        placeholder="username_baru"
+                        required
+                    >
                 </div>
 
                 <div class="space-y-1.5">
@@ -102,14 +101,19 @@
                     <div class="flex items-center justify-between gap-2 flex-wrap">
                         <label class="block text-sm font-medium text-slate-700">Ganti Password</label>
                         <span class="text-[11px] font-normal bg-amber-50 text-amber-800 px-2 py-0.5 rounded border border-amber-200/60 italic">
-                            Kosongkan jika tidak diubah
+                            Kosongkan jika tidak diubah 
                         </span>
                     </div>
                     <input 
                         type="password" 
                         name="user_password" 
-                        placeholder="••••••••"
+                        placeholder="6 angka password baru"
                         class="w-full px-3.5 py-2 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#214122] focus:ring-4 focus:ring-[#214122]/10 transition"
+                        inputmode="numeric" 
+                        pattern="[0-9]{6}" 
+                        maxlength="6" 
+                        minlength="6"
+                        title="Password harus berupa 6 angka"
                     >
                 </div>
 

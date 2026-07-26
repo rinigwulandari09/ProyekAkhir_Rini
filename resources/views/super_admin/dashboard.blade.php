@@ -17,8 +17,8 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="bg-[#A0C4E8] p-6 rounded-xl flex items-center justify-between shadow-sm border border-black/5">
             <div>
-                <p class="text-blue-900 font-bold text-sm">Jumlah Petani</p>
-                <h3 class="text-3xl font-black text-blue-900 leading-none">
+                <p class="text-blue-900 font-bold text-sm font-poppins">Jumlah Petani</p>
+                <h3 class="text-3xl font-black text-blue-900 leading-none font-poppins">
                     {{ number_format($jumlahPetani, 0, ',', '.') }}
                 </h3>
             </div>
@@ -26,8 +26,8 @@
         </div>
         <div class="bg-[#A8D5BA] p-6 rounded-xl flex items-center justify-between shadow-sm border border-black/5">
             <div>
-                <p class="text-green-900 font-bold text-sm">Luas Lahan (Ha)</p>
-                <h3 class="text-3xl font-black text-green-900 leading-none">
+                <p class="text-green-900 font-bold text-sm font-poppins">Luas Lahan (Ha)</p>
+                <h3 class="text-3xl font-black text-green-900 leading-none font-poppins">
                     {{ number_format($jumlahLahan, 0, ',', '.') }}
                 </h3>
             </div>
@@ -35,8 +35,8 @@
         </div>
         <div class="bg-[#E9D79E] p-6 rounded-xl flex items-center justify-between shadow-sm border border-black/5">
             <div>
-                <p class="text-yellow-900 font-bold text-sm">Pendapatan Bulan Ini</p>
-                <h3 class="text-3xl font-black text-yellow-900 leading-none">
+                <p class="text-yellow-900 font-bold text-sm font-poppins">Pendapatan Bulan Ini</p>
+                <h3 class="text-3xl font-black text-yellow-900 leading-none font-poppins">
                     Rp {{ number_format($pendapatanBulanIni, 0, ',', '.') }}
                 </h3>
             </div>
@@ -47,14 +47,14 @@
     {{-- Grafik Section --}}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="bg-white p-5 rounded-xl shadow-sm h-80 flex flex-col">
-            <p class="text-[11px] font-bold text-gray-500 mb-2 uppercase tracking-wider">Pemasukan Per Bulan</p>
+            <p class="text-[11px] font-bold text-gray-500 mb-2 uppercase tracking-wider font-poppins">Pemasukan Per Bulan</p>
             <div class="relative flex-1 w-full h-full">
                 <canvas id="chartPemasukan"></canvas>
             </div>
         </div>
         
         <div class="bg-white p-5 rounded-xl shadow-sm h-80 flex flex-col">
-            <p class="text-[11px] font-bold text-gray-500 mb-2 uppercase tracking-wider">Pengeluaran Per Kategori</p>
+            <p class="text-[11px] font-bold text-gray-500 mb-2 uppercase tracking-wider font-poppins">Pengeluaran Per Kategori</p>
             <div class="relative flex-1 w-full h-full flex justify-center">
                 <canvas id="chartPengeluaran"></canvas>
             </div>
@@ -63,19 +63,19 @@
 
     {{-- Status Audit --}}
     <div class="bg-white p-4 rounded-xl shadow-sm">
-        <h3 class="text-[10px] font-bold text-gray-500 mb-4 uppercase tracking-widest">Status Audit RSPO/ISPO</h3>
+        <h3 class="text-[10px] font-bold text-gray-500 mb-4 uppercase tracking-widest font-poppins">Status Audit RSPO/ISPO</h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="bg-[#D1FAE5] p-4 rounded-lg flex items-center gap-4 border border-green-200">
                 <x-heroicon-s-check-circle class="w-10 h-10 text-green-800" />
-                <div><p class="text-2xl font-black text-green-900 leading-none">670</p><p class="text-[10px] font-bold text-green-700">LULUS</p></div>
+                <div><p class="text-2xl font-black text-green-900 leading-none">{{ $auditLulus }}</p><p class="text-[10px] font-bold text-green-700">LULUS</p></div>
             </div>
             <div class="bg-[#FEF3C7] p-4 rounded-lg flex items-center gap-4 border border-yellow-200">
                 <x-heroicon-s-information-circle class="w-10 h-10 text-yellow-600" />
-                <div><p class="text-2xl font-black text-yellow-900 leading-none">130</p><p class="text-[10px] font-bold text-yellow-700 uppercase">PERLU PERBAIKAN</p></div>
+                <div><p class="text-2xl font-black text-yellow-900 leading-none">{{ $auditPerbaikan }}</p><p class="text-[10px] font-bold text-yellow-700 uppercase">PERLU PERBAIKAN</p></div>
             </div>
             <div class="bg-[#FEE2E2] p-4 rounded-lg flex items-center gap-4 border border-red-200">
                 <x-heroicon-s-exclamation-triangle class="w-10 h-10 text-red-600" />
-                <div><p class="text-2xl font-black text-red-900 leading-none">30</p><p class="text-[10px] font-bold text-red-700 uppercase">PERLU DIAUDIT</p></div>
+                <div><p class="text-2xl font-black text-red-900 leading-none">{{ $auditPending }}</p><p class="text-[10px] font-bold text-red-700 uppercase">PERLU DIAUDIT</p></div>
             </div>
         </div>
     </div>
@@ -126,7 +126,7 @@
     <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
         <div class="flex items-center gap-2 mb-2">
             <x-heroicon-o-map-pin class="w-4 h-4 text-gray-500" />
-            <h3 class="text-[10px] font-bold text-gray-500 uppercase">Sebaran Lahan Anggota</h3>
+            <h3 class="text-[10px] font-bold text-gray-500 uppercase font-poppins">Sebaran Lahan Anggota</h3>
         </div>
         {{-- Container Peta Sebaran --}}
         <div id="mapSebaran" class="w-full h-96 rounded-lg bg-gray-100 relative border border-gray-200" style="z-index: 1;"></div>
@@ -138,7 +138,7 @@
 <div id="statusModal" class="fixed inset-0 z-50 hidden bg-black/40 items-center justify-center transition-opacity">
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform scale-95 transition-transform border border-[#214122]/20" id="modalContent">
         <div class="bg-[#214122] px-6 py-4 flex justify-between items-center">
-            <h3 class="text-lg font-bold text-white">Aktivasi Akun Petani</h3>
+            <h3 class="text-lg font-bold text-white font-poppins">Aktivasi Akun Petani</h3>
             <button type="button" onclick="closeEditModal()" class="text-white hover:text-red-300 transition">
                 <x-heroicon-o-x-mark class="w-6 h-6" />
             </button>

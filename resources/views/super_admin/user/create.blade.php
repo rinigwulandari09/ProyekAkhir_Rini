@@ -107,13 +107,18 @@
                 </div>
 
                 <div class="space-y-1.5">
-                    <label class="block text-sm font-medium text-slate-700">Password <span class="text-rose-500">*</span></label>
+                    <label class="block text-sm font-medium text-slate-700">Password <span class="text-slate-500 font-normal text-xs">(harus berupa 6 angka)</span> <span class="text-rose-500">*</span></label>
                     <input 
                         type="password" 
                         name="user_password" 
-                        placeholder="Masukkan password akun"
+                        placeholder="Masukkan 6 angka"
                         class="w-full px-3.5 py-2 text-sm bg-white border border-slate-300 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#214122] focus:ring-4 focus:ring-[#214122]/10 transition"
                         required
+                        inputmode="numeric" 
+                        pattern="[0-9]{6}" 
+                        maxlength="6" 
+                        minlength="6"
+                        title="Password harus berupa 6 angka"
                     >
                 </div>
 

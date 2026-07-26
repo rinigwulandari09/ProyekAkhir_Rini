@@ -101,9 +101,9 @@
         </form>
     </div>
         
-    {{-- Table Card (PERBAIKAN: Mengganti padding p-3 menjadi p-4 sm:p-6 dan menghapus overflow-x-auto) --}}
-    <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-6 border border-gray-200 mb-6">
-        <table id="keuanganTable" class="w-full text-left border-collapse display responsive nowrap">
+    {{-- Table Card --}}
+    <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-6 border border-gray-200 mb-6 w-full overflow-x-auto">
+        <table id="keuanganTable" class="w-full text-left border-collapse display responsive">
             <thead>
                 <tr class="bg-[#D9F99D] border-b border-gray-200">
                     <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center w-12">No</th>
@@ -116,18 +116,18 @@
             <tbody class="divide-y divide-gray-100">
                 @foreach($petanis as $petani)
                 <tr class="hover:bg-gray-50 transition">
-                    <td class="p-4 text-xs text-center text-gray-500 font-mono"></td>
+                    <td class="p-4 text-xs text-justify text-gray-500 font-mono"></td>
                     <td class="p-4 text-xs text-gray-800 font-medium">
                         {{ $petani->petani_nama }}
                     </td>
-                    <td class="p-4 text-xs text-green-600 font-bold text-right pr-6">
+                    <td class="p-4 text-xs text-green-600 font-bold text-justify pr-6">
                         Rp {{ number_format($petani->total_masuk ?? 0, 0, ',', '.') }}
                     </td>
-                    <td class="p-4 text-xs text-red-500 font-medium text-right pr-6">
+                    <td class="p-4 text-xs text-red-500 font-medium text-justify pr-6">
                         Rp {{ number_format($petani->total_keluar ?? 0, 0, ',', '.') }}
                     </td>
                     <td class="p-4">
-                        <div class="flex justify-center gap-3">
+                        <div class="flex justify-start gap-3">
                             <a href="{{ route('keuangan.show', $petani->petani_id) }}" class="text-green-700 hover:scale-110 transition" title="Lihat Detail Transaksi">
                                 <x-heroicon-o-pencil-square class="w-5 h-5" />
                             </a>
@@ -305,8 +305,6 @@
     .dataTables_wrapper .dataTables_filter input:focus { border-color: #214122 !important; }
 
     #keuanganTable th, #keuanganTable td { white-space: normal !important; word-break: break-word; }
-    #keuanganTable th { white-space: nowrap; }
-
     .dataTables_wrapper .dataTables_info { font-size: 0.875rem !important; color: #4b5563 !important; padding-top: 0 !important; }
     .dataTables_wrapper .dataTables_paginate { padding-top: 0 !important; display: flex !important; gap: 0.25rem !important; }
     .dataTables_wrapper .dataTables_paginate .paginate_button { border: 1px solid #d1d5db !important; border-radius: 0.375rem !important; padding: 0.375rem 0.75rem !important; margin-left: 0 !important; font-size: 0.875rem !important; background: #ffffff !important; color: #374151 !important; transition: all 0.2s; }

@@ -100,6 +100,23 @@ class DashboardController extends Controller
             ->whereNotNull('deadline')
             ->get(['id', 'judul', 'pesan', 'deadline', 'is_done']);
 
+        // Data Audit Internal
+        $auditLulus = DB::table('audit_internal')
+            ->where('status_audit', 'Lulus')
+            ->count();
+            
+        $auditPerbaikan = DB::table('audit_internal')
+            ->where('status_audit', 'Perlu Perbaikan')
+            ->count();
+            
+        $auditPending = DB::table('audit_internal')
+            ->where(function ($query) {
+                $query->whereNull('status_audit')
+                      ->orWhere('status_audit', '')
+                      ->orWhere('status_audit', 'Menunggu Konfirmasi');
+            })
+            ->count();
+
         $events = [];
         foreach ($kalenderTugas as $tugas) {
             $events[] = [
@@ -121,13 +138,15 @@ class DashboardController extends Controller
         if ($user->user_role === 'super_admin') {
             return view('super_admin.dashboard', compact(
                 'jumlahPetani', 'jumlahLahan', 'pendapatanBulanIni', 'petaniPending',
-                'pemasukanGrafik', 'pengeluaranGrafik', 'semuaLahan', 'jumlahProduksiHariIni'
+                'pemasukanGrafik', 'pengeluaranGrafik', 'semuaLahan', 'jumlahProduksiHariIni',
+                'auditLulus', 'auditPerbaikan', 'auditPending'
             ));
         } elseif ($user->user_role === 'admin') {
             return view('admin.dashboard', compact(
                 'jumlahPetani', 'jumlahLahan', 'pendapatanBulanIni', 'petaniPending',
                 'pemasukanGrafik', 'pengeluaranGrafik', 'semuaLahan', 'jumlahProduksiHariIni',
-                'taskNotifications', 'kalenderEvents'
+                'taskNotifications', 'kalenderEvents',
+                'auditLulus', 'auditPerbaikan', 'auditPending'
             ));
         }
 

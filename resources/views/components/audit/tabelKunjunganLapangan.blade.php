@@ -14,21 +14,21 @@
         <form action="{{ route('audit.index') }}" method="GET" class="flex flex-wrap items-center gap-2 w-full xl:w-auto">
             <input type="hidden" name="tab" value="kunjungan">
             
-            <select name="dari_bulan" class="text-xs border-gray-300 text-gray-600 rounded-lg py-1.5 pl-2 pr-6 focus:ring-[#234323] focus:border-[#234323] shadow-sm">
+            <select name="dari_bulan" class="bg-white border-gray-200 text-gray-700 rounded-lg py-2 pl-3 pr-8 text-xs font-medium focus:ring-2 focus:ring-[#234323]/20 focus:border-[#234323] hover:border-[#234323] hover:shadow-md transition-all duration-300 shadow-sm cursor-pointer outline-none">
                 <option value="">Dari Bln</option>
                 @for ($m=1; $m<=12; $m++)
                     <option value="{{ $m }}" {{ request('dari_bulan') == $m && request('tab') == 'kunjungan' ? 'selected' : '' }}>{{ date('M', mktime(0, 0, 0, $m, 1)) }}</option>
                 @endfor
             </select>
 
-            <select name="sampai_bulan" class="text-xs border-gray-300 text-gray-600 rounded-lg py-1.5 pl-2 pr-6 focus:ring-[#234323] focus:border-[#234323] shadow-sm">
+            <select name="sampai_bulan" class="bg-white border-gray-200 text-gray-700 rounded-lg py-2 pl-3 pr-8 text-xs font-medium focus:ring-2 focus:ring-[#234323]/20 focus:border-[#234323] hover:border-[#234323] hover:shadow-md transition-all duration-300 shadow-sm cursor-pointer outline-none">
                 <option value="">Sampai Bln</option>
                 @for ($m=1; $m<=12; $m++)
                     <option value="{{ $m }}" {{ request('sampai_bulan') == $m && request('tab') == 'kunjungan' ? 'selected' : '' }}>{{ date('M', mktime(0, 0, 0, $m, 1)) }}</option>
                 @endfor
             </select>
 
-            <select name="tahun" class="text-xs border-gray-300 text-gray-600 rounded-lg py-1.5 pl-2 pr-6 focus:ring-[#234323] focus:border-[#234323] shadow-sm">
+            <select name="tahun" class="bg-white border-gray-200 text-gray-700 rounded-lg py-2 pl-3 pr-8 text-xs font-medium focus:ring-2 focus:ring-[#234323]/20 focus:border-[#234323] hover:border-[#234323] hover:shadow-md transition-all duration-300 shadow-sm cursor-pointer outline-none">
                 <option value="">Tahun</option>
                 @php $currentYear = date('Y'); @endphp
                 @for ($y = $currentYear + 2; $y >= 2023; $y--)
@@ -36,19 +36,19 @@
                 @endfor
             </select>
 
-            <select name="status" class="text-xs border-gray-300 text-gray-600 rounded-lg py-1.5 pl-2 pr-6 focus:ring-[#234323] focus:border-[#234323] shadow-sm">
+            <select name="status" class="bg-white border-gray-200 text-gray-700 rounded-lg py-2 pl-3 pr-8 text-xs font-medium focus:ring-2 focus:ring-[#234323]/20 focus:border-[#234323] hover:border-[#234323] hover:shadow-md transition-all duration-300 shadow-sm cursor-pointer outline-none">
                 <option value="">Semua Status</option>
                 <option value="Menunggu Konfirmasi" {{ request('status') == 'Menunggu Konfirmasi' && request('tab') == 'kunjungan' ? 'selected' : '' }}>Menunggu Konfirmasi</option>
                 <option value="Lulus" {{ request('status') == 'Lulus' && request('tab') == 'kunjungan' ? 'selected' : '' }}>Lulus</option>
                 <option value="Perlu Perbaikan" {{ request('status') == 'Perlu Perbaikan' && request('tab') == 'kunjungan' ? 'selected' : '' }}>Perlu Perbaikan</option>
             </select>
 
-            <button type="submit" class="bg-[#214122] text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-green-900 transition shadow-sm">
+            <button type="submit" class="bg-[#214122] text-white px-4 py-2 rounded-lg text-xs font-bold tracking-wide hover:bg-[#1a331a] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 shadow-sm">
                 Filter
             </button>
             
             @if(request()->hasAny(['dari_bulan', 'sampai_bulan', 'tahun', 'status']) && request('tab') == 'kunjungan')
-                <a href="{{ route('audit.index', ['tab' => 'kunjungan']) }}" class="bg-gray-100 text-gray-700 border border-gray-300 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-gray-200 transition shadow-sm">
+                <a href="{{ route('audit.index', ['tab' => 'kunjungan']) }}" class="bg-white text-gray-700 border border-gray-200 px-4 py-2 rounded-lg text-xs font-bold tracking-wide hover:bg-gray-50 hover:border-gray-300 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 shadow-sm">
                     Reset
                 </a>
             @endif
@@ -57,7 +57,7 @@
     
     {{-- Table Card --}}
     <div class="bg-white rounded-2xl shadow-sm p-3 sm:p-4 border border-gray-200">
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto w-full">
             <table id="kunjunganTable" class="w-full text-left border-collapse display responsive nowrap" style="width: 100%">
                 <thead>
                     <tr class="bg-[#D9F99D] border-b border-gray-200">
@@ -274,9 +274,6 @@
         background-size: 16px 16px !important;
     }
     .dataTables_wrapper .dataTables_filter input:focus { border-color: #214122 !important; }
-
-    #kunjunganTable th, #kunjunganTable td { white-space: normal !important; word-break: break-word; }
-    #kunjunganTable th { white-space: nowrap; }
 
     /* =========================================
    2. KHUSUS MODE HP (max-width: 640px)
