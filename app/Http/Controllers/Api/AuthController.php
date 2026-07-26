@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Petani;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -47,7 +48,7 @@ class AuthController extends Controller
             'petani_no_hp' => $request->petani_no_hp,
             'petani_status' => 'Pending',
             'petani_email' => $request->petani_email,
-            'petani_pin' => $request->petani_pin,
+            'petani_pin' => Hash::make($request->petani_pin),
             'petani_jenis_kelamin' => $request->petani_jenis_kelamin,
             'petani_tanggal_lahir' => $request->petani_tanggal_lahir,
             'petani_username' => $request->petani_username,
@@ -74,7 +75,7 @@ class AuthController extends Controller
 
         if ($user) {
 
-            if ($user->user_password == $request->password) {
+            if (Hash::check($request->password, $user->user_password)) {
 
                 return response()->json([
                     'success' => true,
@@ -97,7 +98,7 @@ class AuthController extends Controller
         // LOGIN PETANI
         $petani = Petani::where('petani_username', $request->username)->first();
         if ($petani) {
-            if ($petani->petani_pin == $request->password) {
+            if (Hash::check($request->password, $petani->petani_pin)) {
                 // Ambil ulang data profil berdasarkan petani_id
                 $profilPetani = Petani::where('petani_id', $petani->petani_id)
                     ->value('petani_profil');
