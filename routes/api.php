@@ -64,6 +64,7 @@ Route::get('/kegiatan/{id}', [KegiatanController::class, 'detail']);
 Route::get('/lahan', [LahanController::class, 'index']);
 Route::get('/lahan/petani/{petaniId}', [LahanController::class, 'getByPetani']);
 Route::post('/lahan', [LahanController::class, 'store']);
+Route::post('/lahan/update/{lahan_id}', [LahanController::class, 'update']);
 
 // pengingat (send to petani without storing)
 Route::post('/pengingat', [PengingatController::class, 'send']);

@@ -53,4 +53,37 @@ class LahanController extends Controller
             'data' => $lahan
         ], 201);
     }
+
+    // Update lahan (tahun_tanam dan lahan_no_surat)
+    public function update(Request $request, $lahan_id)
+    {
+        $request->validate([
+            'tahun_tanam' => 'nullable|string',
+            'lahan_no_surat' => 'nullable|string',
+        ]);
+
+        $lahan = Lahan::find($lahan_id);
+        
+        if (!$lahan) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Lahan tidak ditemukan'
+            ], 404);
+        }
+
+        if ($request->has('tahun_tanam')) {
+            $lahan->tahun_tanam = $request->tahun_tanam;
+        }
+        if ($request->has('lahan_no_surat')) {
+            $lahan->lahan_no_surat = $request->lahan_no_surat;
+        }
+        
+        $lahan->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data lahan berhasil diperbarui',
+            'data' => $lahan
+        ]);
+    }
 }
