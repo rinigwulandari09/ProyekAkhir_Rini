@@ -26,6 +26,8 @@ Route::post('/petani/ubah-pin/{petani_id}', [PetaniController::class, 'ubahPin']
 
 // users
 Route::get('/users/admins', [UserController::class, 'getAdmins']);
+Route::get('/users/{id}', [UserController::class, 'show']);
+Route::post('/users/update/{id}', [UserController::class, 'update']);
 
 Route::get('/desa', [DesaController::class, 'index']);
 
