@@ -12,7 +12,7 @@ class PetaniController extends Controller
     public function getAll()
     {
         // Ambil data nama petani untuk dropdown / pilihan
-        $petani = Petani::select('petani_id', 'petani_nama', 'petani_username', 'desa_id')
+        $petani = Petani::select('petani_id', 'petani_nama', 'petani_username', 'desa_id', 'petani_email')
             ->get();
 
         return response()->json([
