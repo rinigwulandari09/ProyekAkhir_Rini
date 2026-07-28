@@ -12,7 +12,7 @@ class UserController extends Controller
     {
         // Ambil data user dengan role admin
         $admins = User::where('user_role', 'admin')
-            ->select('user_id', 'user_nama', 'user_username', 'user_email', 'user_jenis_kelamin', 'user_profil')
+            ->select('user_id', 'user_nama', 'user_username', 'user_email', 'user_profil')
             ->get();
 
         return response()->json([
@@ -55,7 +55,6 @@ class UserController extends Controller
         if ($request->has('user_nama')) $user->user_nama = $request->user_nama;
         if ($request->has('user_username')) $user->user_username = $request->user_username;
         if ($request->has('user_email')) $user->user_email = $request->user_email;
-        if ($request->has('user_jenis_kelamin')) $user->user_jenis_kelamin = $request->user_jenis_kelamin;
 
         // Handle upload profil
         if ($request->hasFile('user_profil')) {
