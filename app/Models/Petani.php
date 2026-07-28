@@ -12,6 +12,7 @@ class Petani extends Model
     protected $primaryKey = 'petani_id';
     public $timestamps = false;
 
+    # 
     protected $fillable = [
         'petani_nama',
         'petani_alamat',
@@ -24,6 +25,7 @@ class Petani extends Model
         'petani_username',
         'petani_profil',
         'desa_id'
+
     ];
 
     // relasi ke tabel lahan

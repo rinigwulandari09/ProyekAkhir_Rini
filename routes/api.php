@@ -21,6 +21,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/petani', [PetaniController::class, 'getAll']); // Taruh di atas rute {petani_id} agar tidak bentrok
 Route::get('/petani/{petani_id}', [AuthController::class, 'getPetani']);
 Route::post('/petani/update/{petani_id}', [PetaniController::class, 'update']);
+Route::post('/petani/ubah-pin/{petani_id}', [PetaniController::class, 'ubahPin']);
 
 
 // users
@@ -63,6 +64,7 @@ Route::get('/kegiatan/{id}', [KegiatanController::class, 'detail']);
 Route::get('/lahan', [LahanController::class, 'index']);
 Route::get('/lahan/petani/{petaniId}', [LahanController::class, 'getByPetani']);
 Route::post('/lahan', [LahanController::class, 'store']);
+Route::post('/lahan/update/{lahan_id}', [LahanController::class, 'update']);
 
 // pengingat (send to petani without storing)
 Route::post('/pengingat', [PengingatController::class, 'send']);
