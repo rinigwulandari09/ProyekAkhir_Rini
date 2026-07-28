@@ -31,7 +31,7 @@ class PetaniController extends Controller
     
     public function edit($id)
     {
-        $petani = Petani::with(['lahan', 'desa'])->findOrFail($id);
+        $petani = Petani::with(['lahans', 'desa'])->findOrFail($id);
         $desas = Desa::orderBy('desa_nama')->get();
         $user = auth()->user();
 

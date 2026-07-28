@@ -28,10 +28,16 @@ class Petani extends Model
 
     ];
 
-    // relasi ke tabel lahan
+    // relasi ke tabel lahan (satu lahan)
     public function lahan()
     {
         return $this->hasOne(Lahan::class, 'petani_id', 'petani_id');
+    }
+
+    // relasi ke tabel lahan (banyak lahan)
+    public function lahans()
+    {
+        return $this->hasMany(Lahan::class, 'petani_id', 'petani_id');
     }
 
     // relasi tabel desa

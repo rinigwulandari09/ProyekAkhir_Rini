@@ -112,56 +112,61 @@
                     
                     <div class="flex flex-col lg:flex-row gap-8">
                         <div class="w-full lg:w-1/2">
-                            @if($petani->lahan && $petani->lahan->area_lahan)
-                                <div id="map" class="w-full h-64 rounded-2xl border border-gray-200 shadow-inner relative" style="z-index: 1;"></div>
+                            @if($petani->lahans->count() > 0 && $petani->lahans->whereNotNull('area_lahan')->where('area_lahan', '!=', '')->count() > 0)
+                                <div id="map" class="w-full h-full min-h-[300px] rounded-2xl border border-gray-200 shadow-inner relative" style="z-index: 1;"></div>
                             @else
-                                <div class="w-full h-64 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-center p-6">
+                                <div class="w-full h-full min-h-[300px] bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-center p-6">
                                     <x-heroicon-o-map-pin class="w-12 h-12 text-gray-300 mb-2" />
                                     <p class="text-sm font-semibold text-gray-500">Data Koordinat Kosong</p>
                                 </div>
                             @endif
                         </div>
 
-                        <div class="flex-1 bg-gray-50/60 rounded-2xl p-6 border border-gray-100 flex flex-col justify-center">
-                            @if($petani->lahan)
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 text-xs">
-                                    <div class="space-y-1">
-                                        <span class="font-semibold text-gray-400 block uppercase tracking-wider">Lokasi Lahan</span>
-                                        <span class="text-sm font-bold text-gray-800">{{ $petani->lahan->lahan_lokasi ?? 'Lokasi belum diatur' }}</span>
-                                    </div>
-                                    <div class="space-y-1">
-                                        <span class="font-semibold text-gray-400 block uppercase tracking-wider">Luas Lahan</span>
-                                        <span class="text-sm font-bold bg-green-100 text-green-900 px-2.5 py-1 rounded-lg inline-block">
-                                            {{ $petani->lahan->lahan_luas ?? '0' }} Ha
-                                        </span>
-                                    </div>
-                                    <div class="space-y-1">
-                                        <span class="font-semibold text-gray-400 block uppercase tracking-wider">Tahun Tanam</span>
-                                        <span class="text-sm font-bold text-gray-800">{{ $petani->lahan->tahun_tanam ?? '-' }}</span>
-                                    </div>
-                                    <div class="space-y-1">
-                                        <span class="font-semibold text-gray-400 block uppercase tracking-wider">No Surat Lahan</span>
-                                        <span class="text-sm font-bold text-gray-800">{{ $petani->lahan->lahan_no_surat ?? '-' }}</span>
-                                    </div>
-                                    <div class="space-y-1 sm:col-span-2">
-                                        <span class="font-semibold text-gray-400 block uppercase tracking-wider">Area Spasial (GeoJSON / Koordinat)</span>
-                                        <div class="bg-white p-3 rounded-xl border border-gray-200 max-h-24 overflow-y-auto font-mono text-[11px] text-gray-600 shadow-sm">
-                                            @php
-                                                $areaLahanText = $petani->lahan->area_lahan;
-                                                if (is_array($areaLahanText)) {
-                                                    $areaLahanText = json_encode($areaLahanText, JSON_UNESCAPED_UNICODE);
-                                                }
-                                            @endphp
-                                            @if($areaLahanText)
-                                                {{ Str::limit($areaLahanText, 120, '...') }}
-                                            @else
-                                                <span class="text-gray-400 italic">Tidak ada data spasial</span>
-                                            @endif
+                        <div class="flex-1 max-h-[500px] overflow-y-auto space-y-4 pr-2">
+                            @if($petani->lahans->count() > 0)
+                                @foreach($petani->lahans as $index => $lahan)
+                                    <div class="bg-gray-50/60 rounded-2xl p-6 border border-gray-100 flex flex-col justify-center relative">
+                                        <div class="absolute top-4 right-4 bg-[#214122] text-white text-xs font-bold px-2 py-1 rounded-lg">Lahan {{ $index + 1 }}</div>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 text-xs mt-2">
+                                            <div class="space-y-1">
+                                                <span class="font-semibold text-gray-400 block uppercase tracking-wider">Lokasi Lahan</span>
+                                                <span class="text-sm font-bold text-gray-800">{{ $lahan->lahan_lokasi ?? 'Lokasi belum diatur' }}</span>
+                                            </div>
+                                            <div class="space-y-1">
+                                                <span class="font-semibold text-gray-400 block uppercase tracking-wider">Luas Lahan</span>
+                                                <span class="text-sm font-bold bg-green-100 text-green-900 px-2.5 py-1 rounded-lg inline-block">
+                                                    {{ $lahan->lahan_luas ?? '0' }} Ha
+                                                </span>
+                                            </div>
+                                            <div class="space-y-1">
+                                                <span class="font-semibold text-gray-400 block uppercase tracking-wider">Tahun Tanam</span>
+                                                <span class="text-sm font-bold text-gray-800">{{ $lahan->tahun_tanam ?? '-' }}</span>
+                                            </div>
+                                            <div class="space-y-1">
+                                                <span class="font-semibold text-gray-400 block uppercase tracking-wider">No Surat Lahan</span>
+                                                <span class="text-sm font-bold text-gray-800">{{ $lahan->lahan_no_surat ?? '-' }}</span>
+                                            </div>
+                                            <div class="space-y-1 sm:col-span-2">
+                                                <span class="font-semibold text-gray-400 block uppercase tracking-wider">Area Spasial (GeoJSON / Koordinat)</span>
+                                                <div class="bg-white p-3 rounded-xl border border-gray-200 max-h-24 overflow-y-auto font-mono text-[11px] text-gray-600 shadow-sm">
+                                                    @php
+                                                        $areaLahanText = $lahan->area_lahan;
+                                                        if (is_array($areaLahanText)) {
+                                                            $areaLahanText = json_encode($areaLahanText, JSON_UNESCAPED_UNICODE);
+                                                        }
+                                                    @endphp
+                                                    @if($areaLahanText)
+                                                        {{ Str::limit($areaLahanText, 120, '...') }}
+                                                    @else
+                                                        <span class="text-gray-400 italic">Tidak ada data spasial</span>
+                                                    @endif
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                @endforeach
                             @else
-                                <div class="h-full flex flex-col items-center justify-center text-center py-8">
+                                <div class="bg-gray-50/60 rounded-2xl p-6 border border-gray-100 flex flex-col items-center justify-center text-center py-8 h-full min-h-[300px]">
                                     <x-heroicon-o-document-text class="w-10 h-10 text-gray-300 mb-2" />
                                     <p class="text-xs font-semibold text-gray-500">Belum Memiliki Lahan</p>
                                 </div>
@@ -182,64 +187,75 @@
     </form>
 </div>
 
-@if($petani->lahan && $petani->lahan->area_lahan)
+@if($petani->lahans->count() > 0 && $petani->lahans->whereNotNull('area_lahan')->where('area_lahan', '!=', '')->count() > 0)
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const rawData = @json($petani->lahan->area_lahan);
-        try {
-            const areaData = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
-            const map = L.map('map').setView([-0.489, 101.406], 5);
+        const map = L.map('map').setView([-0.489, 101.406], 5);
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors'
-            }).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
 
-            let layer = null;
+        const styleOptions = {
+            color: '#214122',
+            fillColor: '#214122',
+            fillOpacity: 0.4,
+            weight: 3
+        };
 
-            const styleOptions = {
-                color: '#214122',
-                fillColor: '#214122',
-                fillOpacity: 0.4,
-                weight: 3
-            };
+        const bounds = L.latLngBounds();
+        let hasLayer = false;
 
-            if (areaData && areaData.type) {
-                layer = L.geoJSON(areaData, {
-                    style: styleOptions,
-                    pointToLayer: function (feature, latlng) {
-                        return L.circleMarker(latlng, styleOptions);
+        @foreach($petani->lahans as $index => $lahan)
+            @if(!empty($lahan->area_lahan))
+            try {
+                const rawData = @json($lahan->area_lahan);
+                const areaData = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
+                let layer = null;
+
+                if (areaData && areaData.type) {
+                    layer = L.geoJSON(areaData, {
+                        style: styleOptions,
+                        pointToLayer: function (feature, latlng) {
+                            return L.circleMarker(latlng, styleOptions);
+                        }
+                    });
+                } else if (Array.isArray(areaData) && areaData.length > 0) {
+                    let polygonCoordinates = [];
+
+                    if (areaData[0] && typeof areaData[0] === 'object' && 'lat' in areaData[0] && 'lng' in areaData[0]) {
+                        polygonCoordinates = areaData.map(item => [item.lat, item.lng]);
+                    } else if (Array.isArray(areaData[0]) && areaData[0].length >= 2) {
+                        polygonCoordinates = areaData.map(coord => {
+                            const isLatFirst = Math.abs(coord[0]) <= 90 && Math.abs(coord[1]) <= 180;
+                            return isLatFirst ? [coord[0], coord[1]] : [coord[1], coord[0]];
+                        });
+                    } else if (Array.isArray(areaData[0]) && Array.isArray(areaData[0][0])) {
+                        polygonCoordinates = areaData[0].map(coord => {
+                            const isLatFirst = Math.abs(coord[0]) <= 90 && Math.abs(coord[1]) <= 180;
+                            return isLatFirst ? [coord[0], coord[1]] : [coord[1], coord[0]];
+                        });
                     }
-                });
-            } else if (Array.isArray(areaData) && areaData.length > 0) {
-                let polygonCoordinates = [];
 
-                if (areaData[0] && typeof areaData[0] === 'object' && 'lat' in areaData[0] && 'lng' in areaData[0]) {
-                    polygonCoordinates = areaData.map(item => [item.lat, item.lng]);
-                } else if (Array.isArray(areaData[0]) && areaData[0].length >= 2) {
-                    polygonCoordinates = areaData.map(coord => {
-                        const isLatFirst = Math.abs(coord[0]) <= 90 && Math.abs(coord[1]) <= 180;
-                        return isLatFirst ? [coord[0], coord[1]] : [coord[1], coord[0]];
-                    });
-                } else if (Array.isArray(areaData[0]) && Array.isArray(areaData[0][0])) {
-                    polygonCoordinates = areaData[0].map(coord => {
-                        const isLatFirst = Math.abs(coord[0]) <= 90 && Math.abs(coord[1]) <= 180;
-                        return isLatFirst ? [coord[0], coord[1]] : [coord[1], coord[0]];
-                    });
+                    if (polygonCoordinates.length) {
+                        layer = L.polygon(polygonCoordinates, styleOptions);
+                    }
                 }
 
-                if (polygonCoordinates.length) {
-                    layer = L.polygon(polygonCoordinates, styleOptions);
+                if (layer) {
+                    layer.bindPopup(`<div class="text-sm font-semibold text-[#214122]">Lahan {{ $index + 1 }}</div><div class="text-xs text-gray-600 mt-1">{{ addslashes($lahan->lahan_lokasi ?? 'Lokasi belum diatur') }}</div>`);
+                    layer.addTo(map);
+                    bounds.extend(layer.getBounds());
+                    hasLayer = true;
                 }
+            } catch (error) {
+                console.error('Gagal memproses struktur koordinat polygon:', error);
             }
+            @endif
+        @endforeach
 
-            if (layer) {
-                layer.addTo(map);
-                map.fitBounds(layer.getBounds());
-            } else {
-                console.error('Data area_lahan tidak dikenali:', areaData);
-            }
-        } catch (error) {
-            console.error('Gagal memproses struktur koordinat polygon:', error);
+        if (hasLayer) {
+            map.fitBounds(bounds);
         }
     });
 </script>
