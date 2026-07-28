@@ -41,13 +41,7 @@
                         <td class="p-4 text-xs text-gray-500">{{ $p->petani_email }}</td>
                         <td class="p-4 text-xs text-gray-600">{{ $p->petani_jenis_kelamin ?? '-' }}</td>
                         <td class="p-4 text-xs text-gray-600">
-                            @php
-                                try {
-                                    echo \Carbon\Carbon::createFromFormat('d/m/Y', $p->petani_tanggal_lahir)->translatedFormat('d M Y');
-                                } catch (\Exception $e) {
-                                    echo $p->petani_tanggal_lahir ?? '-';
-                                }
-                            @endphp
+                            {{ $p->petani_tanggal_lahir ? date('Y-m-d', strtotime($p->petani_tanggal_lahir)) : '-' }}
                         </td>
                         <td class="p-4 text-xs text-gray-800 font-medium">{{ $p->desa->desa_nama ?? '-' }}</td>
                         <td class="p-4 text-xs text-gray-500 max-w-xs truncate">{{ $p->petani_alamat ?? '-' }}</td>
@@ -149,7 +143,7 @@
                     // Dibungkus div flex memastikan SVG dan Teks sejajar sempurna
                     text: '<div class="flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path></svg><span>Export Excel</span></div>',
                     className: 'btn-export-excel',
-                    title: 'Data_Petani_NotaSawit',
+                    title: 'Data_Petani_SILAUSA',
                     exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], format: cleanExportFormat }
                 },
                 {
@@ -157,7 +151,7 @@
                     text: '<div class="flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path></svg><span>Export PDF</span></div>',
                     className: 'btn-export-pdf',
                     title: 'LAPORAN DAFTAR DATA PETANI SAWIT',
-                    filename: 'Data_Petani_NotaSawit',
+                    filename: 'Data_Petani_SILAUSA',
                     orientation: 'landscape',
                     pageSize: 'A4',
                     exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], format: cleanExportFormat }

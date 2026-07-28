@@ -154,16 +154,16 @@
                     <tr class="hover:bg-gray-50 transition">
                         <td class="p-4 text-xs text-center text-gray-500 font-mono"></td>
                         <td class="p-4 text-xs text-gray-800 font-medium" data-order="{{ $masuk->produksi_tanggal }}">
-                            {{ \Carbon\Carbon::parse($masuk->produksi_tanggal)->translatedFormat('d M Y') }}
+                            {{ $masuk->produksi_tanggal ? date('Y-m-d', strtotime($masuk->produksi_tanggal)) : '-' }}
                         </td>
                         <td class="p-4 text-xs text-gray-800 font-medium">{{ $masuk->lahan->lahan_nama ?? '-' }}</td>
-                        <td class="p-4 text-xs text-green-600 font-bold text-right pr-6">
+                        <td class="p-4 text-xs text-green-600 font-bold text-justify pr-6">
                             Rp {{ number_format($masuk->total_pendapatan, 0, ',', '.') }}
                         </td>
-                        <td class="p-4 text-xs text-center">
+                        <td class="p-4 text-xs text-justify">
                             @if($masuk->produksi_bukti)
                                 <a href="{{ Storage::url($masuk->produksi_bukti) }}" target="_blank" class="text-blue-600 hover:text-blue-800 transition" title="Lihat Bukti">
-                                    <x-heroicon-o-document-text class="w-5 h-5 mx-auto" />
+                                    <x-heroicon-o-document-text class="w-5 h-5" />
                                 </a>
                             @else
                                 <span class="text-gray-400">-</span>
@@ -202,7 +202,7 @@
                     <tr class="hover:bg-gray-50 transition">
                         <td class="p-4 text-xs text-center text-gray-500 font-mono"></td>
                         <td class="p-4 text-xs text-gray-800 font-medium" data-order="{{ $keluar->biaya_tanggal }}">
-                            {{ \Carbon\Carbon::parse($keluar->biaya_tanggal)->translatedFormat('d M Y') }}
+                            {{ $keluar->biaya_tanggal ? date('Y-m-d', strtotime($keluar->biaya_tanggal)) : '-' }}
                         </td>
                         <td class="p-4 text-xs text-gray-800 font-medium">
                             {{ $keluar->lahan->lahan_nama ?? '-' }}
@@ -210,13 +210,13 @@
                         <td class="p-4 text-xs text-gray-800 font-medium">
                             {{ $keluar->biaya_jenis ?? '-' }}
                         </td>
-                        <td class="p-4 text-xs text-red-500 font-bold text-right pr-6">
+                        <td class="p-4 text-xs text-red-500 font-bold text-justify pr-6">
                             Rp {{ number_format($keluar->biaya_total, 0, ',', '.') }}
                         </td>
-                        <td class="p-4 text-xs text-center">
+                        <td class="p-4 text-xs text-justify">
                             @if($keluar->biaya_bukti)
                                 <a href="{{ Storage::url($keluar->biaya_bukti) }}" target="_blank" class="text-blue-600 hover:text-blue-800 transition" title="Lihat Bukti">
-                                    <x-heroicon-o-document-text class="w-5 h-5 mx-auto" />
+                                    <x-heroicon-o-document-text class="w-5 h-5" />
                                 </a>
                             @else
                                 <span class="text-gray-400">-</span>

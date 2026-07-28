@@ -31,7 +31,7 @@
                 {{-- Section 1: Profil & Informasi Dasar Petani --}}
                 <div class="flex flex-col md:flex-row gap-6 md:gap-8 items-center md:items-start">
                     <div class="w-full md:w-1/4 flex flex-col items-center gap-3">
-                        <img src="https://ui-avatars.com/api/?name={{ urlencode($petani->petani_nama) }}&size=250&background=214122&color=fff&bold=true" 
+                        <img src="{{ $petani->petani_profil ? asset('storage/' . $petani->petani_profil) : 'https://ui-avatars.com/api/?name=' . urlencode($petani->petani_nama) . '&size=250&background=214122&color=fff&bold=true' }}" 
                              alt="Foto Petani" 
                              class="w-48 h-48 md:w-full md:h-52 object-cover rounded-2xl shadow-md border-2 border-gray-100">
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold {{ $petani->petani_status == 'Aktif' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
@@ -45,23 +45,23 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
                             <div class="space-y-1">
                                 <label class="text-xs font-semibold text-gray-400 uppercase">Nama Lengkap</label>
-                                <input type="text" name="petani_nama" value="{{ old('petani_nama', $petani->petani_nama) }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#214122]" required>
+                                <input type="text" name="petani_nama" value="{{ old('petani_nama', $petani->petani_nama) }}" class="w-full px-3 py-2 border border-gray-300 bg-gray-100 text-gray-600 rounded-lg text-sm outline-none cursor-not-allowed" readonly required>
                             </div>
                             <div class="space-y-1">
                                 <label class="text-xs font-semibold text-gray-400 uppercase">Username</label>
-                                <input type="text" name="petani_username" value="{{ old('petani_username', $petani->petani_username) }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-mono outline-none focus:ring-2 focus:ring-[#214122]" required>
+                                <input type="text" name="petani_username" value="{{ old('petani_username', $petani->petani_username) }}" class="w-full px-3 py-2 border border-gray-300 bg-gray-100 text-gray-600 rounded-lg text-sm font-mono outline-none cursor-not-allowed" readonly required>
                             </div>
                             <div class="space-y-1">
                                 <label class="text-xs font-semibold text-gray-400 uppercase">Alamat Email</label>
-                                <input type="email" name="petani_email" value="{{ old('petani_email', $petani->petani_email) }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#214122]">
+                                <input type="email" name="petani_email" value="{{ old('petani_email', $petani->petani_email) }}" class="w-full px-3 py-2 border border-gray-300 bg-gray-100 text-gray-600 rounded-lg text-sm outline-none cursor-not-allowed" readonly>
                             </div>
                             <div class="space-y-1">
                                 <label class="text-xs font-semibold text-gray-400 uppercase">Nomor Handphone</label>
-                                <input type="text" name="petani_no_hp" value="{{ old('petani_no_hp', $petani->petani_no_hp) }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#214122]" required>
+                                <input type="text" name="petani_no_hp" value="{{ old('petani_no_hp', $petani->petani_no_hp) }}" class="w-full px-3 py-2 border border-gray-300 bg-gray-100 text-gray-600 rounded-lg text-sm outline-none cursor-not-allowed" readonly required>
                             </div>
                             <div class="space-y-1">
                                 <label class="text-xs font-semibold text-gray-400 uppercase">Desa</label>
-                                <select name="desa_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#214122]">
+                                <select name="desa_id" class="w-full px-3 py-2 border border-gray-300 bg-gray-100 text-gray-600 rounded-lg text-sm outline-none cursor-not-allowed pointer-events-none" tabindex="-1">
                                     <option value="">-- Pilih Desa --</option>
                                     @foreach($desas as $desa)
                                         <option value="{{ $desa->desa_id }}" {{ (old('desa_id', $petani->desa_id) == $desa->desa_id) ? 'selected' : '' }}>{{ $desa->desa_nama }}</option>
@@ -81,10 +81,10 @@
                             </div>
                         </div>
 
-                        <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                        <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                             <div class="space-y-1">
                                 <label class="text-xs font-semibold text-gray-400 uppercase">Jenis Kelamin</label>
-                                <select name="petani_jenis_kelamin" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#214122]">
+                                <select name="petani_jenis_kelamin" class="w-full px-3 py-2 border border-gray-300 bg-gray-100 text-gray-600 rounded-lg text-sm outline-none cursor-not-allowed pointer-events-none" tabindex="-1">
                                     <option value="">-- Pilih Jenis Kelamin --</option>
                                     <option value="Laki-laki" {{ old('petani_jenis_kelamin', $petani->petani_jenis_kelamin) == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
                                     <option value="Perempuan" {{ old('petani_jenis_kelamin', $petani->petani_jenis_kelamin) == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
@@ -92,17 +92,13 @@
                             </div>
                             <div class="space-y-1">
                                 <label class="text-xs font-semibold text-gray-400 uppercase">Tanggal Lahir</label>
-                                <input type="date" name="petani_tanggal_lahir" value="{{ old('petani_tanggal_lahir', $petani->petani_tanggal_lahir) }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#214122]">
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold text-gray-400 uppercase">PIN (opsional)</label>
-                                <input type="text" name="petani_pin" value="{{ old('petani_pin', $petani->petani_pin) }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#214122]">
+                                <input type="date" name="petani_tanggal_lahir" value="{{ old('petani_tanggal_lahir', $petani->petani_tanggal_lahir) }}" class="w-full px-3 py-2 border border-gray-300 bg-gray-100 text-gray-600 rounded-lg text-sm outline-none cursor-not-allowed pointer-events-none" readonly tabindex="-1">
                             </div>
                         </div>
 
                         <div class="mt-4">
                             <label class="text-xs font-semibold text-gray-400 uppercase">Alamat Lengkap</label>
-                            <textarea name="petani_alamat" class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#214122]" rows="3">{{ old('petani_alamat', $petani->petani_alamat) }}</textarea>
+                            <textarea name="petani_alamat" class="w-full mt-1 px-3 py-2 border border-gray-300 bg-gray-100 text-gray-600 rounded-lg text-sm outline-none cursor-not-allowed" rows="3" readonly>{{ old('petani_alamat', $petani->petani_alamat) }}</textarea>
                         </div>
                     </div>
                 </div>

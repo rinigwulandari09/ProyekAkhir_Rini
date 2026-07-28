@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - NOTASAWIT</title>
+    <title>Login - SILAUSA</title>
+    <link rel="icon" href="{{ asset('foto/logo.png') }}" type="image/png">
     <!-- Menghubungkan ke Vite (Tailwind) -->
     @vite('resources/css/app.css')
     <!-- Google Fonts for better typography -->
@@ -31,7 +32,7 @@
             </div>
             <!-- Overlay Content -->
             <div class="relative z-10 p-12 text-center text-white">
-                <h2 class="text-4xl font-bold mb-4 drop-shadow-lg">Selamat Datang di NOTASAWIT</h2>
+                <h2 class="text-4xl font-bold mb-4 drop-shadow-lg">Selamat Datang di SILAUSA</h2>
                 <p class="text-lg text-white/80 max-w-md mx-auto drop-shadow-md">Sistem Manajemen Perkebunan Kelapa Sawit yang Terintegrasi dan Modern.</p>
             </div>
         </div>
@@ -48,7 +49,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
                         </svg>
                     </div>
-                    <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">NOTASAWIT</h1>
+                    <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">SILAUSA</h1>
                     <p class="text-gray-500 text-sm mt-2 font-medium">Silakan masuk ke akun Anda</p>
                 </div>
 

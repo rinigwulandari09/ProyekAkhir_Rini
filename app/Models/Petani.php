@@ -22,6 +22,7 @@ class Petani extends Model
         'petani_jenis_kelamin',
         'petani_tanggal_lahir',
         'petani_username',
+        'petani_profil',
         'desa_id'
     ];
 

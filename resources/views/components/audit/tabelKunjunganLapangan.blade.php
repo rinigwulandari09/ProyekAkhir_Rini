@@ -76,13 +76,7 @@
                     <tr class="hover:bg-gray-50 transition">
                         <td class="p-4 text-xs text-center text-gray-500 font-mono"></td>
                         <td class="p-4 text-xs text-gray-800 font-medium">
-                            @php
-                                try {
-                                    echo \Carbon\Carbon::parse($k->tanggal_kunjungan)->translatedFormat('d M Y');
-                                } catch (\Exception $e) {
-                                    echo $k->tanggal_kunjungan ?? '-';
-                                }
-                            @endphp
+                            {{ $k->tanggal_kunjungan ? date('Y-m-d', strtotime($k->tanggal_kunjungan)) : '-' }}
                         </td>
                         <td class="p-4 text-xs text-gray-600">{{ $k->desa_kebun ?? '-' }}</td>
                         <td class="p-4 text-xs text-gray-800">{{ $k->desa_kepengurusan ?? '-' }}</td>

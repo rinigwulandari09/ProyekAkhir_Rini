@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title') - NOTASAWIT</title>
+    <title>@yield('title') - SILAUSA</title>
+    <link rel="icon" href="{{ asset('foto/logo.png') }}" type="image/png">
     
     @vite('resources/css/app.css')
     
@@ -44,7 +45,7 @@
                 <div class="w-10 h-10 bg-white p-1 rounded-full flex items-center justify-center overflow-hidden shrink-0">
                     <img src="{{ asset('foto/logo.png') }}" alt="Sawit" class="w-full h-full object-contain" />
                 </div>
-                <span x-show="sidebarOpen" class="tracking-wider text-lg font-bold whitespace-nowrap font-poppins">NOTASAWIT</span>
+                <span x-show="sidebarOpen" class="tracking-wider text-lg font-bold whitespace-nowrap font-poppins">SILAUSA</span>
             </div>
 
             <nav class="flex-1 p-3 space-y-1 mt-4 text-sm overflow-y-auto">

@@ -45,7 +45,7 @@
                         <td class="p-4 text-xs text-center text-gray-500 font-mono"></td>
                         
                         {{-- 2. Tanggal --}}
-                        <td class="p-4 text-xs text-gray-800 font-medium">{{ \Carbon\Carbon::parse($item->tanggal_kunjungan)->format('d-m-Y') }}</td>
+                        <td class="p-4 text-xs text-gray-800 font-medium">{{ $item->tanggal_kunjungan ? date('Y-m-d', strtotime($item->tanggal_kunjungan)) : '-' }}</td>
                         
                         {{-- 3. Desa Kebun --}}
                         <td class="p-4 text-xs text-gray-600">{{ $item->desa_kebun }}</td>

@@ -76,13 +76,7 @@
                     <tr class="hover:bg-gray-50 transition">
                         <td class="p-4 text-xs text-center text-gray-500 font-mono"></td>
                         <td class="p-4 text-xs text-gray-800 font-medium">
-                            @php
-                                try {
-                                    echo \Carbon\Carbon::parse($a->tanggal)->translatedFormat('d M Y');
-                                } catch (\Exception $e) {
-                                    echo $a->tanggal ?? '-';
-                                }
-                            @endphp
+                            {{ $a->tanggal ? date('Y-m-d', strtotime($a->tanggal)) : '-' }}
                         </td>
                         <td class="p-4 text-xs text-gray-600">{{ $a->desa ?? '-' }}</td>
                         <td class="p-4 text-xs text-gray-500">{{ $a->nama_auditor ?? '-' }}</td>
