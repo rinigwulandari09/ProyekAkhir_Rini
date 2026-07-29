@@ -113,9 +113,9 @@
                     <div class="flex flex-col lg:flex-row gap-8">
                         <div class="w-full lg:w-1/2">
                             @if($petani->lahans->count() > 0 && $petani->lahans->whereNotNull('area_lahan')->where('area_lahan', '!=', '')->count() > 0)
-                                <div id="map" class="w-full h-full min-h-[300px] rounded-2xl border border-gray-200 shadow-inner relative" style="z-index: 1;"></div>
+                                <div id="map" class="w-full h-[350px] lg:h-[500px] rounded-2xl border border-gray-200 shadow-inner relative" style="z-index: 1;"></div>
                             @else
-                                <div class="w-full h-full min-h-[300px] bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-center p-6">
+                                <div class="w-full h-[350px] lg:h-[500px] bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-center p-6">
                                     <x-heroicon-o-map-pin class="w-12 h-12 text-gray-300 mb-2" />
                                     <p class="text-sm font-semibold text-gray-500">Data Koordinat Kosong</p>
                                 </div>
@@ -257,6 +257,11 @@
         if (hasLayer) {
             map.fitBounds(bounds);
         }
+
+        // Perbaiki masalah render peta di mode mobile (responsive)
+        setTimeout(function() {
+            map.invalidateSize();
+        }, 500);
     });
 </script>
 @endif
