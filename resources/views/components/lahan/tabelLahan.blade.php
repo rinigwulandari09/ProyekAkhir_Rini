@@ -6,8 +6,8 @@
             <p class="text-sm text-gray-500">Daftar lahan spasial yang terdaftar di database.</p>
         </div>
         
-        {{-- TOMBOL AKSI: Hanya Muncul Untuk Role Admin --}}
-        @if(auth()->user()->user_role === 'admin')
+        {{-- TOMBOL AKSI: Muncul Untuk Role Admin dan Super Admin --}}
+        @if(in_array(auth()->user()->user_role, ['admin', 'super_admin']))
         <div class="flex flex-wrap gap-3">
             {{-- FORM IMPORT FILE JSON DIRECT --}}
             <form action="{{ route('lahan.preview_import') }}" method="POST" enctype="multipart/form-data" class="flex items-center gap-2 bg-gray-100 p-1.5 rounded-xl border border-gray-300 shadow-sm">
@@ -83,7 +83,7 @@
                                     <x-heroicon-o-map-pin class="w-5 h-5" />
                                 </a>
                                 
-                                @if(auth()->user()->user_role === 'admin')
+                                @if(in_array(auth()->user()->user_role, ['admin', 'super_admin']))
                                 <a href="{{ route('lahan.edit', $lahan->lahan_id) }}" class="text-green-700 hover:scale-110 transition" title="Edit Lahan">
                                     <x-heroicon-o-pencil-square class="w-5 h-5" />
                                 </a>

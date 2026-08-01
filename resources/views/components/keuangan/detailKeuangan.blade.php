@@ -27,10 +27,17 @@
                     Nama Petani : <span id="namaPetaniCetak" class="font-medium text-gray-600">{{ $petani->petani_nama ?? $petani->nama ?? 'Dhini Handayani' }}</span>
                 </h2>
             </div>
-            {{-- Tombol Utama pemicu download PDF --}}
-            <button onclick="exportSemuaLaporan()" class="bg-[#214122] text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-[#325934] transition shadow-sm">
-                <x-heroicon-o-arrow-up-tray class="w-4 h-4" /> Export Laporan Keuangan (PDF)
-            </button>
+            {{-- Tombol Utama pemicu download --}}
+            <div class="flex flex-col sm:flex-row gap-2">
+                <button onclick="exportExcelLaporan()" class="bg-white text-[#107C41] border border-[#107C41] px-4 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2 hover:bg-[#107C41] hover:text-white transition shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path></svg>
+                    Export Excel
+                </button>
+                <button onclick="exportSemuaLaporan()" class="bg-[#214122] text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2 hover:bg-[#325934] transition shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path></svg>
+                    Export PDF
+                </button>
+            </div>
         </div>
 
         {{-- Filter Bar Modern --}}
@@ -46,7 +53,7 @@
                     $namaBulan = [1=>'Januari', 2=>'Februari', 3=>'Maret', 4=>'April', 5=>'Mei', 6=>'Juni', 7=>'Juli', 8=>'Agustus', 9=>'September', 10=>'Oktober', 11=>'November', 12=>'Desember'];
                 @endphp
                 {{-- BARIS FILTER DROPDOWN --}}
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {{-- Dropdown 1 --}}
                     <div class="flex flex-col gap-1.5">
                         <label class="text-xs font-semibold text-gray-500 pl-1">Dari Bulan</label>
@@ -94,6 +101,24 @@
                             </div>
                         </div>
                     </div>
+
+                    {{-- Dropdown 4 (Lahan) --}}
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-xs font-semibold text-gray-500 pl-1">Pilih Lahan</label>
+                        <div class="relative">
+                            <select name="lahan_id" id="filterLahan" class="w-full bg-white border border-gray-200 text-gray-700 text-sm rounded-xl px-3.5 py-2.5 outline-none focus:border-[#214122] transition appearance-none cursor-pointer">
+                                <option value="">Semua Lahan</option>
+                                @foreach($lahans as $lahan)
+                                    <option value="{{ $lahan->lahan_id }}" {{ request('lahan_id') == $lahan->lahan_id ? 'selected' : '' }}>
+                                        {{ $lahan->lahan_nama ?: 'Lahan ' . $loop->iteration }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-gray-400">
+                                <x-heroicon-o-chevron-down class="w-4 h-4" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {{-- BARIS TOMBOL AKSI --}}
@@ -102,7 +127,7 @@
                         <x-heroicon-o-magnifying-glass class="w-4 h-4" />
                         Terapkan Filter
                     </button>
-                    @if(request('bulan_awal') || request('bulan_akhir') || request('tahun'))
+                    @if(request('bulan_awal') || request('bulan_akhir') || request('tahun') || request('lahan_id'))
                         <a href="{{ url()->current() }}" class="text-sm font-semibold text-red-500 hover:text-red-700 hover:underline">Reset Filter</a>
                     @endif
                 </div>
@@ -144,6 +169,8 @@
                         <th class="p-4 text-xs font-bold text-[#214122] uppercase text-center w-12">No</th>
                         <th class="p-4 text-xs font-bold text-[#214122] uppercase">Tanggal</th>
                         <th class="p-4 text-xs font-bold text-[#214122] uppercase">Asal Lahan</th>
+                        <th class="p-4 text-xs font-bold text-[#214122] uppercase text-center">Jumlah TBS</th>
+                        <th class="p-4 text-xs font-bold text-[#214122] uppercase text-right">Harga TBS</th>
                         <th class="p-4 text-xs font-bold text-[#214122] uppercase text-right">Total Pendapatan</th>
                         <th class="p-4 text-xs font-bold text-[#214122] uppercase text-center">Bukti Nota</th>
                         <th class="p-4 text-xs font-bold text-[#214122] uppercase">Keterangan</th>
@@ -157,6 +184,8 @@
                             {{ $masuk->produksi_tanggal ? date('Y-m-d', strtotime($masuk->produksi_tanggal)) : '-' }}
                         </td>
                         <td class="p-4 text-xs text-gray-800 font-medium">{{ $masuk->lahan->lahan_nama ?? '-' }}</td>
+                        <td class="p-4 text-xs text-gray-800 font-medium text-center">{{ $masuk->jumlah_tbs ? number_format($masuk->jumlah_tbs, 0, ',', '.') . ' Kg' : '-' }}</td>
+                        <td class="p-4 text-xs text-gray-800 font-medium text-right">Rp {{ number_format($masuk->harga_tbs ?? 0, 0, ',', '.') }}</td>
                         <td class="p-4 text-xs text-green-600 font-bold text-justify pr-6">
                             Rp {{ number_format($masuk->total_pendapatan, 0, ',', '.') }}
                         </td>
@@ -192,7 +221,9 @@
                         <th class="p-4 text-xs font-bold text-[#991B1B] uppercase">Tanggal</th>
                         <th class="p-4 text-xs font-bold text-[#991B1B] uppercase">Asal Lahan</th>
                         <th class="p-4 text-xs font-bold text-[#991B1B] uppercase">Jenis Biaya</th>
-                        <th class="p-4 text-xs font-bold text-[#991B1B] uppercase text-right">Jumlah Biaya</th>
+                        <th class="p-4 text-xs font-bold text-[#991B1B] uppercase">Nama Biaya</th>
+                        <th class="p-4 text-xs font-bold text-[#991B1B] uppercase text-center">Jumlah / Qty</th>
+                        <th class="p-4 text-xs font-bold text-[#991B1B] uppercase text-right">Total Biaya</th>
                         <th class="p-4 text-xs font-bold text-[#991B1B] uppercase text-center">Bukti</th>
                         <th class="p-4 text-xs font-bold text-[#991B1B] uppercase">Keterangan</th>
                     </tr>
@@ -210,6 +241,12 @@
                         <td class="p-4 text-xs text-gray-800 font-medium">
                             {{ $keluar->biaya_jenis ?? '-' }}
                         </td>
+                        <td class="p-4 text-xs text-gray-800 font-medium">
+                            {{ $keluar->biaya_nama ?? '-' }}
+                        </td>
+                        <td class="p-4 text-xs text-gray-800 font-medium text-center">
+                            {{ $keluar->biaya_jumlah ?? '-' }}
+                        </td>
                         <td class="p-4 text-xs text-red-500 font-bold text-justify pr-6">
                             Rp {{ number_format($keluar->biaya_total, 0, ',', '.') }}
                         </td>
@@ -222,8 +259,8 @@
                                 <span class="text-gray-400">-</span>
                             @endif
                         </td>
-                        <td class="p-4 text-xs text-gray-500 max-w-xs truncate" title="{{ $keluar->biaya_keterangan ?? '-' }}">
-                            {{ $keluar->biaya_keterangan ?? '-' }}
+                        <td class="p-4 text-xs text-gray-500 max-w-xs truncate" title="{{ $keluar->biaya_keterangan ?? $keluar->biaya_ket ?? '-' }}">
+                            {{ $keluar->biaya_keterangan ?? $keluar->biaya_ket ?? '-' }}
                         </td>
                     </tr>
                     @endforeach
@@ -241,6 +278,7 @@
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <script>
     var tableMasuk, tableKeluar;
@@ -329,12 +367,14 @@
                 rowLoop + 1,
                 cells.eq(1).text().trim(),
                 cells.eq(2).text().trim(),
-                { text: cells.eq(3).text().trim(), alignment: 'right' },
-                cells.eq(5).text().trim()
+                { text: cells.eq(3).text().trim(), alignment: 'center' },
+                { text: cells.eq(4).text().trim(), alignment: 'right' },
+                { text: cells.eq(5).text().trim(), alignment: 'right' },
+                cells.eq(7).text().trim()
             ]);
         });
         if (dataPemasukan.length === 0) {
-            dataPemasukan.push([{ text: 'Belum ada catatan transaksi.', colspan: 5, alignment: 'center', italic: true }, '', '', '', '']);
+            dataPemasukan.push([{ text: 'Belum ada catatan transaksi.', colspan: 7, alignment: 'center', italic: true }, '', '', '', '', '', '']);
         }
 
         var dataPengeluaran = [];
@@ -345,12 +385,14 @@
                 cells.eq(1).text().trim(),
                 cells.eq(2).text().trim(),
                 cells.eq(3).text().trim(),
-                { text: cells.eq(4).text().trim(), alignment: 'right' },
-                cells.eq(6).text().trim()
+                cells.eq(4).text().trim(),
+                { text: cells.eq(5).text().trim(), alignment: 'center' },
+                { text: cells.eq(6).text().trim(), alignment: 'right' },
+                cells.eq(8).text().trim()
             ]);
         });
         if (dataPengeluaran.length === 0) {
-            dataPengeluaran.push([{ text: 'Belum ada catatan transaksi.', colspan: 6, alignment: 'center', italic: true }, '', '', '', '', '']);
+            dataPengeluaran.push([{ text: 'Belum ada catatan transaksi.', colspan: 8, alignment: 'center', italic: true }, '', '', '', '', '', '', '']);
         }
 
         var docDefinition = {
@@ -365,6 +407,7 @@
                 {
                     columns: [
                         { text: [{ text: 'Nama Petani : ', bold: true }, namaPetani], fontSize: 10 },
+                        { text: [{ text: 'Lahan : ', bold: true }, $('#filterLahan option:selected').text().trim()], alignment: 'center', fontSize: 10 },
                         { text: [{ text: 'Tanggal Unduh : ', bold: true }, new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })], alignment: 'right', fontSize: 10 }
                     ]
                 },
@@ -389,13 +432,15 @@
                 {
                     style: 'tableStyle',
                     table: {
-                        widths: ['6%', '16%', '20%', '23%', '35%'],
+                        widths: ['5%', '13%', '16%', '11%', '15%', '20%', '20%'],
                         headerRows: 1,
                         body: [
                             [
                                 { text: 'No', style: 'tableHeaderMasuk' },
                                 { text: 'Tanggal', style: 'tableHeaderMasuk' },
                                 { text: 'Asal Lahan', style: 'tableHeaderMasuk' },
+                                { text: 'Jml TBS', style: 'tableHeaderMasuk' },
+                                { text: 'Harga TBS', style: 'tableHeaderMasuk', alignment: 'right' },
                                 { text: 'Total Pendapatan', style: 'tableHeaderMasuk', alignment: 'right' },
                                 { text: 'Keterangan', style: 'tableHeaderMasuk' }
                             ],
@@ -408,7 +453,7 @@
                 {
                     style: 'tableStyle',
                     table: {
-                        widths: ['6%', '15%', '18%', '16%', '18%', '27%'],
+                        widths: ['4%', '13%', '13%', '13%', '16%', '6%', '15%', '20%'],
                         headerRows: 1,
                         body: [
                             [
@@ -416,7 +461,9 @@
                                 { text: 'Tanggal', style: 'tableHeaderKeluar' },
                                 { text: 'Asal Lahan', style: 'tableHeaderKeluar' },
                                 { text: 'Jenis Biaya', style: 'tableHeaderKeluar' },
-                                { text: 'Jumlah Biaya', style: 'tableHeaderKeluar', alignment: 'right' },
+                                { text: 'Nama Biaya', style: 'tableHeaderKeluar' },
+                                { text: 'Qty', style: 'tableHeaderKeluar' },
+                                { text: 'Total Biaya', style: 'tableHeaderKeluar', alignment: 'right' },
                                 { text: 'Keterangan', style: 'tableHeaderKeluar' }
                             ],
                             ...dataPengeluaran
@@ -435,6 +482,78 @@
         };
 
         pdfMake.createPdf(docDefinition).download('Laporan_Keuangan_' + namaPetani.replace(/\s+/g, '_') + '.pdf');
+    }
+
+    // FUNGSI UTAMA EXPORT LAPORAN GABUNGAN KE EXCEL
+    function exportExcelLaporan() {
+        var namaPetani = $('#namaPetaniCetak').text().trim();
+        var wb = XLSX.utils.book_new();
+
+        // Sheet 1: Pemasukan
+        var wsDataMasuk = [
+            ["LAPORAN PEMASUKAN (PRODUKSI)"],
+            ["Nama Petani", namaPetani],
+            ["Filter Lahan", $('#filterLahan option:selected').text().trim()],
+            ["Tanggal Unduh", new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })],
+            [],
+            ["No", "Tanggal", "Asal Lahan", "Jumlah TBS (Kg)", "Harga TBS (Rp)", "Total Pendapatan (Rp)", "Keterangan"]
+        ];
+
+        tableMasuk.rows({ search: 'applied' }).every(function (rowIdx, tableLoop, rowLoop) {
+            var cells = $(this.node()).find('td');
+            var jumlahClean = cells.eq(3).text().replace(/[^0-9]/g, '');
+            var hargaClean = cells.eq(4).text().replace(/[^0-9]/g, '');
+            var pendapatanClean = cells.eq(5).text().replace(/[^0-9]/g, '');
+            wsDataMasuk.push([
+                rowLoop + 1,
+                cells.eq(1).text().trim(),
+                cells.eq(2).text().trim(),
+                jumlahClean ? parseInt(jumlahClean) : 0,
+                hargaClean ? parseInt(hargaClean) : 0,
+                pendapatanClean ? parseInt(pendapatanClean) : 0,
+                cells.eq(7).text().trim()
+            ]);
+        });
+
+        if (wsDataMasuk.length === 6) {
+            wsDataMasuk.push(["Belum ada catatan transaksi."]);
+        }
+        var wsMasuk = XLSX.utils.aoa_to_sheet(wsDataMasuk);
+        XLSX.utils.book_append_sheet(wb, wsMasuk, "Pemasukan");
+
+        // Sheet 2: Pengeluaran
+        var wsDataKeluar = [
+            ["LAPORAN PENGELUARAN (OPERASIONAL)"],
+            ["Nama Petani", namaPetani],
+            ["Filter Lahan", $('#filterLahan option:selected').text().trim()],
+            ["Tanggal Unduh", new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })],
+            [],
+            ["No", "Tanggal", "Asal Lahan", "Jenis Biaya", "Nama Biaya", "Qty", "Total Biaya (Rp)", "Keterangan"]
+        ];
+
+        tableKeluar.rows({ search: 'applied' }).every(function (rowIdx, tableLoop, rowLoop) {
+            var cells = $(this.node()).find('td');
+            var pengeluaranClean = cells.eq(6).text().replace(/[^0-9]/g, '');
+            wsDataKeluar.push([
+                rowLoop + 1,
+                cells.eq(1).text().trim(),
+                cells.eq(2).text().trim(),
+                cells.eq(3).text().trim(),
+                cells.eq(4).text().trim(),
+                cells.eq(5).text().trim(),
+                pengeluaranClean ? parseInt(pengeluaranClean) : 0,
+                cells.eq(8).text().trim()
+            ]);
+        });
+
+        if (wsDataKeluar.length === 6) {
+            wsDataKeluar.push(["Belum ada catatan transaksi."]);
+        }
+        var wsKeluar = XLSX.utils.aoa_to_sheet(wsDataKeluar);
+        XLSX.utils.book_append_sheet(wb, wsKeluar, "Pengeluaran");
+
+        // Download
+        XLSX.writeFile(wb, 'Laporan_Keuangan_' + namaPetani.replace(/\s+/g, '_') + '.xlsx');
     }
 </script>
 

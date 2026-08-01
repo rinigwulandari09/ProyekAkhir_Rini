@@ -45,28 +45,31 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
                             <div class="space-y-1">
                                 <label class="text-xs font-semibold text-gray-400 uppercase">Nama Lengkap</label>
-                                <input type="text" name="petani_nama" value="{{ old('petani_nama', $petani->petani_nama) }}" class="w-full px-3 py-2 border border-gray-300 bg-gray-100 text-gray-600 rounded-lg text-sm outline-none cursor-not-allowed" readonly required>
+                                <input type="text" name="petani_nama" value="{{ old('petani_nama', $petani->petani_nama) }}" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#214122] focus:border-[#214122] text-sm text-gray-700 shadow-sm transition" required>
                             </div>
                             <div class="space-y-1">
                                 <label class="text-xs font-semibold text-gray-400 uppercase">Username</label>
-                                <input type="text" name="petani_username" value="{{ old('petani_username', $petani->petani_username) }}" class="w-full px-3 py-2 border border-gray-300 bg-gray-100 text-gray-600 rounded-lg text-sm font-mono outline-none cursor-not-allowed" readonly required>
+                                <input type="text" name="petani_username" value="{{ old('petani_username', $petani->petani_username) }}" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#214122] focus:border-[#214122] text-sm font-mono text-gray-700 shadow-sm transition" required>
                             </div>
                             <div class="space-y-1">
                                 <label class="text-xs font-semibold text-gray-400 uppercase">Alamat Email</label>
-                                <input type="email" name="petani_email" value="{{ old('petani_email', $petani->petani_email) }}" class="w-full px-3 py-2 border border-gray-300 bg-gray-100 text-gray-600 rounded-lg text-sm outline-none cursor-not-allowed" readonly>
+                                <input type="email" name="petani_email" value="{{ old('petani_email', $petani->petani_email) }}" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#214122] focus:border-[#214122] text-sm text-gray-700 shadow-sm transition">
                             </div>
                             <div class="space-y-1">
                                 <label class="text-xs font-semibold text-gray-400 uppercase">Nomor Handphone</label>
-                                <input type="text" name="petani_no_hp" value="{{ old('petani_no_hp', $petani->petani_no_hp) }}" class="w-full px-3 py-2 border border-gray-300 bg-gray-100 text-gray-600 rounded-lg text-sm outline-none cursor-not-allowed" readonly required>
+                                <input type="text" name="petani_no_hp" value="{{ old('petani_no_hp', $petani->petani_no_hp) }}" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#214122] focus:border-[#214122] text-sm text-gray-700 shadow-sm transition" required>
                             </div>
                             <div class="space-y-1">
                                 <label class="text-xs font-semibold text-gray-400 uppercase">Desa</label>
-                                <select name="desa_id" class="w-full px-3 py-2 border border-gray-300 bg-gray-100 text-gray-600 rounded-lg text-sm outline-none cursor-not-allowed pointer-events-none" tabindex="-1">
-                                    <option value="">-- Pilih Desa --</option>
-                                    @foreach($desas as $desa)
-                                        <option value="{{ $desa->desa_id }}" {{ (old('desa_id', $petani->desa_id) == $desa->desa_id) ? 'selected' : '' }}>{{ $desa->desa_nama }}</option>
-                                    @endforeach
-                                </select>
+                                <div class="relative mt-1">
+                                    <select name="desa_id" class="w-full pl-3 pr-10 py-2 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#214122] focus:border-[#214122] appearance-none cursor-pointer text-sm text-gray-700 shadow-sm transition">
+                                        <option value="">-- Pilih Desa --</option>
+                                        @foreach($desas as $desa)
+                                            <option value="{{ $desa->desa_id }}" {{ (old('desa_id', $petani->desa_id) == $desa->desa_id) ? 'selected' : '' }}>{{ $desa->desa_nama }}</option>
+                                        @endforeach
+                                    </select>
+                                    <x-heroicon-o-chevron-down class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+                                </div>
                             </div>
                             
                             <div class="space-y-1">
@@ -84,21 +87,24 @@
                         <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                             <div class="space-y-1">
                                 <label class="text-xs font-semibold text-gray-400 uppercase">Jenis Kelamin</label>
-                                <select name="petani_jenis_kelamin" class="w-full px-3 py-2 border border-gray-300 bg-gray-100 text-gray-600 rounded-lg text-sm outline-none cursor-not-allowed pointer-events-none" tabindex="-1">
-                                    <option value="">-- Pilih Jenis Kelamin --</option>
-                                    <option value="Laki-laki" {{ old('petani_jenis_kelamin', $petani->petani_jenis_kelamin) == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
-                                    <option value="Perempuan" {{ old('petani_jenis_kelamin', $petani->petani_jenis_kelamin) == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
-                                </select>
+                                <div class="relative mt-1">
+                                    <select name="petani_jenis_kelamin" class="w-full pl-3 pr-10 py-2 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#214122] focus:border-[#214122] appearance-none cursor-pointer text-sm text-gray-700 shadow-sm transition">
+                                        <option value="">-- Pilih Jenis Kelamin --</option>
+                                        <option value="Laki-laki" {{ old('petani_jenis_kelamin', $petani->petani_jenis_kelamin) == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                                        <option value="Perempuan" {{ old('petani_jenis_kelamin', $petani->petani_jenis_kelamin) == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                                    </select>
+                                    <x-heroicon-o-chevron-down class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+                                </div>
                             </div>
                             <div class="space-y-1">
                                 <label class="text-xs font-semibold text-gray-400 uppercase">Tanggal Lahir</label>
-                                <input type="date" name="petani_tanggal_lahir" value="{{ old('petani_tanggal_lahir', $petani->petani_tanggal_lahir) }}" class="w-full px-3 py-2 border border-gray-300 bg-gray-100 text-gray-600 rounded-lg text-sm outline-none cursor-not-allowed pointer-events-none" readonly tabindex="-1">
+                                <input type="date" name="petani_tanggal_lahir" value="{{ old('petani_tanggal_lahir', $petani->petani_tanggal_lahir) }}" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#214122] focus:border-[#214122] text-sm text-gray-700 shadow-sm transition">
                             </div>
                         </div>
 
                         <div class="mt-4">
                             <label class="text-xs font-semibold text-gray-400 uppercase">Alamat Lengkap</label>
-                            <textarea name="petani_alamat" class="w-full mt-1 px-3 py-2 border border-gray-300 bg-gray-100 text-gray-600 rounded-lg text-sm outline-none cursor-not-allowed" rows="3" readonly>{{ old('petani_alamat', $petani->petani_alamat) }}</textarea>
+                            <textarea name="petani_alamat" class="w-full mt-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#214122] focus:border-[#214122] text-sm text-gray-700 shadow-sm transition" rows="3">{{ old('petani_alamat', $petani->petani_alamat) }}</textarea>
                         </div>
                     </div>
                 </div>

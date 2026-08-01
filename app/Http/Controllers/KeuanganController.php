@@ -135,10 +135,11 @@ class KeuanganController extends Controller
             abort(403, 'Anda tidak memiliki hak akses untuk melihat data keuangan petani ini.');
         }
 
-        // Tangkap parameter filter tanggal
+        // Tangkap parameter filter tanggal dan lahan
         $bulanAwal  = $request->input('bulan_awal');  
         $bulanAkhir = $request->input('bulan_akhir'); 
         $tahun      = $request->input('tahun');       
+        $lahanId    = $request->input('lahan_id');
 
         // 2. Ambil query relasi
         $produksiQuery = $petani->produksi(); 
@@ -160,6 +161,12 @@ class KeuanganController extends Controller
             $biayaQuery->whereRaw("EXTRACT(MONTH FROM biaya_tanggal) <= ?", [$bulanAkhir]);
         }
 
+        // Terapkan filter lahan
+        if ($lahanId) {
+            $produksiQuery->where('lahan_id', $lahanId);
+            $biayaQuery->where('lahan_id', $lahanId);
+        }
+
         // PERBAIKAN UTAMA DETAIL: Urutkan berdasarkan tanggal transaksi terbaru (DESC)
         $pemasukan = $produksiQuery
             ->with('lahan')
@@ -174,7 +181,10 @@ class KeuanganController extends Controller
         $totalPemasukan = $pemasukan->sum('total_pendapatan');
         $totalPengeluaran = $pengeluaran->sum('biaya_total');
 
-        $compactData = compact('petani', 'pemasukan', 'pengeluaran', 'totalPemasukan', 'totalPengeluaran', 'bulanAwal', 'bulanAkhir', 'tahun');
+        // 5. Ambil data lahan untuk dropdown filter
+        $lahans = $petani->lahans;
+
+        $compactData = compact('petani', 'pemasukan', 'pengeluaran', 'totalPemasukan', 'totalPengeluaran', 'bulanAwal', 'bulanAkhir', 'tahun', 'lahanId', 'lahans');
 
         // Alihkan ke view sesuai role
         if ($user->user_role === 'super_admin') {

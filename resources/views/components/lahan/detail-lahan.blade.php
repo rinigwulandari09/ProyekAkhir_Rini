@@ -77,10 +77,26 @@
         // 1. Inisialisasi awal objek peta (default view di Riau)
         const mapDetail = L.map('mapDetailLahan').setView([-0.489, 101.406], 13);
 
-        // 2. Load Tile OpenStreetMap Standard
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(mapDetail);
+        // 2. Base maps
+        var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        });
+
+        var satelliteLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+            maxZoom: 20,
+            attribution: '© Google Maps'
+        });
+
+        // Default layer
+        satelliteLayer.addTo(mapDetail);
+
+        // Menambahkan kontrol pilihan layer ke peta
+        var baseMaps = {
+            "Satelit (Google)": satelliteLayer,
+            "Peta Standar (OSM)": osmLayer
+        };
+        L.control.layers(baseMaps).addTo(mapDetail);
 
         // 3. Tangkap string koordinat area_lahan dari database
         const areaLahanRaw = @json($lahan->area_lahan);
@@ -107,8 +123,8 @@
                     // 4. Gambar Poligon Lahan Tunggal menggunakan fungsi bawaan L.polygon sesuai kodemu semula
                     const polygon = L.polygon(finalCoords, {
                         color: '#214122',       // Garis tepi luar
-                        fillColor: '#214122',   // Isian dalam poligon
-                        fillOpacity: 0.4,       // Transparansi isi poligon
+                        fillColor: '#D9F99D',   // Isian dalam poligon
+                        fillOpacity: 0.5,       // Transparansi isi poligon
                         weight: 3               // Ketebalan garis
                     }).addTo(mapDetail);
 

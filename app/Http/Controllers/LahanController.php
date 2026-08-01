@@ -133,21 +133,31 @@ class LahanController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
+            'lahan_nama'   => 'required|string|max:255',
             'lahan_lokasi' => 'required|string|max:255',
             'lahan_luas'   => 'required|numeric',
             'petani_id'    => 'required',
+            'area_lahan'   => 'nullable|json',
             'tahun_tanam'  => 'nullable|integer',
             'lahan_no_surat' => 'nullable|string|max:255',
         ]);
 
         $lahan = Lahan::findOrFail($id);
-        $lahan->update([
+        
+        $updateData = [
+            'lahan_nama'   => $request->lahan_nama,
             'lahan_lokasi' => $request->lahan_lokasi,
             'lahan_luas'   => $request->lahan_luas,
             'petani_id'    => $request->petani_id,
             'tahun_tanam'  => $request->tahun_tanam,
             'lahan_no_surat' => $request->lahan_no_surat,
-        ]);
+        ];
+        
+        if ($request->has('area_lahan') && !empty($request->area_lahan)) {
+            $updateData['area_lahan'] = json_decode($request->area_lahan);
+        }
+
+        $lahan->update($updateData);
 
         return redirect()->route('lahan.index')->with('success', 'Data lahan berhasil diperbarui!');
     }
@@ -162,54 +172,57 @@ class LahanController extends Controller
     }
 
 
-    private function cariPetaniTerbaik($namaJson, $desaId)
+    private function cariPetaniTerbaik($namaJson, $desaId = null)
     {
         $namaJson = strtolower(trim($namaJson));
 
-        // Hapus angka di belakang
+        // Hapus angka di belakang (misal: "Adi Mahyudin 1" menjadi "adi mahyudin")
         $namaJson = preg_replace('/\s+\d+$/', '', $namaJson);
 
-        // 1. Exact Match
-        $petani = Petani::where('desa_id', $desaId)
-            ->whereRaw('LOWER(petani_nama) = ?', [$namaJson])
-            ->first();
+        // --- TAHAP 1: CARI DI DESA YANG SAMA (Jika desa valid) ---
+        if ($desaId) {
+            // 1. Exact Match
+            $petani = Petani::where('desa_id', $desaId)
+                ->whereRaw('LOWER(petani_nama) = ?', [$namaJson])
+                ->first();
+            if ($petani) return $petani;
 
-        if ($petani) {
-            return $petani;
-        }
+            // 2. LIKE Match
+            $petani = Petani::where('desa_id', $desaId)
+                ->whereRaw('LOWER(petani_nama) LIKE ?', ['%' . $namaJson . '%'])
+                ->first();
+            if ($petani) return $petani;
 
-        // 2. LIKE Match
-        $petani = Petani::where('desa_id', $desaId)
-            ->whereRaw('LOWER(petani_nama) LIKE ?', ['%' . $namaJson . '%'])
-            ->first();
+            // 3. Similarity Match
+            $petanis = Petani::where('desa_id', $desaId)->get();
+            $bestMatch = null;
+            $bestScore = 0;
 
-        if ($petani) {
-            return $petani;
-        }
+            foreach ($petanis as $p) {
+                similar_text($namaJson, strtolower($p->petani_nama), $score);
+                if ($score > $bestScore) {
+                    $bestScore = $score;
+                    $bestMatch = $p;
+                }
+            }
 
-        // 3. Similarity Match
-        $petanis = Petani::where('desa_id', $desaId)->get();
-
-        $bestMatch = null;
-        $bestScore = 0;
-
-        foreach ($petanis as $p) {
-
-            similar_text(
-                $namaJson,
-                strtolower($p->petani_nama),
-                $score
-            );
-
-            if ($score > $bestScore) {
-                $bestScore = $score;
-                $bestMatch = $p;
+            // Minimal kemiripan 70% untuk lokal
+            if ($bestScore >= 70) {
+                return $bestMatch;
             }
         }
 
-        // Minimal kemiripan 50%
-        if ($bestScore >= 50) {
-            return $bestMatch;
+        // --- TAHAP 2: CARI DI SELURUH DATABASE (LINTAS DESA) ---
+        // 4. Exact Match (Lintas Desa)
+        $petaniGlobal = Petani::whereRaw('LOWER(petani_nama) = ?', [$namaJson])->get();
+        if ($petaniGlobal->count() === 1) {
+            return $petaniGlobal->first(); // Berhasil jika namanya unik di seluruh sistem
+        }
+
+        // 5. LIKE Match (Lintas Desa)
+        $petaniGlobalLike = Petani::whereRaw('LOWER(petani_nama) LIKE ?', ['%' . $namaJson . '%'])->get();
+        if ($petaniGlobalLike->count() === 1) {
+            return $petaniGlobalLike->first();
         }
 
         return null;
@@ -422,14 +435,33 @@ class LahanController extends Controller
                 'desa_nama',
                 $namaDesa
             )->first();
+            
+            $desaId = $desa ? $desa->desa_id : null;
 
-            $petani = null;
+            $petani = $this->cariPetaniTerbaik($namaPetani, $desaId);
 
-            if ($desa) {
-                $petani = $this->cariPetaniTerbaik(
-                    $namaPetani,
-                    $desa->desa_id
-                );
+            $geometry = $feature['geometry'] ?? null;
+            $isDuplicate = false;
+            
+            if ($geometry) {
+                // Kita gunakan PHP array comparison yang sudah terbukti jalan dari processImport
+                $geometryJson = json_encode($geometry);
+                $hasil = DB::selectOne("
+                    SELECT ST_AsGeoJSON(
+                        ST_Transform(
+                            ST_SetSRID(
+                                ST_GeomFromGeoJSON(?),
+                                32647
+                            ),
+                            4326
+                        )
+                    ) AS geojson
+                ", [$geometryJson]);
+
+                if ($hasil && $hasil->geojson) {
+                    $geojson4326 = json_decode($hasil->geojson, true);
+                    $isDuplicate = $this->polygonSudahAda($geojson4326);
+                }
             }
 
             $preview[] = [
@@ -437,7 +469,7 @@ class LahanController extends Controller
                 'desa' => $namaDesa,
                 'petani_db' => $petani?->petani_nama,
                 'petani_id' => $petani?->petani_id,
-                'status' => $petani ? 'cocok' : 'tidak_cocok',
+                'status' => $petani ? ($isDuplicate ? 'duplikat' : 'cocok') : 'tidak_cocok',
                 'feature' => $feature
             ];
         }
@@ -509,6 +541,11 @@ class LahanController extends Controller
             $jumlahSkip   = 0;
 
             foreach ($preview as $item) {
+
+                if ($item['status'] === 'duplikat') {
+                    $jumlahSkip++;
+                    continue;
+                }
 
                 if ($item['status'] !== 'cocok') {
                     continue;
