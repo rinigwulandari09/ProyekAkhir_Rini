@@ -5,7 +5,19 @@
             <h1 class="text-2xl font-bold text-[#214122]">Daftar Petani</h1>
             <p class="text-sm text-gray-500">Daftar seluruh petani sawit yang terdaftar.</p>
         </div>
+        
+        <a href="{{ route('petani.create') }}" class="bg-[#214122] text-white px-4 py-2.5 rounded-lg inline-flex items-center gap-2 hover:bg-green-900 transition shadow-md font-semibold text-sm">
+            <x-heroicon-o-user-plus class="w-5 h-5" />
+            Tambah Petani
+        </a>
     </div>
+
+    @if(session('success'))
+        <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl relative text-sm flex items-center shadow-sm" role="alert">
+            <x-heroicon-o-check-circle class="w-5 h-5 mr-2" />
+            <span class="block sm:inline">{{ session('success') }}</span>
+        </div>
+    @endif
 
     {{-- Container tempat tombol Export --}}
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
