@@ -195,4 +195,103 @@ class KeuanganController extends Controller
 
         abort(403);
     }
+
+    public function editProduksi($id)
+    {
+        $user = auth()->user();
+        if ($user->user_role !== 'super_admin') {
+            abort(403, 'Hanya Super Admin yang dapat mengakses halaman ini.');
+        }
+        $produksi = Produksi::findOrFail($id);
+        $lahans = $produksi->petani->lahans;
+        return view('super_admin.keuangan.edit_produksi', compact('produksi', 'lahans'));
+    }
+
+    public function updateProduksi(Request $request, $id)
+    {
+        $user = auth()->user();
+        if ($user->user_role !== 'super_admin') {
+            abort(403, 'Hanya Super Admin yang dapat mengubah data ini.');
+        }
+
+        $produksi = Produksi::findOrFail($id);
+
+        $request->validate([
+            'lahan_id' => 'required|exists:lahan,lahan_id',
+            'produksi_tanggal' => 'required|date',
+            'jumlah_tbs' => 'required|numeric',
+            'harga_tbs' => 'required|numeric',
+            'produksi_ket' => 'nullable|string',
+            'produksi_bukti' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048'
+        ]);
+
+        $data = $request->only(['lahan_id', 'produksi_tanggal', 'jumlah_tbs', 'harga_tbs']);
+        $data['total_pendapatan'] = $request->jumlah_tbs * $request->harga_tbs;
+        
+        if ($request->has('produksi_ket')) {
+            $data['produksi_ket'] = $request->produksi_ket;
+        }
+
+        if ($request->hasFile('produksi_bukti')) {
+            // Delete old file if necessary, logic depending on existing system
+            $file = $request->file('produksi_bukti');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('public/bukti_produksi', $filename);
+            $data['produksi_bukti'] = 'bukti_produksi/' . $filename;
+        }
+
+        $produksi->update($data);
+
+        return redirect()->route('keuangan.show', $produksi->petani_id)->with('success', 'Data Pemasukan (Produksi) berhasil diperbarui.');
+    }
+
+    public function editBiayaOperasional($id)
+    {
+        $user = auth()->user();
+        if ($user->user_role !== 'super_admin') {
+            abort(403, 'Hanya Super Admin yang dapat mengakses halaman ini.');
+        }
+        $biaya = BiayaOperasional::findOrFail($id);
+        $lahans = $biaya->petani->lahans;
+        return view('super_admin.keuangan.edit_biaya', compact('biaya', 'lahans'));
+    }
+
+    public function updateBiayaOperasional(Request $request, $id)
+    {
+        $user = auth()->user();
+        if ($user->user_role !== 'super_admin') {
+            abort(403, 'Hanya Super Admin yang dapat mengubah data ini.');
+        }
+
+        $biaya = BiayaOperasional::findOrFail($id);
+
+        $request->validate([
+            'lahan_id' => 'required|exists:lahan,lahan_id',
+            'biaya_tanggal' => 'required|date',
+            'biaya_jenis' => 'required|string',
+            'biaya_nama' => 'required|string',
+            'biaya_jumlah' => 'nullable|numeric',
+            'biaya_total' => 'required|numeric',
+            'biaya_ket' => 'nullable|string',
+            'biaya_bukti' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048'
+        ]);
+
+        $data = $request->only(['lahan_id', 'biaya_tanggal', 'biaya_jenis', 'biaya_nama', 'biaya_jumlah', 'biaya_total']);
+        
+        if ($request->has('biaya_ket')) {
+            $data['biaya_ket'] = $request->biaya_ket;
+        }
+
+        if ($request->hasFile('biaya_bukti')) {
+            // Delete old file if necessary
+            $file = $request->file('biaya_bukti');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('public/bukti_biaya', $filename);
+            $data['biaya_bukti'] = 'bukti_biaya/' . $filename;
+        }
+
+        $biaya->update($data);
+
+        return redirect()->route('keuangan.show', $biaya->petani_id)->with('success', 'Data Pengeluaran (Biaya Operasional) berhasil diperbarui.');
+    }
 }

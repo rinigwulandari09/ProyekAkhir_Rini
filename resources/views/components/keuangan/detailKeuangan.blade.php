@@ -163,7 +163,8 @@
                     <span class="w-1.5 h-5 bg-green-600 rounded"></span> Tabel Pemasukan (Produksi)
                 </h3>
             </div>
-            <table id="tabelPemasukan" class="w-full text-left border-collapse display responsive nowrap">
+            <div class="overflow-x-auto w-full">
+                <table id="tabelPemasukan" class="w-full text-left border-collapse display responsive nowrap">
                 <thead>
                     <tr class="bg-[#D9F99D] border-b border-gray-200">
                         <th class="p-4 text-xs font-bold text-[#214122] uppercase text-center w-12">No</th>
@@ -174,6 +175,9 @@
                         <th class="p-4 text-xs font-bold text-[#214122] uppercase text-right">Total Pendapatan</th>
                         <th class="p-4 text-xs font-bold text-[#214122] uppercase text-center">Bukti Nota</th>
                         <th class="p-4 text-xs font-bold text-[#214122] uppercase">Keterangan</th>
+                        @if(auth()->user()->user_role === 'super_admin')
+                        <th class="p-4 text-xs font-bold text-[#214122] uppercase text-center">Aksi</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -184,8 +188,8 @@
                             {{ $masuk->produksi_tanggal ? date('Y-m-d', strtotime($masuk->produksi_tanggal)) : '-' }}
                         </td>
                         <td class="p-4 text-xs text-gray-800 font-medium">{{ $masuk->lahan->lahan_nama ?? '-' }}</td>
-                        <td class="p-4 text-xs text-gray-800 font-medium text-center">{{ $masuk->jumlah_tbs ? number_format($masuk->jumlah_tbs, 0, ',', '.') . ' Kg' : '-' }}</td>
-                        <td class="p-4 text-xs text-gray-800 font-medium text-right">Rp {{ number_format($masuk->harga_tbs ?? 0, 0, ',', '.') }}</td>
+                        <td class="p-4 text-xs text-gray-800 font-medium text-justify">{{ $masuk->jumlah_tbs ? number_format($masuk->jumlah_tbs, 0, ',', '.') . ' Kg' : '-' }}</td>
+                        <td class="p-4 text-xs text-gray-800 font-medium text-justify">Rp {{ number_format($masuk->harga_tbs ?? 0, 0, ',', '.') }}</td>
                         <td class="p-4 text-xs text-green-600 font-bold text-justify pr-6">
                             Rp {{ number_format($masuk->total_pendapatan, 0, ',', '.') }}
                         </td>
@@ -201,10 +205,18 @@
                         <td class="p-4 text-xs text-gray-500 max-w-xs truncate" title="{{ $masuk->produksi_keterangan ?? $masuk->keterangan }}">
                             {{ $masuk->produksi_keterangan ?? $masuk->keterangan ?? '-' }}
                         </td>
+                        @if(auth()->user()->user_role === 'super_admin')
+                        <td class="p-4 text-xs text-center">
+                            <a href="{{ route('produksi.edit', $masuk->id ?? $masuk->produksi_id) }}" class="inline-block text-blue-600 hover:text-blue-800 transition" title="Edit Data">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            </a>
+                        </td>
+                        @endif
                     </tr>
                     @endforeach
                 </tbody>
-            </table>
+                </table>
+            </div>
         </div>
 
         {{-- Tabel Pengeluaran Section --}}
@@ -214,7 +226,8 @@
                     <span class="w-1.5 h-5 bg-red-500 rounded"></span> Tabel Pengeluaran (Operasional)
                 </h3>
             </div>
-            <table id="tabelPengeluaran" class="w-full text-left border-collapse display responsive nowrap">
+            <div class="overflow-x-auto w-full">
+                <table id="tabelPengeluaran" class="w-full text-left border-collapse display responsive nowrap">
                 <thead>
                     <tr class="bg-[#FFE4E6] border-b border-gray-200">
                         <th class="p-4 text-xs font-bold text-[#991B1B] uppercase text-center w-12">No</th>
@@ -226,6 +239,9 @@
                         <th class="p-4 text-xs font-bold text-[#991B1B] uppercase text-right">Total Biaya</th>
                         <th class="p-4 text-xs font-bold text-[#991B1B] uppercase text-center">Bukti</th>
                         <th class="p-4 text-xs font-bold text-[#991B1B] uppercase">Keterangan</th>
+                        @if(auth()->user()->user_role === 'super_admin')
+                        <th class="p-4 text-xs font-bold text-[#991B1B] uppercase text-center">Aksi</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -262,10 +278,18 @@
                         <td class="p-4 text-xs text-gray-500 max-w-xs truncate" title="{{ $keluar->biaya_keterangan ?? $keluar->biaya_ket ?? '-' }}">
                             {{ $keluar->biaya_keterangan ?? $keluar->biaya_ket ?? '-' }}
                         </td>
+                        @if(auth()->user()->user_role === 'super_admin')
+                        <td class="p-4 text-xs text-center">
+                            <a href="{{ route('biaya_operasional.edit', $keluar->id ?? $keluar->biaya_id ?? $keluar->biaya_operasional_id) }}" class="inline-block text-blue-600 hover:text-blue-800 transition" title="Edit Data">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            </a>
+                        </td>
+                        @endif
                     </tr>
                     @endforeach
                 </tbody>
-            </table>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -563,8 +587,36 @@
     table.dataTable { border-collapse: collapse !important; border-spacing: 0 !important; width: 100% !important; margin: 0 !important; }
     table.dataTable thead th { border-bottom: 1px solid #e5e7eb !important; }
     
-    #tabelPemasukan th, #tabelPemasukan td, #tabelPengeluaran th, #tabelPengeluaran td { white-space: normal !important; word-break: break-word; }
-    #tabelPemasukan th, #tabelPengeluaran th { white-space: nowrap; }
+    #tabelPemasukan th, #tabelPemasukan td, #tabelPengeluaran th, #tabelPengeluaran td { white-space: nowrap !important; }
+
+    /* CUSTOM ICON PLUS (+) HANYA MUNCUL DI HP */
+    @media (max-width: 640px) {
+        table.dataTable.dtr-inline.collapsed > tbody > tr:not(.child) > td:first-child {
+            position: relative;
+            padding-left: 32px !important;
+            cursor: pointer;
+        }
+        table.dataTable.dtr-inline.collapsed > tbody > tr:not(.child) > td:first-child::before {
+            content: '+' !important;
+            position: absolute;
+            top: 50% !important;
+            left: 8px !important;
+            transform: translateY(-50%) !important;
+            background-color: #234323 !important;
+            color: white !important;
+            width: 16px !important;
+            height: 16px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border-radius: 9999px !important;
+            font-weight: bold !important;
+            font-size: 14px !important;
+            line-height: 1 !important;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
+        }
+        table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td:first-child::before { content: '-' !important; background-color: #dc2626 !important; }
+    }
 
     /* =========================================
        STYLING SHOW ENTRIES & SEARCH (PERBAIKAN)

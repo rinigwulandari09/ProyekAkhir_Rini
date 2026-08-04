@@ -71,20 +71,28 @@
                     </div>
                 </div>
 
-                {{-- Nama Penerima --}}
-                <div class="space-y-2" id="recipientSelectWrap">
-                    <label class="block text-sm font-semibold text-gray-700">Nama Penerima</label>
-                    <div class="relative">
-                        <select name="recipient_id" id="recipientSelect" class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-700 outline-none appearance-none focus:ring-2 focus:ring-[#214122] focus:border-transparent bg-white shadow-sm transition-shadow">
-                            <option value="" disabled selected>Pilih penerima...</option>
-                            @foreach($petanis as $p)
-                                <option data-category="petani" value="{{ $p->petani_id }}">{{ $p->petani_nama }} (Petani)</option>
-                            @endforeach
-                            @foreach($admins as $a)
-                                <option data-category="admin" value="{{ $a->user_id }}">{{ $a->user_nama }} (Admin)</option>
-                            @endforeach
-                        </select>
-                        <x-heroicon-o-chevron-down class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+                    {{-- Nama Penerima --}}
+                    <div class="space-y-2" id="recipientSelectWrap">
+                        <label class="block text-sm font-semibold text-gray-700">Nama Penerima</label>
+                        <div class="relative">
+                            <select name="recipient_id" id="recipientSelect" class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-700 outline-none appearance-none focus:ring-2 focus:ring-[#214122] focus:border-transparent bg-white shadow-sm transition-shadow">
+                                <option value="" disabled selected>Pilih penerima...</option>
+                                @foreach($petanis as $p)
+                                    <option data-category="petani" value="{{ $p->petani_id }}">{{ $p->petani_nama }} (Petani)</option>
+                                @endforeach
+                                @foreach($admins as $a)
+                                    <option data-category="admin" value="{{ $a->user_id }}">{{ $a->user_nama }} (Admin)</option>
+                                @endforeach
+                            </select>
+                            <x-heroicon-o-chevron-down class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                        </div>
+                    </div>
+
+                    {{-- Tanggal Pengiriman --}}
+                    <div class="space-y-2">
+                        <label class="block text-sm font-semibold text-gray-700">Tanggal Pelaksanaan / Deadline</label>
+                        <input type="date" name="deadline" class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-700 outline-none focus:ring-2 focus:ring-[#214122] focus:border-transparent shadow-sm transition-shadow bg-white uppercase">
                     </div>
                 </div>
 
@@ -100,13 +108,7 @@
                     <textarea name="message" rows="5" placeholder="Tulis pesan pengingat di sini (contoh: Jadwal pemupukan besok pagi jam 08:00)..." class="w-full p-4 border border-gray-200 rounded-xl text-sm text-gray-700 outline-none focus:ring-2 focus:ring-[#214122] focus:border-transparent bg-white shadow-sm transition-shadow resize-y" required></textarea>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-                    {{-- Tanggal Pengiriman --}}
-                    <div class="space-y-2">
-                        <label class="block text-sm font-semibold text-gray-700">Tanggal Pelaksanaan / Deadline</label>
-                        <input type="date" name="deadline" class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-700 outline-none focus:ring-2 focus:ring-[#214122] focus:border-transparent shadow-sm transition-shadow bg-white uppercase">
-                    </div>
-                </div>
+
 
                 {{-- Tombol Simpan --}}
                 <div class="mt-6 sm:mt-8 pt-6 border-t border-gray-100 flex flex-col sm:flex-row justify-end gap-3">
