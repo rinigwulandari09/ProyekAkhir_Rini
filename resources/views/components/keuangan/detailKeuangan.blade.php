@@ -206,9 +206,9 @@
                             {{ $masuk->produksi_keterangan ?? $masuk->keterangan ?? '-' }}
                         </td>
                         @if(auth()->user()->user_role === 'super_admin')
-                        <td class="p-4 text-xs text-center">
-                            <a href="{{ route('produksi.edit', $masuk->id ?? $masuk->produksi_id) }}" class="inline-block text-blue-600 hover:text-blue-800 transition" title="Edit Data">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        <td class="p-4 text-xs text-justify">
+                            <a href="{{ route('produksi.edit', $masuk->id ?? $masuk->produksi_id) }}" class="inline-block text-green-700 hover:scale-110 transition" title="Edit Data">
+                                <x-heroicon-o-pencil-square class="w-5 h-5" />
                             </a>
                         </td>
                         @endif
@@ -279,9 +279,9 @@
                             {{ $keluar->biaya_keterangan ?? $keluar->biaya_ket ?? '-' }}
                         </td>
                         @if(auth()->user()->user_role === 'super_admin')
-                        <td class="p-4 text-xs text-center">
-                            <a href="{{ route('biaya_operasional.edit', $keluar->id ?? $keluar->biaya_id ?? $keluar->biaya_operasional_id) }}" class="inline-block text-blue-600 hover:text-blue-800 transition" title="Edit Data">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        <td class="p-4 text-xs text-justify">
+                            <a href="{{ route('biaya_operasional.edit', $keluar->id ?? $keluar->biaya_id ?? $keluar->biaya_operasional_id) }}" class="inline-block text-green-700 hover:scale-110 transition" title="Edit Data">
+                                <x-heroicon-o-pencil-square class="w-5 h-5" />
                             </a>
                         </td>
                         @endif

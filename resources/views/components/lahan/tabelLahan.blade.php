@@ -78,7 +78,7 @@
                         <td class="p-4 text-xs text-gray-600">{{ $lahan->lahan_no_surat ?? '-' }}</td>
                         <td class="p-4 text-xs text-gray-600">{{ $lahan->lahan_lokasi }}</td>
                         <td class="p-4">
-                            <div class="flex justify-center gap-3 items-justify">
+                            <div class="flex text-justify gap-3 items-justify">
                                 <a href="{{ route('lahan.show', $lahan->lahan_id) }}" class="text-blue-600 hover:scale-110 transition" title="Lihat Peta / Detail">
                                     <x-heroicon-o-map-pin class="w-5 h-5" />
                                 </a>
