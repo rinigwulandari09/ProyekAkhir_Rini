@@ -63,7 +63,17 @@ class DashboardApiController extends Controller
                     'pengingat' => DB::table('tugas')
                                     ->whereNotNull('deadline')
                                     ->orderBy('deadline', 'asc')
-                                    ->get(['id', 'judul', 'pesan', 'deadline', 'is_done'])
+                                    ->get(['id', 'judul', 'pesan', 'deadline', 'is_done']),
+                    'status_audit' => [
+                        'lulus' => DB::table('audit_internal')->where('status_audit', 'Lulus')->count(),
+                        'perlu_perbaikan' => DB::table('audit_internal')->where('status_audit', 'Perlu Perbaikan')->count(),
+                        'pending' => DB::table('audit_internal')
+                            ->where(function ($query) {
+                                $query->whereNull('status_audit')
+                                      ->orWhere('status_audit', '')
+                                      ->orWhere('status_audit', 'Menunggu Konfirmasi');
+                            })->count()
+                    ]
                 ]
             ]);
         } catch (\Exception $e) {
