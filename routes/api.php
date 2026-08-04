@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\DashboardApiController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/lupa-pin', [AuthController::class, 'lupaPin']);
 Route::get('/petani', [PetaniController::class, 'getAll']); // Taruh di atas rute {petani_id} agar tidak bentrok
 Route::get('/petani/{petani_id}', [AuthController::class, 'getPetani']);
 Route::post('/petani/update/{petani_id}', [PetaniController::class, 'update']);

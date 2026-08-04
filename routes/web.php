@@ -57,6 +57,14 @@ Route::middleware(['auth'])->group(function () {
     // Menampilkan halaman daftar petani (Otomatis mendeteksi layout di Controller)
     Route::get('/petani', [PetaniController::class, 'index'])->name('petani.index');
 
+    // Form Tambah Petani
+    Route::get('/petani/create', [PetaniController::class, 'create'])
+        ->name('petani.create');
+
+    // Proses Simpan Petani Baru
+    Route::post('/petani', [PetaniController::class, 'store'])
+        ->name('petani.store');
+
     // Menampilkan halaman form edit petani
     Route::get('/petani/{id}/edit', [PetaniController::class, 'edit'])->name('petani.edit');
 
