@@ -131,6 +131,34 @@ class AuthController extends Controller
         ], 404);
     }
 
+    public function lupaPin(Request $request)
+    {
+        $request->validate([
+            'username' => 'required',
+            'email'    => 'required|email',
+            'pin_baru' => 'required|numeric|digits:6',
+        ]);
+
+        $petani = Petani::where('petani_username', $request->username)
+            ->where('petani_email', $request->email)
+            ->first();
+
+        if ($petani) {
+            $petani->petani_pin = Hash::make($request->pin_baru);
+            $petani->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'PIN berhasil direset. Silakan login dengan PIN baru Anda.'
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Data username dan email tidak cocok atau tidak ditemukan.'
+        ], 404);
+    }
+
     public function getPetani($petani_id)
     {
         $petani = Petani::find($petani_id);
