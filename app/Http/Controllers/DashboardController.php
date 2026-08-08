@@ -34,8 +34,16 @@ class DashboardController extends Controller
             ->join('petani', 'lahan.petani_id', '=', 'petani.petani_id')
             ->whereNotNull('lahan.area_lahan');
 
-        // --- CATATAN: Filter berdasarkan desa_id DIHAPUS agar Admin Desa bisa melihat data Nasional/Keseluruhan ---
-
+        // Jika user adalah admin, filter data berdasarkan desa_id
+        if ($user->user_role === 'admin' && $user->desa_id) {
+            $jumlahPetaniQuery->where('petani.desa_id', $user->desa_id);
+            $jumlahLahanQuery->where('petani.desa_id', $user->desa_id);
+            $pendapatanBulanIniQuery->where('petani.desa_id', $user->desa_id);
+            $petaniPendingQuery->where('petani.desa_id', $user->desa_id);
+            $pemasukanDataQuery->where('petani.desa_id', $user->desa_id);
+            $pengeluaranGrafikQuery->where('petani.desa_id', $user->desa_id);
+            $semuaLahanQuery->where('petani.desa_id', $user->desa_id);
+        }
         // 2. Eksekusi Pengambilan Data Keseluruhan
         $jumlahPetani = $jumlahPetaniQuery->count('petani_id');
         $jumlahLahan = $jumlahLahanQuery->sum('lahan_luas');
@@ -74,10 +82,15 @@ class DashboardController extends Controller
                 'petani.petani_nama'
             ]);
 
-        $jumlahProduksiHariIni = DB::table('produksi')
+        $jumlahProduksiHariIniQuery = DB::table('produksi')
             ->join('petani', 'produksi.petani_id', '=', 'petani.petani_id')
-            ->whereDate('produksi_tanggal', today())
-            ->count();
+            ->whereDate('produksi_tanggal', today());
+
+        if ($user->user_role === 'admin' && $user->desa_id) {
+            $jumlahProduksiHariIniQuery->where('petani.desa_id', $user->desa_id);
+        }
+
+        $jumlahProduksiHariIni = $jumlahProduksiHariIniQuery->count();
 
         $userIdColumn = Schema::hasColumn('users', 'user_id') ? 'user_id' : 'id';
 
@@ -101,15 +114,22 @@ class DashboardController extends Controller
             ->get(['id', 'judul', 'pesan', 'deadline', 'is_done']);
 
         // Data Audit Internal
-        $auditLulus = DB::table('audit_internal')
+        $auditQuery = DB::table('audit_internal');
+        
+        if ($user->user_role === 'admin' && $user->desa_id) {
+            $auditQuery->join('petani', 'audit_internal.petani_id', '=', 'petani.petani_id')
+                       ->where('petani.desa_id', $user->desa_id);
+        }
+
+        $auditLulus = (clone $auditQuery)
             ->where('status_audit', 'Lulus')
             ->count();
             
-        $auditPerbaikan = DB::table('audit_internal')
+        $auditPerbaikan = (clone $auditQuery)
             ->where('status_audit', 'Perlu Perbaikan')
             ->count();
             
-        $auditPending = DB::table('audit_internal')
+        $auditPending = (clone $auditQuery)
             ->where(function ($query) {
                 $query->whereNull('status_audit')
                       ->orWhere('status_audit', '')

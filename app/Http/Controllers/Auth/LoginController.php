@@ -32,11 +32,22 @@ class LoginController extends Controller
             return redirect()->route('dashboard');
         }
 
-        return back()
-            ->withErrors([
-                'user_username' => 'Username atau Password salah'
-            ])
-            ->withInput();
+        // Cek apakah username ada di database
+        $userExists = User::where('user_username', $request->user_username)->first();
+
+        if (!$userExists) {
+            return back()
+                ->withErrors([
+                    'user_username' => 'Username yang Anda masukkan salah.'
+                ])
+                ->withInput();
+        } else {
+            return back()
+                ->withErrors([
+                    'user_password' => 'Password yang Anda masukkan salah.'
+                ])
+                ->withInput($request->except('user_password'));
+        }
     }
 
     public function logout(Request $request)
