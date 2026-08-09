@@ -188,7 +188,14 @@
                     filename: 'Data_Audit_Internal',
                     orientation: 'landscape',
                     pageSize: 'A4',
-                    exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6], format: cleanExportFormat }
+                    exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6], format: cleanExportFormat },
+                    customize: function (doc) {
+                        doc.content[1].table.widths = ['auto', '*', '*', '*', '*', '*', '*'];
+                        doc.styles.tableHeader.alignment = 'center';
+                        if (doc.content[0]) {
+                            doc.content[0].alignment = 'center';
+                        }
+                    }
                 }
             ],
             "dom": '<"hidden" B> <"flex justify-between items-center w-full mb-4 gap-2" l f> rt <"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4" i p>'

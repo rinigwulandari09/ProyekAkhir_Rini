@@ -54,7 +54,7 @@
     </div>
     {{-- Status Audit --}}
     <div class="bg-white p-4 rounded-xl shadow-sm">
-        <h3 class="text-[10px] font-bold text-gray-500 mb-4 uppercase tracking-widest font-poppins">Status Audit RSPO/ISPO</h3>
+        <h3 class="text-[10px] font-bold text-gray-500 mb-4 uppercase tracking-widest font-poppins">Status Audit Internal</h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="bg-[#D1FAE5] p-4 rounded-lg flex items-center gap-4 border border-green-200">
                 <x-heroicon-s-check-circle class="w-10 h-10 text-green-800" />

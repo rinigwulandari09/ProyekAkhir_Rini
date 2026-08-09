@@ -76,8 +76,8 @@
                                 <label class="text-xs font-semibold text-gray-400 uppercase block">Ubah Status Akun</label>
                                 <div class="relative w-full sm:max-w-xs mt-1">
                                     <select name="petani_status" class="w-full pl-3 pr-10 py-2 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#214122] focus:border-[#214122] appearance-none cursor-pointer text-sm font-semibold text-gray-700 shadow-sm transition">
-                                        <option value="Aktif" {{ $petani->petani_status == 'Aktif' ? 'selected' : '' }}>🟢 Aktif</option>
-                                        <option value="Nonaktif" {{ $petani->petani_status == 'Nonaktif' ? 'selected' : '' }}>🔴 Nonaktif</option>
+                                        <option value="Aktif" {{ $petani->petani_status == 'Aktif' ? 'selected' : '' }}>Aktif</option>
+                                        <option value="Nonaktif" {{ $petani->petani_status == 'Nonaktif' ? 'selected' : '' }}>Nonaktif</option>
                                     </select>
                                     <x-heroicon-o-chevron-down class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
                                 </div>
