@@ -72,7 +72,8 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
-                    @foreach($audit as $a)
+                    @foreach($audit as $nama_petani => $history)
+                    @php $a = $history->first(); @endphp
                     <tr class="hover:bg-gray-50 transition">
                         <td class="p-4 text-xs text-center text-gray-500 font-mono"></td>
                         <td class="p-4 text-xs text-gray-800 font-medium">
@@ -113,10 +114,15 @@
                                 <form action="{{ route('audit.internal.destroy', $a->id_audit) }}" method="POST" onsubmit="return confirm('Yakin hapus data audit internal ini?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="text-red-500 hover:scale-110 transition">
+                                    <button type="submit" class="text-red-500 hover:scale-110 transition" title="Hapus">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"></path></svg>
                                     </button>
                                 </form>
+                                @if($history->count() > 1)
+                                <button type="button" onclick="openHistoryModal('{{ md5($nama_petani) }}')" class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-semibold hover:bg-blue-200 transition" title="Lihat Riwayat Audit">
+                                    Riwayat ({{ $history->count() }})
+                                </button>
+                                @endif
                             </div>
                         </td>
                     </tr>
@@ -262,6 +268,65 @@
     </div>
 </div>
 
+{{-- Modals for History --}}
+@foreach($audit as $nama_petani => $history)
+    @if($history->count() > 1)
+    <div id="historyModal-{{ md5($nama_petani) }}" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity bg-black/50" aria-hidden="true" onclick="closeHistoryModal('{{ md5($nama_petani) }}')"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="relative inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-xl shadow-xl sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full sm:p-6 z-10">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-gray-900">Riwayat Audit: {{ $nama_petani }}</h3>
+                    <button type="button" onclick="closeHistoryModal('{{ md5($nama_petani) }}')" class="text-gray-400 hover:text-gray-500">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+                <div class="mt-2 overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Attempt</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Auditor</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">File</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach($history as $h)
+                            <tr>
+                                <td class="px-3 py-2 text-sm text-gray-900">{{ $h->audit_attempt ?? '-' }}</td>
+                                <td class="px-3 py-2 text-sm text-gray-900">{{ $h->tanggal }}</td>
+                                <td class="px-3 py-2 text-sm text-gray-900">{{ $h->nama_auditor }}</td>
+                                <td class="px-3 py-2 text-sm">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                        @if($h->status_audit == 'Lulus') bg-green-100 text-green-800 
+                                        @elseif($h->status_audit == 'Perlu Perbaikan') bg-red-100 text-red-800 
+                                        @else bg-yellow-100 text-yellow-800 @endif">
+                                        {{ $h->status_audit ?: 'Pending' }}
+                                    </span>
+                                </td>
+                                <td class="px-3 py-2 text-sm text-gray-500 max-w-[150px] truncate" title="{{ $h->keterangan }}">{{ $h->keterangan ?? '-' }}</td>
+                                <td class="px-3 py-2 text-sm text-gray-500">
+                                    @if($h->path_file_kunjungan)
+                                    <a href="{{ Storage::url(str_replace(['storage/', 'public/'], '', $h->path_file_kunjungan)) }}" target="_blank" class="text-blue-600 hover:underline">Lihat PDF</a>
+                                    @else
+                                    -
+                                    @endif
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+@endforeach
+
 <script>
     // Gunakan event delegation agar tombol yang ada di dalam pagination DataTables tetap berfungsi
     $(document).on('click', '.btn-edit-status', function(e) {
@@ -308,5 +373,13 @@
         } else {
             container.classList.add('hidden');
         }
+    }
+
+    function openHistoryModal(id) {
+        document.getElementById('historyModal-' + id).classList.remove('hidden');
+    }
+
+    function closeHistoryModal(id) {
+        document.getElementById('historyModal-' + id).classList.add('hidden');
     }
 </script>

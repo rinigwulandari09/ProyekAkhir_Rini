@@ -69,7 +69,9 @@ class AuditInternalController extends Controller
                 $auditQuery->where('status_audit', $status);
             }
         }
-        $audit = $auditQuery->orderBy('tanggal', 'desc')->get();
+        $auditRaw = $auditQuery->orderBy('tanggal', 'desc')->get();
+        // Group by nama_petani
+        $audit = $auditRaw->groupBy('nama_petani');
 
         if ($isAdmin) {
             return view('admin.Audit.index', compact('kunjungan', 'audit', 'bulanAwal', 'bulanAkhir', 'tahun', 'status'));
