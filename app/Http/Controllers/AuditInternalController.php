@@ -139,7 +139,7 @@ class AuditInternalController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'status_audit' => 'required|string|in:Lulus,Perlu Perbaikan',
+            'status_audit' => 'required|string|in:Lulus,Perlu Perbaikan,Ditolak',
             'keterangan' => 'nullable|string'
         ]);
 

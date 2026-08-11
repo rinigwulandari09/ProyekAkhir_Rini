@@ -244,6 +244,7 @@
                                     <option value="" disabled selected hidden>Pilih Status...</option>
                                     <option value="Lulus">Lulus</option>
                                     <option value="Perlu Perbaikan">Perlu Perbaikan</option>
+                                    <option value="Ditolak">Ditolak</option>
                                 </select>
                             </div>
 
@@ -368,7 +369,7 @@
     function toggleKeteranganField() {
         const status = document.getElementById('status_audit').value;
         const container = document.getElementById('keterangan_container');
-        if (status === 'Perlu Perbaikan') {
+        if (status === 'Perlu Perbaikan' || status === 'Ditolak') {
             container.classList.remove('hidden');
         } else {
             container.classList.add('hidden');
