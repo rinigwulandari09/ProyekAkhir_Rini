@@ -60,15 +60,15 @@
         <div class="overflow-x-auto w-full">
             <table id="auditTable" class="w-full text-left border-collapse display responsive nowrap" style="width: 100%">
                 <thead>
-                    <tr class="bg-[#D9F99D] border-b border-gray-200">
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center w-12">No</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Tanggal</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Desa</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Nama Auditor</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Nama Petani</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Status</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Keterangan</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">Aksi</th>
+                    <tr class="bg-[#FFC107] border-b border-[#E0A800] shadow-sm">
+                        <th class="p-4 text-xs font-extrabold text-gray-900 uppercase text-center w-12 rounded-tl-lg tracking-wider">No</th>
+                        <th class="p-4 text-xs font-extrabold text-gray-900 uppercase tracking-wider">Tanggal</th>
+                        <th class="p-4 text-xs font-extrabold text-gray-900 uppercase tracking-wider">Desa</th>
+                        <th class="p-4 text-xs font-extrabold text-gray-900 uppercase tracking-wider">Nama Auditor</th>
+                        <th class="p-4 text-xs font-extrabold text-gray-900 uppercase tracking-wider">Nama Petani</th>
+                        <th class="p-4 text-xs font-extrabold text-gray-900 uppercase tracking-wider">Status</th>
+                        <th class="p-4 text-xs font-extrabold text-gray-900 uppercase tracking-wider">Keterangan</th>
+                        <th class="p-4 text-xs font-extrabold text-gray-900 uppercase text-center rounded-tr-lg tracking-wider">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">

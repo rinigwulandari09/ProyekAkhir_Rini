@@ -77,6 +77,7 @@ Route::post('/kunjungan-lapangan', [KunjunganLapanganController::class, 'store']
 
 // audit internal
 Route::post('/audit-internal', [AuditInternalController::class, 'store']);
+Route::get('/audit-internal/all', [AuditInternalController::class, 'getAllByDesa']);
 Route::get('/audit-internal/petani/{petani_id}', [AuditInternalController::class, 'getNotifications']);
 Route::put('/notifications/read', [AuditInternalController::class, 'markAsRead']);
 

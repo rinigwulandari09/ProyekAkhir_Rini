@@ -19,7 +19,7 @@ class AuditInternalController extends Controller
             'desa' => 'required|string',
             'nama_auditor' => 'required|string',
             'nama_petani' => 'required|string',
-            'file_kunjungan' => 'required|file|mimes:pdf,jpg,jpeg,png|max:10240' // Max 10MB
+            'file_kunjungan' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240' // Max 10MB
         ]);
 
         if ($validator->fails()) {
@@ -46,6 +46,7 @@ class AuditInternalController extends Controller
             $petani_id = $petani ? $petani->petani_id : null;
 
             $audit = AuditInternal::create([
+                'id_audit' => $request->id_audit,
                 'user_id' => $request->user_id,
                 'tanggal' => $request->tanggal,
                 'desa' => $request->desa,
@@ -54,6 +55,10 @@ class AuditInternalController extends Controller
                 'petani_id' => $petani_id,
                 'is_read' => 0,
                 'path_file_kunjungan' => $path,
+                'status_audit' => $request->status_audit,
+                'keterangan' => $request->keterangan,
+                'periode' => $request->periode,
+                'audit_attempt' => $request->audit_attempt ?? 1
             ]);
 
             return response()->json([
@@ -69,6 +74,24 @@ class AuditInternalController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function getAllByDesa(Request $request)
+    {
+        $desa = $request->input('desa');
+        
+        $query = AuditInternal::query();
+        if ($desa) {
+            $query->where('desa', $desa);
+        }
+
+        $audits = $query->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data audit berhasil diambil',
+            'data' => $audits
+        ], 200);
     }
 
     public function getNotifications($petani_id)
