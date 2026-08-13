@@ -24,8 +24,7 @@
     <form method="GET" action="{{ route('notifikasi.index') }}" class="bg-white p-4 rounded-t-2xl border border-gray-200 border-b-0 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <div class="flex gap-2 p-1 bg-gray-100 rounded-xl">
             <button type="submit" name="tab" value="all" class="px-6 py-1.5 rounded-lg text-xs font-bold {{ $tab === 'all' ? 'bg-white shadow-sm text-[#214122]' : 'text-gray-400 hover:text-gray-600' }}">Semua</button>
-            <button type="submit" name="tab" value="produksi" class="px-6 py-1.5 rounded-lg text-xs font-bold {{ $tab === 'produksi' ? 'bg-white shadow-sm text-[#214122]' : 'text-gray-400 hover:text-gray-600' }}">Produksi</button>
-            <button type="submit" name="tab" value="profil" class="px-6 py-1.5 rounded-lg text-xs font-bold {{ $tab === 'profil' ? 'bg-white shadow-sm text-[#214122]' : 'text-gray-400 hover:text-gray-600' }}">Profil</button>
+            <button type="submit" name="tab" value="unread" class="px-6 py-1.5 rounded-lg text-xs font-bold {{ $tab === 'unread' ? 'bg-white shadow-sm text-[#214122]' : 'text-gray-400 hover:text-gray-600' }}">Belum Dibaca</button>
         </div>
 
         <div class="relative ml-auto w-full md:w-auto">

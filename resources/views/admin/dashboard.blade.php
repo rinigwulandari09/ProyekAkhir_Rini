@@ -9,32 +9,35 @@
 
 <div class="space-y-6">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-[#A0C4E8] p-6 rounded-xl flex items-center justify-between shadow-sm border border-black/5">
-            <div>
-                <p class="text-blue-900 font-bold text-sm font-poppins">Jumlah Petani</p>
-                <h3 class="text-3xl font-black text-blue-900 leading-none font-poppins">
+        <div class="bg-gradient-to-r from-[#184D2E] to-[#D4AF37] p-6 rounded-2xl flex items-center justify-between shadow-lg shadow-[#184D2E]/20 border border-white/10 relative overflow-hidden">
+            <div class="absolute -right-6 -top-6 w-32 h-32 bg-white/20 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="relative z-10">
+                <p class="text-white/90 font-medium text-sm font-poppins tracking-wide">Jumlah Petani</p>
+                <h3 class="text-3xl font-black text-white leading-none font-poppins mt-1">
                     {{ number_format($jumlahPetani, 0, ',', '.') }}
                 </h3>
             </div>
-            <x-heroicon-o-user-group class="w-12 h-12 text-blue-900/50" />
+            <x-heroicon-o-user-group class="w-12 h-12 text-white/30 relative z-10" />
         </div>
-        <div class="bg-[#A8D5BA] p-6 rounded-xl flex items-center justify-between shadow-sm border border-black/5">
-            <div>
-                <p class="text-green-900 font-bold text-sm font-poppins">Luas Lahan (Ha)</p>
-                <h3 class="text-3xl font-black text-green-900 leading-none font-poppins">
+        <div class="bg-gradient-to-r from-[#FDE047] to-[#D4AF37] p-6 rounded-2xl flex items-center justify-between shadow-lg shadow-[#D4AF37]/20 border border-white/10 relative overflow-hidden">
+            <div class="absolute -right-6 -top-6 w-32 h-32 bg-white/40 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="relative z-10">
+                <p class="text-[#184D2E] font-medium text-sm font-poppins tracking-wide">Luas Lahan (Ha)</p>
+                <h3 class="text-3xl font-black text-[#184D2E] leading-none font-poppins mt-1">
                     {{ number_format($jumlahLahan, 0, ',', '.') }}
                 </h3>
             </div>
-            <x-heroicon-o-map class="w-12 h-12 text-green-900/50" />
+            <x-heroicon-o-map class="w-12 h-12 text-[#184D2E]/30 relative z-10" />
         </div>
-        <div class="bg-[#E9D79E] p-6 rounded-xl flex items-center justify-between shadow-sm border border-black/5">
-            <div>
-                <p class="text-yellow-900 font-bold text-sm font-poppins">Pendapatan Bulan Ini</p>
-                <h3 class="text-3xl font-black text-yellow-900 leading-none font-poppins">
+        <div class="bg-gradient-to-r from-[#318552] to-[#184D2E] p-6 rounded-2xl flex items-center justify-between shadow-lg shadow-[#184D2E]/20 border border-white/10 relative overflow-hidden">
+            <div class="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="relative z-10">
+                <p class="text-white/90 font-medium text-sm font-poppins tracking-wide">Pendapatan Bulan Ini</p>
+                <h3 class="text-3xl font-black text-white leading-none font-poppins mt-1">
                     Rp {{ number_format($pendapatanBulanIni, 0, ',', '.') }}
                 </h3>
             </div>
-            <x-heroicon-o-banknotes class="w-12 h-12 text-yellow-900/50" />
+            <x-heroicon-o-banknotes class="w-12 h-12 text-white/30 relative z-10" />
         </div>
     </div>
 
@@ -52,65 +55,105 @@
             </div>
         </div>
     </div>
-    {{-- Status Audit --}}
-    <div class="bg-white p-4 rounded-xl shadow-sm">
-        <h3 class="text-[10px] font-bold text-gray-500 mb-4 uppercase tracking-widest font-poppins">Status Audit Internal</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-[#D1FAE5] p-4 rounded-lg flex items-center gap-4 border border-green-200">
-                <x-heroicon-s-check-circle class="w-10 h-10 text-green-800" />
-                <div><p class="text-2xl font-black text-green-900 leading-none">{{ $auditLulus }}</p><p class="text-[10px] font-bold text-green-700">LULUS</p></div>
-            </div>
-            <div class="bg-[#FEF3C7] p-4 rounded-lg flex items-center gap-4 border border-yellow-200">
-                <x-heroicon-s-information-circle class="w-10 h-10 text-yellow-600" />
-                <div><p class="text-2xl font-black text-yellow-900 leading-none">{{ $auditPerbaikan }}</p><p class="text-[10px] font-bold text-yellow-700 uppercase">PERLU PERBAIKAN</p></div>
-            </div>
-            <div class="bg-[#FEE2E2] p-4 rounded-lg flex items-center gap-4 border border-red-200">
-                <x-heroicon-s-exclamation-triangle class="w-10 h-10 text-red-600" />
-                <div><p class="text-2xl font-black text-red-900 leading-none font-poppins">{{ $auditPending }}</p><p class="text-[10px] font-bold text-red-700 uppercase font-poppins">PERLU DIAUDIT</p></div>
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
+        {{-- Status Audit (1 Kolom) --}}
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 h-full flex flex-col col-span-1">
+            <h3 class="text-xs font-bold text-gray-500 mb-5 uppercase tracking-widest font-poppins flex items-center gap-2">
+                <x-heroicon-o-clipboard-document-check class="w-4 h-4" />
+                Status Audit Internal
+            </h3>
+            <div class="flex flex-col gap-4 flex-1 justify-center">
+                <div class="bg-emerald-50/50 p-4 rounded-xl flex items-center justify-between border border-emerald-100/50 group hover:bg-emerald-50 transition">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center shrink-0">
+                            <x-heroicon-s-check-circle class="w-6 h-6" />
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-emerald-700 tracking-wider">LULUS</p>
+                            <p class="text-sm text-gray-500 font-medium">Sudah Sesuai</p>
+                        </div>
+                    </div>
+                    <p class="text-3xl font-black text-emerald-700 font-poppins">{{ $auditLulus }}</p>
+                </div>
+                
+                <div class="bg-amber-50/50 p-4 rounded-xl flex items-center justify-between border border-amber-100/50 group hover:bg-amber-50 transition">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center shrink-0">
+                            <x-heroicon-s-information-circle class="w-6 h-6" />
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-amber-700 tracking-wider"> PERLU PERBAIKAN</p>
+                            <p class="text-sm text-gray-500 font-medium">Butuh tindak lanjut</p>
+                        </div>
+                    </div>
+                    <p class="text-3xl font-black text-amber-700 font-poppins">{{ $auditPerbaikan }}</p>
+                </div>
+
+                <div class="bg-rose-50/50 p-4 rounded-xl flex items-center justify-between border border-rose-100/50 group hover:bg-rose-50 transition">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center shrink-0">
+                            <x-heroicon-s-exclamation-triangle class="w-6 h-6" />
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-rose-700 tracking-wider">PENDING</p>
+                            <p class="text-sm text-gray-500 font-medium">Perlu Verifikasi</p>
+                        </div>
+                    </div>
+                    <p class="text-3xl font-black text-rose-700 font-poppins">{{ $auditPending }}</p>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-        <div class="flex items-center justify-between gap-4 mb-4">
-            <div>
-                <h3 class="text-lg font-bold text-gray-900 font-poppins">Pengingat Tugas</h3>
-                <p class="text-sm text-gray-500 font-poppins">Tugas dari Superadmin akan muncul di sini, diurutkan berdasarkan deadline terdekat.</p>
+        {{-- Pengingat Tugas (2 Kolom) --}}
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 col-span-1 xl:col-span-2 h-full flex flex-col">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 pb-4 border-b border-gray-50">
+                <div>
+                    <h3 class="text-sm font-bold text-gray-800 font-poppins flex items-center gap-2">
+                        <x-heroicon-o-bell-alert class="w-5 h-5 text-amber-500" />
+                        Pengingat Tugas
+                    </h3>
+                    <p class="text-[11px] text-gray-500 font-poppins mt-1">Tugas dari Superadmin diurutkan berdasarkan deadline terdekat.</p>
+                </div>
             </div>
-        </div>
 
-        <div class="overflow-x-auto p-1">
-            <table id="tugasTable" class="w-full text-left border-collapse display responsive nowrap">
-                <thead>
-                    <tr class="bg-[#D9F99D] border-b border-gray-200">
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Judul</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Pesan</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Deadline</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Dibuat</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100 bg-white">
-                    @foreach($taskNotifications as $task)
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="p-4 text-xs text-gray-800 font-medium">{{ $task->judul }}</td>
-                            <td class="p-4 text-xs text-gray-700">{{ $task->pesan }}</td>
-                            <td class="p-4 text-xs text-gray-700">
-                                {{ $task->deadline ? \Carbon\Carbon::parse($task->deadline)->translatedFormat('d F Y') : '-' }}
-                            </td>
-                            <td class="p-4 text-xs text-gray-700">{{ \Carbon\Carbon::parse($task->created_at)->translatedFormat('d F Y') }}</td>
-                            <td class="p-4 text-center">
-                                <form action="{{ route('tugas.complete', ['id' => $task->id]) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menandai tugas ini sebagai selesai?')">
-                                    @csrf
-                                    <button type="submit" class="inline-flex items-center rounded-lg bg-[#234323] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#3D5A3E] cursor-pointer shadow-sm active:scale-95">
-                                        Tandai Selesai
-                                    </button>
-                                </form>
-                            </td>
+            <div class="overflow-x-auto flex-1">
+                <table id="tugasTable" class="w-full text-left border-collapse display responsive">
+                    <thead>
+                        <tr class="bg-[#D4AF37] border-b border-[#B8860B] shadow-sm text-black">
+                            <th class="p-4 text-[10px] font-bold text-black uppercase tracking-wider rounded-l-xl">Judul</th>
+                            <th class="p-4 text-[10px] font-bold text-black uppercase tracking-wider">Pesan</th>
+                            <th class="p-4 text-[10px] font-bold text-black uppercase tracking-wider">Deadline</th>
+                            <th class="p-4 text-[10px] font-bold text-black uppercase tracking-wider text-center rounded-r-xl">Aksi</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        @forelse($taskNotifications as $task)
+                            <tr class="hover:bg-gray-50/50 transition">
+                                <td class="p-4 text-xs text-gray-800 font-semibold">{{ $task->judul }}</td>
+                                <td class="p-4 text-xs text-gray-600 whitespace-normal break-words min-w-[150px]">{{ $task->pesan }}</td>
+                                <td class="p-4">
+                                    <span class="inline-block whitespace-nowrap px-2.5 py-1 bg-amber-50 text-amber-700 rounded-md text-[11px] font-bold border border-amber-100">
+                                        {{ $task->deadline ? date('d/m/Y', strtotime($task->deadline)) : '-' }}
+                                    </span>
+                                </td>
+                                <td class="p-4 text-center whitespace-nowrap">
+                                    <form action="{{ route('tugas.complete', ['id' => $task->id]) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menandai tugas ini sebagai selesai?')">
+                                        @csrf
+                                        <button type="submit" class="inline-flex whitespace-nowrap items-center gap-1.5 rounded-lg bg-[#234323] px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-[#1b3d1b] cursor-pointer shadow-sm active:scale-95">
+                                            <x-heroicon-s-check class="w-3.5 h-3.5" />
+                                            Selesai
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="p-8 text-center text-gray-400 text-sm">Belum ada pengingat tugas dari Superadmin.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -166,9 +209,9 @@
                 }
             },
             "columnDefs": [
-                { "orderable": false, "searchable": false, "targets": [4] },
+                { "orderable": false, "searchable": false, "targets": [3] },
                 { "className": "all", "targets": 0 }, 
-                { "className": "min-tablet", "targets": [1, 2, 3, 4] } 
+                { "className": "min-tablet", "targets": [1, 2, 3] } 
             ],
             "dom": '<"flex justify-between items-center w-full mb-4 gap-2" l f> rt <"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4" i p>'
         });
@@ -300,8 +343,7 @@
     }
     .dataTables_wrapper .dataTables_filter input:focus { border-color: #214122 !important; }
 
-    #tugasTable th, #tugasTable td { white-space: normal !important; word-break: break-word; }
-    #tugasTable th { white-space: nowrap; }
+    #tugasTable th, #tugasTable td { white-space: nowrap !important; }
 
     .dataTables_wrapper .dataTables_info { font-size: 0.875rem !important; color: #6b7280 !important; padding-top: 0 !important; }
     .dataTables_wrapper .dataTables_info b, .dataTables_wrapper .dataTables_info strong { font-weight: 700 !important; color: #1f2937 !important; }
@@ -337,18 +379,18 @@
     /* =========================================
        3. KALENDER CUSTOM CSS
        ========================================= */
-    .fc { font-family: inherit !important; }
+    .fc { font-family: inherit !important; font-size: 0.85rem !important; }
     .fc-theme-standard td, .fc-theme-standard th { border-color: #f3f4f6 !important; }
-    .fc-col-header-cell { background-color: #f9fafb; padding: 8px 0; font-weight: 600; font-size: 0.875rem; color: #4b5563; text-transform: uppercase; border-bottom: 1px solid #e5e7eb !important; }
-    .fc-daygrid-day-number { color: #374151; font-weight: 500; padding: 4px 8px !important; }
+    .fc-col-header-cell { background-color: #f9fafb; padding: 6px 0 !important; font-weight: 600; font-size: 0.75rem !important; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb !important; }
+    .fc-daygrid-day-number { color: #4b5563; font-weight: 600; font-size: 0.8rem !important; padding: 4px 8px !important; }
     .fc-day-today { background-color: #f0fdf4 !important; }
-    .fc-daygrid-event { border-radius: 6px !important; padding: 2px 4px !important; font-size: 0.75rem !important; border: none !important; font-weight: 500; transition: transform 0.2s; cursor: pointer; }
+    .fc-daygrid-event { border-radius: 4px !important; padding: 2px 6px !important; font-size: 0.7rem !important; border: none !important; font-weight: 600 !important; transition: transform 0.2s; cursor: pointer; margin: 1px 2px !important; }
     .fc-daygrid-event:hover { transform: scale(1.02); opacity: 0.9; }
     .fc-event-title { font-weight: 600 !important; }
     
     /* Toolbar & Buttons */
-    .fc-toolbar-title { font-size: 1.25rem !important; font-weight: 700 !important; color: #1f2937 !important; }
-    .fc-toolbar-chunk { display: flex; align-items: center; gap: 0.75rem; }
+    .fc-toolbar-title { font-size: 1.1rem !important; font-weight: 700 !important; color: #1f2937 !important; }
+    .fc-toolbar-chunk { display: flex; align-items: center; gap: 0.5rem; }
     .fc-button-group { display: flex; gap: 0.25rem; }
     
     /* Inactive Button Style (Ghost/Outline) */
@@ -359,6 +401,8 @@
         border-radius: 6px !important; 
         text-transform: capitalize !important; 
         font-weight: 600 !important; 
+        font-size: 0.75rem !important;
+        padding: 4px 10px !important;
         transition: all 0.2s !important; 
         box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
     }

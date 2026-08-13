@@ -22,7 +22,9 @@ class DashboardController extends Controller
         $pendapatanBulanIniQuery = DB::table('produksi')
             ->join('petani', 'produksi.petani_id', '=', 'petani.petani_id');
             
-        $petaniPendingQuery = DB::table('petani')->where('petani_status', 'Pending');
+        $petaniPendingQuery = DB::table('petani')
+            ->leftJoin('desa', 'petani.desa_id', '=', 'desa.desa_id')
+            ->where('petani.petani_status', 'Pending');
         
         $pemasukanDataQuery = DB::table('produksi')
             ->join('petani', 'produksi.petani_id', '=', 'petani.petani_id');
@@ -54,7 +56,7 @@ class DashboardController extends Controller
             ->sum('total_pendapatan');
 
         $petaniPending = $petaniPendingQuery
-            ->get(['petani_id', 'petani_nama', 'petani_email', 'petani_status']);
+            ->get(['petani.*', 'desa.desa_nama']);
 
         $pemasukanData = $pemasukanDataQuery
             ->select(DB::raw("DATE_PART('month', produksi_tanggal) as bulan"), DB::raw("SUM(total_pendapatan) as total"))

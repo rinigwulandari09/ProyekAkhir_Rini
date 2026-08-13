@@ -166,7 +166,7 @@
             <div class="overflow-x-auto w-full">
                 <table id="tabelPemasukan" class="w-full text-left border-collapse display responsive nowrap">
                 <thead>
-                    <tr class="bg-[#D9F99D] border-b border-gray-200">
+                    <tr class="bg-[#D4AF37] border-b border-[#B8860B] shadow-sm text-black">
                         <th class="p-4 text-xs font-bold text-[#214122] uppercase text-center w-12">No</th>
                         <th class="p-4 text-xs font-bold text-[#214122] uppercase">Tanggal</th>
                         <th class="p-4 text-xs font-bold text-[#214122] uppercase">Asal Lahan</th>
@@ -202,8 +202,8 @@
                                 <span class="text-gray-400">-</span>
                             @endif
                         </td>
-                        <td class="p-4 text-xs text-gray-500 max-w-xs truncate" title="{{ $masuk->produksi_keterangan ?? $masuk->keterangan }}">
-                            {{ $masuk->produksi_keterangan ?? $masuk->keterangan ?? '-' }}
+                        <td class="p-4 text-xs text-gray-500 max-w-xs truncate" title="{{ $masuk->produksi_ket ?? $masuk->keterangan }}">
+                            {{ $masuk->produksi_ket ?? $masuk->keterangan ?? '-' }}
                         </td>
                         @if(auth()->user()->user_role === 'super_admin')
                         <td class="p-4 text-xs text-justify">

@@ -26,22 +26,21 @@
     
     {{-- Table Card --}}
     <div class="bg-white rounded-2xl shadow-sm p-3 sm:p-4 border border-gray-200">
-        <div class="overflow-x-auto">
-            <table id="petaniTable" class="w-full text-left border-collapse display responsive nowrap">
-                <thead>
-                    <tr class="bg-[#D9F99D] border-b border-gray-200">
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center w-12">No</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Nama</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Username</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">No. HP</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Email</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Gender</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Tgl Lahir</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Desa</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Alamat</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">Status</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">Aksi</th>
-                    </tr>
+        <table id="petaniTable" class="w-full text-left border-collapse display responsive nowrap" style="width: 100%">
+            <thead>
+                <tr class="bg-[#D4AF37] border-b border-[#B8860B] shadow-sm text-black">
+                    <th class="p-4 text-xs font-extrabold uppercase text-center w-12 rounded-tl-lg tracking-wider">No</th>
+                    <th class="p-4 text-xs font-extrabold uppercase text-left tracking-wider">Nama</th>
+                    <th class="p-4 text-xs font-extrabold uppercase text-left tracking-wider">Username</th>
+                    <th class="p-4 text-xs font-extrabold uppercase text-left tracking-wider">No. HP</th>
+                    <th class="p-4 text-xs font-extrabold uppercase text-left tracking-wider">Email</th>
+                    <th class="p-4 text-xs font-extrabold uppercase text-left tracking-wider">Gender</th>
+                    <th class="p-4 text-xs font-extrabold uppercase text-left tracking-wider">Tgl Lahir</th>
+                    <th class="p-4 text-xs font-extrabold uppercase text-left tracking-wider">Desa</th>
+                    <th class="p-4 text-xs font-extrabold uppercase text-left tracking-wider">Alamat</th>
+                    <th class="p-4 text-xs font-extrabold uppercase text-center tracking-wider">Status</th>
+                    <th class="p-4 text-xs font-extrabold uppercase text-center rounded-tr-lg tracking-wider">Aksi</th>
+                </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @foreach($petani as $p)
@@ -86,7 +85,6 @@
                     @endforeach
                 </tbody>
             </table>
-        </div>
     </div>
 </div>
 
@@ -170,7 +168,7 @@
                 }
             ],
             // DOM Layout: Length di kiri, Search di kanan (sejajar di semua device)
-            "dom": '<"hidden" B> <"flex justify-between items-center w-full mb-4 gap-2" l f> rt <"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4" i p>'
+            "dom": '<"hidden" B> <"flex justify-between items-center w-full mb-4 gap-2" l f> <"overflow-x-auto w-full" tr> <"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4" i p>'
         });
 
         table.on('order.dt search.dt draw.dt', function () {
@@ -236,8 +234,7 @@
     }
     .dataTables_wrapper .dataTables_filter input:focus { border-color: #214122 !important; }
 
-    #petaniTable th, #petaniTable td { white-space: normal !important; word-break: break-word; }
-    #petaniTable th { white-space: nowrap; }
+    #petaniTable th, #petaniTable td { white-space: nowrap !important; }
 
 
     /* =========================================

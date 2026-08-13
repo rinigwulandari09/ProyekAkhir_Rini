@@ -53,18 +53,17 @@
     
     {{-- Table Card --}}
     <div class="bg-white rounded-2xl shadow-sm p-3 sm:p-4 border border-gray-200">
-        <div class="overflow-x-auto">
-            <table id="lahanTable" class="w-full text-left border-collapse display responsive nowrap">
-                <thead>
-                    <tr class="bg-[#D9F99D] border-b border-gray-200">
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center w-12">No</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Nama Pemilik/Petani</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">Luas Lahan</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">Tahun Tanam</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">No Surat</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Lokasi Lahan</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">Aksi</th>
-                    </tr>
+        <table id="lahanTable" class="w-full text-left border-collapse display responsive nowrap" style="width: 100%">
+            <thead>
+                <tr class="bg-[#D4AF37] border-b border-[#B8860B] shadow-sm text-black">
+                    <th class="p-4 text-xs font-extrabold uppercase text-center w-12 rounded-tl-lg tracking-wider">No</th>
+                    <th class="p-4 text-xs font-extrabold uppercase text-left tracking-wider">Nama Pemilik/Petani</th>
+                    <th class="p-4 text-xs font-extrabold uppercase text-center tracking-wider">Luas Lahan</th>
+                    <th class="p-4 text-xs font-extrabold uppercase text-center tracking-wider">Tahun Tanam</th>
+                    <th class="p-4 text-xs font-extrabold uppercase text-left tracking-wider">No Surat</th>
+                    <th class="p-4 text-xs font-extrabold uppercase text-left tracking-wider">Lokasi Lahan</th>
+                    <th class="p-4 text-xs font-extrabold uppercase text-center rounded-tr-lg tracking-wider">Aksi</th>
+                </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @foreach($lahans as $lahan)
@@ -102,7 +101,6 @@
                     @endforeach
                 </tbody>
             </table>
-        </div>
     </div>
 </div>
 
@@ -220,7 +218,7 @@
                     }
                 }
             ],
-            "dom": '<"hidden" B> <"flex justify-between items-center w-full mb-4 gap-2" l f> rt <"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4" i p>'
+            "dom": '<"hidden" B> <"flex justify-between items-center w-full mb-4 gap-2" l f> <"overflow-x-auto w-full" tr> <"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4" i p>'
         });
 
         table.on('order.dt search.dt draw.dt', function () {
@@ -258,8 +256,7 @@
     }
     .dataTables_wrapper .dataTables_filter input:focus { border-color: #214122 !important; }
 
-    #lahanTable th, #lahanTable td { white-space: normal !important; word-break: break-word; }
-    #lahanTable th { white-space: nowrap; }
+    #lahanTable th, #lahanTable td { white-space: nowrap !important; }
 
     .dataTables_wrapper .dataTables_info { font-size: 0.875rem !important; color: #6b7280 !important; padding-top: 0 !important; }
     .dataTables_wrapper .dataTables_info b, .dataTables_wrapper .dataTables_info strong { font-weight: 700 !important; color: #1f2937 !important; }

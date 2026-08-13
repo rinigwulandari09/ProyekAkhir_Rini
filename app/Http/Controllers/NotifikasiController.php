@@ -139,7 +139,7 @@ class NotifikasiController extends Controller
         ->orderByDesc('id');
     }
 
-    public function getPopup()
+    public function getPopup(Request $request)
     {
         $user = Auth::user();
         if (! in_array($user->user_role, ['super_admin', 'admin'])) { 
@@ -167,11 +167,9 @@ class NotifikasiController extends Controller
                 DB::raw("'produksi' as tipe")
             )
             ->orderByDesc('produksi.id')
-            ->take(20)
+            ->take(30)
             ->get();
 
-        // Tampilkan semua tugas (termasuk yang sudah masuk sebelumnya) agar popup tidak menghapus riwayat.
-        // Batasi untuk performa: ambil 50 tugas terbaru.
         $custom = DB::table('tugas')
             ->where(function ($q) use ($user, $userIdColumn) {
                 $q->whereNull('user_id')->orWhere('user_id', $user->{$userIdColumn});
@@ -181,13 +179,21 @@ class NotifikasiController extends Controller
             ->take(50)
             ->get();
 
-        $merged = $custom->concat($produksi)->sortByDesc(function ($item) {
-            return $item->tipe === 'produksi' ? $item->id : strtotime($item->created_at ?? now());
-        })->values()->take(10)->map(function ($row) {
+        $filter = $request->get('filter', 'all');
+
+        $merged = $custom->concat($produksi)->map(function ($row) {
             $row->notif_id = $row->tipe . '_' . $row->id;
             $row->is_read = (bool) $row->is_read;
             return $row;
         });
+
+        if ($filter === 'unread') {
+            $merged = $merged->where('is_read', false);
+        }
+
+        $merged = $merged->sortByDesc(function ($item) {
+            return $item->tipe === 'produksi' ? $item->id : strtotime($item->created_at ?? now());
+        })->values()->take(15);
 
         return response()->json(['data' => $merged]);
     }
@@ -207,11 +213,13 @@ class NotifikasiController extends Controller
         $produksiQuery = $this->produksiQuery($user)
             ->whereDate('produksi.produksi_tanggal', today());
 
-        // Jika admin sudah pernah mengklik "tandai dibaca" HARI INI, maka count produksi hari ini menjadi 0
+        $produksiTotalHariIni = $produksiQuery->count('produksi.id');
+
+        // Jika admin sudah pernah mengklik "tandai dibaca" HARI INI, maka count produksi hari ini menjadi 0 (untuk badge)
         if ($userLastRead && $userLastRead->isToday()) {
-            $produksiCount = 0;
+            $produksiCountUnread = 0;
         } else {
-            $produksiCount = $produksiQuery->count('produksi.id');
+            $produksiCountUnread = $produksiTotalHariIni;
         }
 
         $customCount = DB::table('tugas')
@@ -232,8 +240,8 @@ class NotifikasiController extends Controller
             ->count();
 
         return response()->json([
-            'count' => $produksiCount + $customCount,
-            'produksiCount' => $produksiCount,
+            'count' => $produksiCountUnread + $customCount,
+            'produksiCount' => $produksiTotalHariIni,
             'customCount' => $customCount,
         ]);
     }
@@ -285,11 +293,17 @@ class NotifikasiController extends Controller
         if (! in_array($user->user_role, ['super_admin', 'admin'])) { abort(403); }
 
         $search = $request->input('search');
-        $tab = in_array($request->input('tab'), ['all', 'produksi', 'tugas', 'profil']) ? $request->input('tab') : 'all';
+        $tab = in_array($request->input('tab'), ['all', 'unread', 'produksi', 'tugas', 'profil']) ? $request->input('tab') : 'all';
         $page = max(1, (int) $request->input('page', 1));
         $perPage = 10;
 
-        $notifsQuery = $this->notificationsQuery($user, $search, $tab);
+        $queryTab = in_array($tab, ['produksi', 'tugas', 'profil']) ? $tab : 'all';
+        $notifsQuery = $this->notificationsQuery($user, $search, $queryTab);
+
+        if ($tab === 'unread') {
+            $notifsQuery = DB::query()->fromSub($notifsQuery, 'unread_notifs')->where('is_read', 0);
+        }
+
         $total = $notifsQuery->count();
 
         $notifs = $notifsQuery->forPage($page, $perPage)->get()

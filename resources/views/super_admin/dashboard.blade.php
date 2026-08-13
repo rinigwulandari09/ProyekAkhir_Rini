@@ -15,32 +15,35 @@
     
     {{-- Statistik Utama --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-[#A0C4E8] p-6 rounded-xl flex items-center justify-between shadow-sm border border-black/5">
-            <div>
-                <p class="text-blue-900 font-bold text-sm font-poppins">Jumlah Petani</p>
-                <h3 class="text-3xl font-black text-blue-900 leading-none font-poppins">
+        <div class="bg-gradient-to-r from-[#184D2E] to-[#D4AF37] p-6 rounded-2xl flex items-center justify-between shadow-lg shadow-[#184D2E]/20 border border-white/10 relative overflow-hidden">
+            <div class="absolute -right-6 -top-6 w-32 h-32 bg-white/20 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="relative z-10">
+                <p class="text-white/90 font-medium text-sm font-poppins tracking-wide">Jumlah Petani</p>
+                <h3 class="text-3xl font-black text-white leading-none font-poppins mt-1">
                     {{ number_format($jumlahPetani, 0, ',', '.') }}
                 </h3>
             </div>
-            <x-heroicon-o-user-group class="w-12 h-12 text-blue-900/50" />
+            <x-heroicon-o-user-group class="w-12 h-12 text-white/30 relative z-10" />
         </div>
-        <div class="bg-[#A8D5BA] p-6 rounded-xl flex items-center justify-between shadow-sm border border-black/5">
-            <div>
-                <p class="text-green-900 font-bold text-sm font-poppins">Luas Lahan (Ha)</p>
-                <h3 class="text-3xl font-black text-green-900 leading-none font-poppins">
+        <div class="bg-gradient-to-r from-[#FDE047] to-[#D4AF37] p-6 rounded-2xl flex items-center justify-between shadow-lg shadow-[#D4AF37]/20 border border-white/10 relative overflow-hidden">
+            <div class="absolute -right-6 -top-6 w-32 h-32 bg-white/40 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="relative z-10">
+                <p class="text-[#184D2E] font-medium text-sm font-poppins tracking-wide">Luas Lahan (Ha)</p>
+                <h3 class="text-3xl font-black text-[#184D2E] leading-none font-poppins mt-1">
                     {{ number_format($jumlahLahan, 0, ',', '.') }}
                 </h3>
             </div>
-            <x-heroicon-o-map class="w-12 h-12 text-green-900/50" />
+            <x-heroicon-o-map class="w-12 h-12 text-[#184D2E]/30 relative z-10" />
         </div>
-        <div class="bg-[#E9D79E] p-6 rounded-xl flex items-center justify-between shadow-sm border border-black/5">
-            <div>
-                <p class="text-yellow-900 font-bold text-sm font-poppins">Pendapatan Bulan Ini</p>
-                <h3 class="text-3xl font-black text-yellow-900 leading-none font-poppins">
+        <div class="bg-gradient-to-r from-[#318552] to-[#184D2E] p-6 rounded-2xl flex items-center justify-between shadow-lg shadow-[#184D2E]/20 border border-white/10 relative overflow-hidden">
+            <div class="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="relative z-10">
+                <p class="text-white/90 font-medium text-sm font-poppins tracking-wide">Pendapatan Bulan Ini</p>
+                <h3 class="text-3xl font-black text-white leading-none font-poppins mt-1">
                     Rp {{ number_format($pendapatanBulanIni, 0, ',', '.') }}
                 </h3>
             </div>
-            <x-heroicon-o-banknotes class="w-12 h-12 text-yellow-900/50" />
+            <x-heroicon-o-banknotes class="w-12 h-12 text-white/30 relative z-10" />
         </div>
     </div>
 
@@ -61,65 +64,103 @@
         </div>
     </div>
 
-    {{-- Status Audit --}}
-    <div class="bg-white p-4 rounded-xl shadow-sm">
-        <h3 class="text-[10px] font-bold text-gray-500 mb-4 uppercase tracking-widest font-poppins">Status Audit Internal</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-[#D1FAE5] p-4 rounded-lg flex items-center gap-4 border border-green-200">
-                <x-heroicon-s-check-circle class="w-10 h-10 text-green-800" />
-                <div><p class="text-2xl font-black text-green-900 leading-none">{{ $auditLulus }}</p><p class="text-[10px] font-bold text-green-700">LULUS</p></div>
-            </div>
-            <div class="bg-[#FEF3C7] p-4 rounded-lg flex items-center gap-4 border border-yellow-200">
-                <x-heroicon-s-information-circle class="w-10 h-10 text-yellow-600" />
-                <div><p class="text-2xl font-black text-yellow-900 leading-none">{{ $auditPerbaikan }}</p><p class="text-[10px] font-bold text-yellow-700 uppercase">PERLU PERBAIKAN</p></div>
-            </div>
-            <div class="bg-[#FEE2E2] p-4 rounded-lg flex items-center gap-4 border border-red-200">
-                <x-heroicon-s-exclamation-triangle class="w-10 h-10 text-red-600" />
-                <div><p class="text-2xl font-black text-red-900 leading-none">{{ $auditPending }}</p><p class="text-[10px] font-bold text-red-700 uppercase">PERLU DIAUDIT</p></div>
-            </div>
-        </div>
-    </div>
+    {{-- Audit & Aktivasi Akun (Bersebelahan) --}}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        {{-- Status Audit --}}
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 lg:col-span-1 flex flex-col">
+            <h3 class="text-[11px] font-bold text-gray-500 mb-5 uppercase tracking-wider font-poppins flex items-center gap-2">
+                <x-heroicon-o-clipboard-document-check class="w-4 h-4 text-[#184D2E]" />
+                Status Audit Internal
+            </h3>
+            <div class="flex flex-col gap-4 flex-1 justify-center">
+                <div class="bg-white p-4 rounded-xl flex items-center justify-between border border-[#184D2E]/10 group hover:bg-[#184D2E]/5 transition">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-[#184D2E]/10 text-[#184D2E] rounded-full flex items-center justify-center shrink-0">
+                            <x-heroicon-s-check-circle class="w-6 h-6" />
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-[#184D2E] tracking-wider">LULUS</p>
+                            <p class="text-[11px] text-gray-500 font-medium mt-0.5">Sudah Sesuai</p>
+                        </div>
+                    </div>
+                    <p class="text-3xl font-black text-[#184D2E] font-poppins">{{ $auditLulus }}</p>
+                </div>
+                
+                <div class="bg-white p-4 rounded-xl flex items-center justify-between border border-[#D4AF37]/20 group hover:bg-[#D4AF37]/10 transition">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-[#D4AF37]/20 text-[#b59223] rounded-full flex items-center justify-center shrink-0">
+                            <x-heroicon-s-information-circle class="w-6 h-6" />
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-[#856b17] tracking-wider">PERBAIKAN</p>
+                            <p class="text-[11px] text-gray-500 font-medium mt-0.5">Butuh tindak lanjut</p>
+                        </div>
+                    </div>
+                    <p class="text-3xl font-black text-[#856b17] font-poppins">{{ $auditPerbaikan }}</p>
+                </div>
 
-    {{-- Table Card --}}
-    <div class="bg-white rounded-2xl shadow-sm p-4 border border-gray-200">
-        <div class="overflow-x-auto p-1">
-            <table id="tabelPetani" class="w-full text-left border-collapse display responsive nowrap">
-                <thead>
-                    <tr class="bg-[#D9F99D] border-b border-gray-200">
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">No</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Nama</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase">Email</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">Status</th>
-                        <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100 bg-white">
-                    @foreach($petaniPending as $index => $petani)
-                    <tr class="hover:bg-gray-50 transition">
-                        <td class="p-4 text-xs text-gray-500 font-mono"></td>
-                        <td class="p-4 text-xs text-gray-800 font-medium">{{ $petani->petani_nama }}</td>
-                        <td class="p-4 text-xs text-gray-500">{{ $petani->petani_email ?? 'tidak ada email' }}</td>
-                        <td class="p-4 text-justify">
-                            <span class="bg-[#FEF3C7] text-[#92400E] px-3 py-1 rounded-full text-[10px] font-bold">
-                                {{ $petani->petani_status }}
-                            </span>
-                        </td>
-                        <td class="p-4">
-                            <div class="flex justify gap-3">
-                                <button type="button" title="Edit" class="text-green-700 hover:scale-110 transition"
-                                        onclick="openEditModal('{{ $petani->petani_id }}', '{{ addslashes($petani->petani_nama) }}', '{{ $petani->petani_status }}', '{{ addslashes($petani->petani_email ?? '-') }}', '{{ addslashes($petani->petani_no_hp ?? '-') }}', '{{ addslashes($petani->petani_alamat ?? '-') }}', '{{ addslashes($petani->petani_jenis_kelamin ?? '-') }}')">
-                                    <x-heroicon-o-pencil-square class="w-5 h-5" />
-                                </button>
-                                <button title="Hapus" class="text-red-500 hover:scale-110 transition">
-                                    <x-heroicon-o-trash class="w-5 h-5" />
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                <div class="bg-rose-50/50 p-4 rounded-xl flex items-center justify-between border border-rose-100/50 group hover:bg-rose-50 transition">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center shrink-0">
+                            <x-heroicon-s-exclamation-triangle class="w-6 h-6" />
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-rose-700 tracking-wider">PENDING</p>
+                            <p class="text-[11px] text-gray-500 font-medium mt-0.5">Perlu Verifikasi</p>
+                        </div>
+                    </div>
+                    <p class="text-3xl font-black text-rose-700 font-poppins">{{ $auditPending }}</p>
+                </div>
+            </div>
         </div>
+
+        {{-- Table Card --}}
+        <div class="bg-white rounded-2xl shadow-sm p-5 border border-gray-200 lg:col-span-2 flex flex-col">
+            <div class="flex items-center gap-2 mb-4">
+                <x-heroicon-o-user-plus class="w-5 h-5 text-[#184D2E]" />
+                <h3 class="text-[11px] font-bold text-gray-500 uppercase tracking-wider font-poppins">Aktivasi Akun Petani</h3>
+            </div>
+            <div class="overflow-x-auto p-1 flex-1">
+                <table id="tabelPetani" class="w-full text-left border-collapse display responsive nowrap">
+                    <thead>
+                        <tr class="bg-[#D4AF37] border-b border-[#B8860B] shadow-sm text-black">
+                            <th class="p-4 text-[10px] font-bold text-black uppercase tracking-wider">No</th>
+                            <th class="p-4 text-[10px] font-bold text-black uppercase tracking-wider">Nama</th>
+                            <th class="p-4 text-[10px] font-bold text-black uppercase tracking-wider">Email</th>
+                            <th class="p-4 text-[10px] font-bold text-black uppercase tracking-wider text-center">Status</th>
+                            <th class="p-4 text-[10px] font-bold text-black uppercase tracking-wider text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        @foreach($petaniPending as $index => $petani)
+                        <tr class="hover:bg-gray-50/50 transition">
+                            <td class="p-4 text-xs text-gray-500 font-mono">{{ $index + 1 }}</td>
+                            <td class="p-4 text-xs text-gray-800 font-semibold">{{ $petani->petani_nama }}</td>
+                            <td class="p-4 text-xs text-gray-600">{{ $petani->petani_email ?? '-' }}</td>
+                            <td class="p-4 text-center">
+                                <span class="inline-block px-2.5 py-1 bg-amber-50 text-amber-700 rounded-md text-[11px] font-bold border border-amber-100">
+                                    {{ $petani->petani_status }}
+                                </span>
+                            </td>
+                            <td class="p-4 text-center whitespace-nowrap">
+                                <div class="flex justify-center gap-2">
+                                    <button type="button" title="Edit" class="p-1.5 bg-[#184D2E]/10 text-[#184D2E] hover:bg-[#184D2E] hover:text-white rounded-lg transition-colors border border-[#184D2E]/20"
+                                            onclick="openEditModal('{{ $petani->petani_id }}', '{{ addslashes($petani->petani_nama) }}', '{{ $petani->petani_status }}', '{{ addslashes($petani->petani_email ?? '-') }}', '{{ addslashes($petani->petani_no_hp ?? '-') }}', '{{ addslashes($petani->petani_alamat ?? '-') }}', '{{ addslashes($petani->petani_jenis_kelamin ?? '-') }}', '{{ addslashes($petani->desa_nama ?? '-') }}')">
+                                        <x-heroicon-o-pencil-square class="w-4 h-4" />
+                                    </button>
+                                    <button title="Hapus" class="p-1.5 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-lg transition-colors border border-red-100">
+                                        <x-heroicon-o-trash class="w-4 h-4" />
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
     {{-- Map Section --}}
@@ -136,56 +177,78 @@
 
 {{-- Modal Edit Status --}}
 <div id="statusModal" class="fixed inset-0 z-50 hidden bg-black/40 items-center justify-center transition-opacity p-4">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform scale-95 transition-transform border border-[#214122]/20" id="modalContent">
-        <div class="bg-[#214122] px-6 py-4 flex justify-between items-center">
-            <h3 class="text-lg font-bold text-white font-poppins">Aktivasi Akun Petani</h3>
-            <button type="button" onclick="closeEditModal()" class="text-white hover:text-red-300 transition">
-                <x-heroicon-o-x-mark class="w-6 h-6" />
-            </button>
-        </div>  
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden transform scale-95 transition-transform" id="modalContent">
         
         <form id="formUbahStatus" method="POST" action="">
             @csrf
             @method('PUT')
             
-            <div class="p-6 space-y-4">
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Nama Petani</label>
-                    <p id="modalNamaPetani" class="text-gray-900 bg-gray-100 px-3 py-2 rounded-lg font-medium"></p>
+            {{-- Header --}}
+            <div class="px-5 py-4 flex justify-between items-center border-b border-gray-100">
+                <h3 class="text-sm font-bold text-gray-800 flex items-center gap-2">
+                    <x-heroicon-o-user-circle class="w-5 h-5 text-green-600" />
+                    Aktivasi Akun Petani
+                </h3>
+                <button type="button" onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 transition">
+                    <x-heroicon-o-x-mark class="w-5 h-5" />
+                </button>
+            </div>  
+            
+            <div class="p-5 space-y-4">
+                
+                {{-- Info Utama --}}
+                <div class="flex items-center gap-3 bg-green-50/50 p-3 rounded-lg border border-green-100/50">
+                    <div class="w-10 h-10 bg-green-100 text-green-600 rounded-full flex items-center justify-center shrink-0">
+                        <x-heroicon-o-user class="w-5 h-5" />
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p id="modalNamaPetani" class="text-sm font-bold text-gray-900 truncate"></p>
+                        <p id="modalEmailPetani" class="text-[11px] text-gray-500 truncate"></p>
+                    </div>
+                </div>
+
+                {{-- Detail Info --}}
+                <div class="bg-gray-50 rounded-lg p-3 text-xs border border-gray-100">
+                    <div class="grid grid-cols-2 gap-y-3 gap-x-2">
+                        <div>
+                            <span class="block text-gray-400 font-medium mb-0.5 text-[10px] uppercase tracking-wider">No. HP</span>
+                            <span id="modalHpPetani" class="text-gray-700 font-medium font-mono"></span>
+                        </div>
+                        <div>
+                            <span class="block text-gray-400 font-medium mb-0.5 text-[10px] uppercase tracking-wider">Kelamin</span>
+                            <span id="modalJkPetani" class="text-gray-700 font-medium"></span>
+                        </div>
+                        <div>
+                            <span class="block text-gray-400 font-medium mb-0.5 text-[10px] uppercase tracking-wider">Desa</span>
+                            <span id="modalDesaPetani" class="text-gray-700 font-medium truncate"></span>
+                        </div>
+                        <div>
+                            <span class="block text-gray-400 font-medium mb-0.5 text-[10px] uppercase tracking-wider">Alamat</span>
+                            <span id="modalAlamatPetani" class="text-gray-700 font-medium truncate block"></span>
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">Email</label>
-                        <p id="modalEmailPetani" class="text-xs text-gray-800 bg-gray-50 px-3 py-2 rounded-lg border border-gray-100 truncate"></p>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">No. HP</label>
-                        <p id="modalHpPetani" class="text-xs text-gray-800 bg-gray-50 px-3 py-2 rounded-lg border border-gray-100"></p>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">Jenis Kelamin</label>
-                        <p id="modalJkPetani" class="text-xs text-gray-800 bg-gray-50 px-3 py-2 rounded-lg border border-gray-100"></p>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1">Alamat</label>
-                        <p id="modalAlamatPetani" class="text-xs text-gray-800 bg-gray-50 px-3 py-2 rounded-lg border border-gray-100 truncate"></p>
-                    </div>
-                </div>
-                
+                {{-- Form Status --}}
                 <div>
-                    <label for="petani_status" class="block text-sm font-bold text-gray-200 mb-1">Status Baru</label>
-                    <select id="selectStatus" name="petani_status" class="w-full border border-[#214122]/30 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#214122] focus:border-[#214122] outline-none bg-[#f8faf7] text-[#214122]">
-                        <option value="Pending">Pending</option>
-                        <option value="Aktif">Disetujui</option>
-                        <option value="Ditolak">Ditolak</option>
-                    </select>
+                    <label for="selectStatus" class="block text-xs font-bold text-gray-700 mb-1.5">Ubah Status</label>
+                    <div class="relative">
+                        <select id="selectStatus" name="petani_status" class="w-full border border-gray-200 rounded-lg pl-3 pr-8 py-2 text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-600 outline-none bg-white text-gray-700 appearance-none font-medium shadow-sm transition cursor-pointer">
+                            <option value="Pending">Pending</option>
+                            <option value="Aktif">Disetujui (Aktif)</option>
+                            <option value="Ditolak">Ditolak</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
+                            <x-heroicon-o-chevron-down class="w-4 h-4" />
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <div class="bg-[#f1f5f0] px-6 py-4 border-t border-[#214122]/10 flex justify-end gap-3">
-                <button type="button" onclick="closeEditModal()" class="px-4 py-2 text-sm font-bold text-[#214122] bg-white border border-[#214122]/20 rounded-lg hover:bg-[#e8f0e8] transition">Batal</button>
-                <button type="submit" class="px-4 py-2 text-sm font-bold text-white bg-[#214122] rounded-lg hover:bg-[#1b3d1b] transition shadow-sm">Simpan Perubahan</button>
+            {{-- Footer Action --}}
+            <div class="bg-gray-50 px-5 py-3 border-t border-gray-100 flex justify-end gap-2">
+                <button type="button" onclick="closeEditModal()" class="px-3 py-1.5 text-xs font-bold text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:text-gray-900 transition">Batal</button>
+                <button type="submit" class="px-4 py-1.5 text-xs font-bold text-white bg-[#214122] rounded-lg hover:bg-[#1b3d1b] transition shadow-sm focus:ring-2 focus:ring-[#214122]/30">Simpan Status</button>
             </div>
         </form>
     </div>
@@ -383,7 +446,7 @@
 
 {{-- Script Modal Edit --}}
 <script>
-    function openEditModal(id, nama, status, email, hp, alamat, jk) {
+    function openEditModal(id, nama, status, email, hp, alamat, jk, desa) {
         const modal = document.getElementById('statusModal');
         const form = document.getElementById('formUbahStatus');
         const namaText = document.getElementById('modalNamaPetani');
@@ -394,6 +457,7 @@
         document.getElementById('modalAlamatPetani').innerText = alamat;
         document.getElementById('modalAlamatPetani').title = alamat; // tooltip hover untuk alamat panjang
         document.getElementById('modalJkPetani').innerText = jk;
+        document.getElementById('modalDesaPetani').innerText = desa;
         
         form.action = `/dashboard/petani/${id}/status`; 
         namaText.innerText = nama;
