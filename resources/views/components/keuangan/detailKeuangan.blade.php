@@ -187,7 +187,7 @@
                         <td class="p-4 text-xs text-gray-800 font-medium" data-order="{{ $masuk->produksi_tanggal }}">
                             {{ $masuk->produksi_tanggal ? date('Y-m-d', strtotime($masuk->produksi_tanggal)) : '-' }}
                         </td>
-                        <td class="p-4 text-xs text-gray-800 font-medium">{{ $masuk->lahan->lahan_nama ?? '-' }}</td>
+                        <td class="p-4 text-xs text-gray-800 font-medium">{{ $masuk->lahan->lahan_nama ?? ($masuk->detailProduksi->first()?->lahan->lahan_nama ?? '-') }}</td>
                         <td class="p-4 text-xs text-gray-800 font-medium text-justify">{{ $masuk->jumlah_tbs ? number_format($masuk->jumlah_tbs, 0, ',', '.') . ' Kg' : '-' }}</td>
                         <td class="p-4 text-xs text-gray-800 font-medium text-justify">Rp {{ number_format($masuk->harga_tbs ?? 0, 0, ',', '.') }}</td>
                         <td class="p-4 text-xs text-green-600 font-bold text-justify pr-6">
