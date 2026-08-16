@@ -34,6 +34,8 @@ class ProduksiController extends Controller
             'petani_id'        => 'required|exists:petani,petani_id',
             'lahan_id'           => 'required|array',
             'lahan_id.*'         => 'integer',
+            'jumlah_produksi'    => 'nullable|array',
+            'subtotal_pendapatan' => 'nullable|array',
             'produksi_ket'     => 'nullable|string',
 
             // TAMBAHAN
@@ -67,19 +69,20 @@ class ProduksiController extends Controller
             // TAMBAHAN
             'produksi_bukti'   => $fotoPath
         ]);
-        foreach ($request->lahan_id as $lahanId) {
+
+        foreach ($request->lahan_id as $key => $lahanId) {
 
             DetailProduksi::create([
-                'produksi_id' => $produksi->id,
-                'lahan_id'    => $lahanId,
+                'produksi_id'         => $produksi->id,
+                'lahan_id'            => $lahanId,
+                'jumlah_tbs'          => $request->jumlah_produksi[$key] ?? 0,
+                'subtotal_pendapatan' => $request->subtotal_pendapatan[$key] ?? 0,
             ]);
 
         }
 
         // AMBIL DATA PETANI
         $petani = Petani::find($request->petani_id);
-
-        // Catatan: notifikasi produksi untuk superadmin akan diambil secara runtime dari tabel produksi.
 
         return response()->json([
             'success' => true,
@@ -99,6 +102,7 @@ class ProduksiController extends Controller
             ]
         ], 201);
     }
+
 
     public function show($id)
 {
