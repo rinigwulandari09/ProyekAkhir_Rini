@@ -57,7 +57,7 @@
                             @foreach($lahans as $lahan)
                                 <option
                                     value="{{ $lahan->lahan_id }}"
-                                    {{ old('lahan_id', $produksi->lahan_id) == $lahan->lahan_id ? 'selected' : '' }}
+                                    {{ old('lahan_id', $produksi->lahan_id ?? ($produksi->detailProduksi->first()?->lahan_id ?? '')) == $lahan->lahan_id ? 'selected' : '' }}
                                 >
                                     {{ $lahan->lahan_nama ?: 'Lahan ' . $loop->iteration }}
                                 </option>

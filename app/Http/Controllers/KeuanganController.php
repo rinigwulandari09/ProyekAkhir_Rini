@@ -163,13 +163,18 @@ class KeuanganController extends Controller
 
         // Terapkan filter lahan
         if ($lahanId) {
-            $produksiQuery->where('lahan_id', $lahanId);
+            $produksiQuery->where(function($q) use ($lahanId) {
+                $q->where('lahan_id', $lahanId)
+                  ->orWhereHas('detailProduksi', function($q2) use ($lahanId) {
+                      $q2->where('lahan_id', $lahanId);
+                  });
+            });
             $biayaQuery->where('lahan_id', $lahanId);
         }
 
         // PERBAIKAN UTAMA DETAIL: Urutkan berdasarkan tanggal transaksi terbaru (DESC)
         $pemasukan = $produksiQuery
-            ->with('lahan')
+            ->with(['lahan', 'detailProduksi.lahan'])
             ->orderBy('produksi_tanggal', 'desc')
             ->get();
 

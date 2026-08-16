@@ -150,7 +150,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'PIN berhasil direset. Silakan login dengan PIN baru Anda.'
+                'message' => 'PIN berhasil diresett. Silakan login dengan PIN baru Anda.'
             ]);
         }
 

@@ -29,7 +29,7 @@
         <div class="overflow-x-auto">
             <table id="kunjunganTable" class="w-full text-left border-collapse display responsive nowrap">
                 <thead>
-                    <tr class="bg-[#D9F99D] border-b border-gray-200">
+                    <tr class="bg-[#D4AF37] border-b border-[#B8860B] shadow-sm text-black">
                         <th class="p-4 text-xs font-bold text-gray-700 uppercase text-center w-12">No</th>
                         <th class="p-4 text-xs font-bold text-gray-700 uppercase">Tanggal</th>
                         <th class="p-4 text-xs font-bold text-gray-700 uppercase">Desa Kebun</th>
@@ -224,8 +224,7 @@
     }
     .dataTables_wrapper .dataTables_filter input:focus { border-color: #214122 !important; }
 
-    #kunjunganTable th, #kunjunganTable td { white-space: normal !important; word-break: break-word; }
-    #kunjunganTable th { white-space: nowrap; }
+    #kunjunganTable th, #kunjunganTable td { white-space: nowrap !important; }
 
     /* =========================================
    2. KHUSUS MODE HP (max-width: 640px)

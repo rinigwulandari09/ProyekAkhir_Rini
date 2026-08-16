@@ -49,31 +49,31 @@
             </div>
 
             <nav class="flex-1 p-3 space-y-1 mt-4 text-sm overflow-y-auto">
-                <a href="{{ url('/dashboard') }}" class="flex items-center gap-3 {{ request()->is('dashboard') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition" :class="!sidebarOpen && 'justify-center'">
+                <a href="{{ url('/dashboard') }}" class="flex items-center gap-3 {{ request()->is('dashboard') ? 'bg-[#D4AF37]/20' : '' }} p-3 rounded-lg hover:bg-[#D4AF37]/20 transition" :class="!sidebarOpen && 'justify-center'">
                     <x-heroicon-o-home class="w-5 h-5 shrink-0" /> 
                     <span x-show="sidebarOpen">Beranda</span>
                 </a>
-                <a href="{{ route('user.index') }}" class="flex items-center gap-3 {{ request()->routeIs('user.*') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition" :class="!sidebarOpen && 'justify-center'">
+                <a href="{{ route('user.index') }}" class="flex items-center gap-3 {{ request()->routeIs('user.*') ? 'bg-[#D4AF37]/20' : '' }} p-3 rounded-lg hover:bg-[#D4AF37]/20 transition" :class="!sidebarOpen && 'justify-center'">
                     <x-heroicon-o-users class="w-5 h-5 shrink-0" /> 
                     <span x-show="sidebarOpen">Data User</span>
                 </a>
-                <a href="{{ route('petani.index') }}" class="flex items-center gap-3 {{ request()->routeIs('petani.*') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition" :class="!sidebarOpen && 'justify-center'">
+                <a href="{{ route('petani.index') }}" class="flex items-center gap-3 {{ request()->routeIs('petani.*') ? 'bg-[#D4AF37]/20' : '' }} p-3 rounded-lg hover:bg-[#D4AF37]/20 transition" :class="!sidebarOpen && 'justify-center'">
                     <x-heroicon-o-user-group class="w-5 h-5 shrink-0" /> 
                     <span x-show="sidebarOpen">Data Petani</span>
                 </a>
-                <a href="{{ route('lahan.index') }}" class="flex items-center gap-3 {{ request()->routeIs('lahan.*') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition" :class="!sidebarOpen && 'justify-center'">
+                <a href="{{ route('lahan.index') }}" class="flex items-center gap-3 {{ request()->routeIs('lahan.*') ? 'bg-[#D4AF37]/20' : '' }} p-3 rounded-lg hover:bg-[#D4AF37]/20 transition" :class="!sidebarOpen && 'justify-center'">
                     <x-heroicon-o-map class="w-5 h-5 shrink-0" /> 
                     <span x-show="sidebarOpen">Data Lahan</span>
                 </a>
-                <a href="{{ route('keuangan.index') }}" class="flex items-center gap-3 {{ request()->routeIs('keuangan.*') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition" :class="!sidebarOpen && 'justify-center'">
+                <a href="{{ route('keuangan.index') }}" class="flex items-center gap-3 {{ request()->routeIs('keuangan.*') ? 'bg-[#D4AF37]/20' : '' }} p-3 rounded-lg hover:bg-[#D4AF37]/20 transition" :class="!sidebarOpen && 'justify-center'">
                     <x-heroicon-o-banknotes class="w-5 h-5 shrink-0" /> 
                     <span x-show="sidebarOpen">Data Keuangan</span>
                 </a>
-                <a href="{{ route('audit.index') }}" class="flex items-center gap-3 {{ request()->routeIs('audit.*') ? 'bg-[#3D5A3E]' : '' }} p-3 rounded-lg hover:bg-[#3D5A3E] transition" :class="!sidebarOpen && 'justify-center'">
+                <a href="{{ route('audit.index') }}" class="flex items-center gap-3 {{ request()->routeIs('audit.*') ? 'bg-[#D4AF37]/20' : '' }} p-3 rounded-lg hover:bg-[#D4AF37]/20 transition" :class="!sidebarOpen && 'justify-center'">
                     <x-heroicon-o-document-text class="w-5 h-5 shrink-0" /> 
                     <span x-show="sidebarOpen">Audit</span>
                 </a>
-                <button @click="showLogoutConfirm = true" class="flex items-center gap-3 p-3 rounded-lg w-full text-left hover:bg-[#3D5A3E] transition" :class="!sidebarOpen && 'justify-center'">
+                <button @click="showLogoutConfirm = true" class="flex items-center gap-3 p-3 rounded-lg w-full text-left hover:bg-[#D4AF37]/20 transition" :class="!sidebarOpen && 'justify-center'">
                     <x-heroicon-o-arrow-left-start-on-rectangle class="w-5 h-5 shrink-0" /> 
                     <span x-show="sidebarOpen">Keluar</span>
                 </button>
@@ -89,7 +89,7 @@
                     <h1 class="font-poppins">PENGINGAT</h1>
                 </div>
                 <p class="mb-3 leading-tight">Tambahkan pengingat atau informasi!</p>
-                <a href="{{ route('pengingat.create') }}" class="w-full bg-[#234323] py-2 rounded font-bold text-white hover:bg-[#3D5A3E] transition inline-block text-center">
+                <a href="{{ route('pengingat.create') }}" class="w-full bg-[#234323] py-2 rounded font-bold text-white hover:bg-[#D4AF37]/20 transition inline-block text-center">
                     TAMBAH
                 </a>
             </div>
@@ -164,7 +164,7 @@
                     Batal
                 </button>
                 <button @click="confirmLogout()" 
-                        class="px-4 py-2 bg-[#234323] text-white rounded-lg hover:bg-[#3D5A3E] transition font-medium">
+                        class="px-4 py-2 bg-[#234323] text-white rounded-lg hover:bg-[#D4AF37]/20 transition font-medium">
                     Keluar
                 </button>
             </div>

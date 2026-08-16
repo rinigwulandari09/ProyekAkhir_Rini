@@ -19,7 +19,7 @@
         <div class="overflow-x-auto w-full">
             <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr class="bg-[#D9F99D] border-b border-gray-200">
+                    <tr class="bg-[#D4AF37] border-b border-[#B8860B] shadow-sm text-black">
                         <th class="p-4 text-xs font-bold text-[#214122] uppercase">Nama JSON</th>
                         <th class="p-4 text-xs font-bold text-[#214122] uppercase">Desa</th>
                         <th class="p-4 text-xs font-bold text-[#214122] uppercase">Petani Sistem</th>
