@@ -28,20 +28,18 @@ class ProduksiController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'produksi_tanggal' => 'required|date',
+            'produksi_tanggal' => 'required',
             'jumlah_tbs'       => 'required|numeric',
             'harga_tbs'        => 'required|numeric',
-            'petani_id'        => 'required|exists:petani,petani_id',
+            'petani_id'        => 'required',
             'lahan_id'           => 'required|array',
             'lahan_id.*'         => 'integer',
-            'jumlah_produksi'    => 'nullable|array',
-            'jumlah_tbs_detail'  => 'nullable|array',
-            'subtotal_pendapatan' => 'nullable|array',
-            'subtotal'           => 'nullable|array',
-            'produksi_ket'     => 'nullable|string',
-
-            // TAMBAHAN
-            'produksi_bukti'   => 'nullable|image|mimes:jpg,jpeg,png|max:5120'
+            'jumlah_produksi'    => 'nullable',
+            'jumlah_tbs_detail'  => 'nullable',
+            'subtotal_pendapatan' => 'nullable',
+            'subtotal'           => 'nullable',
+            'produksi_ket'     => 'nullable',
+            'produksi_bukti'   => 'nullable'
         ]);
 
         $totalPendapatan = $request->total_pendapatan ?? ($request->jumlah_tbs * $request->harga_tbs);
@@ -67,8 +65,6 @@ class ProduksiController extends Controller
             'status_validasi'  => 'Pending',
             'petani_id'        => $request->petani_id,
             'produksi_ket'     => $request->produksi_ket,
-
-            // TAMBAHAN
             'produksi_bukti'   => $fotoPath
         ]);
 
@@ -90,9 +86,6 @@ class ProduksiController extends Controller
             ]);
         }
 
-        // AMBIL DATA PETANI
-        $petani = Petani::find($request->petani_id);
-
         return response()->json([
             'success' => true,
             'message' => 'Data produksi berhasil ditambahkan',
@@ -103,8 +96,6 @@ class ProduksiController extends Controller
                 'harga_tbs' => $produksi->harga_tbs,
                 'total_pendapatan' => $produksi->total_pendapatan,
                 'produksi_bukti' => $produksi->produksi_bukti,
-
-                // URL YANG BISA DIPAKAI GLIDE
                 'produksi_bukti_url' => $fotoPath
                     ? asset('storage/' . $fotoPath)
                     : null
@@ -115,10 +106,9 @@ class ProduksiController extends Controller
 
     public function show($id)
     {
-        // Kita panggil detail_produksi beserta data lahan yang ada di dalam masing-masing detail
         $produksi = Produksi::with([
             'petani',
-            'detailProduksi.lahan' // nested eager loading: mengambil detail dan lahannya
+            'detailProduksi.lahan'
         ])->find($id);
 
         if (!$produksi) {
@@ -139,30 +129,20 @@ class ProduksiController extends Controller
                 'total_pendapatan' => $produksi->total_pendapatan,
                 'status_validasi' => $produksi->status_validasi,
                 'produksi_ket' => $produksi->produksi_ket,
-
-                // PATH GAMBAR
                 'produksi_bukti' => $produksi->produksi_bukti,
-
-                // URL GAMBAR UNTUK ANDROID
                 'produksi_bukti_url' => $produksi->produksi_bukti
                     ? asset('storage/' . $produksi->produksi_bukti)
                     : null,
-
-                // DATA PETANI
                 'petani' => [
                     'id' => $produksi->petani->petani_id ?? null,
                     'nama' => $produksi->petani->petani_nama ?? null
                 ],
-
-                // DATA DETAIL PRODUKSI DAN LAHANNYA
                 'detail_produksi' => $produksi->detailProduksi->map(function ($detail) {
                     return [
                         'id' => $detail->id,
                         'jumlah_tbs_detail' => $detail->jumlah_tbs ?? null, 
                         'harga_tbs_detail' => $detail->harga_tbs ?? null,
                         'subtotal_pendapatan' => $detail->subtotal_pendapatan ?? null,
-                        
-                        // DATA LAHAN (Diambil dari relasi per detail produksi)
                         'lahan' => [
                             'id' => $detail->lahan->lahan_id ?? null,
                             'nama' => $detail->lahan->lahan_nama ?? null
