@@ -310,12 +310,20 @@
                                     </span>
                                 </td>
                                 <td class="px-3 py-2 text-sm text-gray-500 max-w-[150px] truncate" title="{{ $h->keterangan }}">{{ $h->keterangan ?? '-' }}</td>
-                                <td class="px-3 py-2 text-sm text-gray-500">
+                                <td class="px-3 py-2 text-sm text-gray-500 flex items-center gap-2">
                                     @if($h->path_file_kunjungan)
                                     <a href="{{ Storage::url(str_replace(['storage/', 'public/'], '', $h->path_file_kunjungan)) }}" target="_blank" class="text-blue-600 hover:underline">Lihat PDF</a>
                                     @else
-                                    -
+                                    <span>-</span>
                                     @endif
+                                    
+                                    <button type="button" 
+                                            data-id="{{ $h->id_audit }}"
+                                            data-status="{{ $h->status_audit ?: '' }}"
+                                            data-keterangan="{{ $h->keterangan ?? '' }}"
+                                            class="btn-edit-status text-yellow-500 hover:scale-110 transition" title="Ubah Status">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"></path></svg>
+                                    </button>
                                 </td>
                             </tr>
                             @endforeach

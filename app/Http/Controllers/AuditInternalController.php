@@ -69,7 +69,7 @@ class AuditInternalController extends Controller
                 $auditQuery->where('status_audit', $status);
             }
         }
-        $auditRaw = $auditQuery->orderBy('tanggal', 'desc')->get();
+        $auditRaw = $auditQuery->orderBy('tanggal', 'desc')->orderBy('audit_attempt', 'desc')->get();
         // Group by nama_petani
         $audit = $auditRaw->groupBy('nama_petani');
 
