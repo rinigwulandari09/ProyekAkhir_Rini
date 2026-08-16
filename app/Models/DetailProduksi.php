@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Models;
 
@@ -11,6 +11,8 @@ class DetailProduksi extends Model
 
     protected $table = 'detail_produksi';
     protected $primaryKey = 'detail_produksi_id';
+
+    public $timestamps = false;
 
     protected $fillable = [
         'produksi_id',
