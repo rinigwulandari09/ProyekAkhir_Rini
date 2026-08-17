@@ -43,6 +43,33 @@ class ProduksiController extends Controller
             'produksi_bukti'      => 'nullable'
         ]);
 
+        // CEK DUPLIKASI ENTRY (Mencegah request ganda dalam rentang 10 detik)
+        $existing = Produksi::where('petani_id', $request->petani_id)
+            ->where('produksi_tanggal', $request->produksi_tanggal)
+            ->where('jumlah_tbs', $request->jumlah_tbs)
+            ->where('harga_tbs', $request->harga_tbs)
+            ->where('produksi_ket', $request->produksi_ket)
+            ->where('created_at', '>=', now()->subSeconds(10))
+            ->first();
+
+        if ($existing) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Data produksi sudah tersimpan sebelumnya',
+                'data' => [
+                    'id' => $existing->id,
+                    'produksi_tanggal' => $existing->produksi_tanggal,
+                    'jumlah_tbs' => $existing->jumlah_tbs,
+                    'harga_tbs' => $existing->harga_tbs,
+                    'total_pendapatan' => $existing->total_pendapatan,
+                    'produksi_bukti' => $existing->produksi_bukti,
+                    'produksi_bukti_url' => $existing->produksi_bukti
+                        ? asset('storage/' . $existing->produksi_bukti)
+                        : null
+                ]
+            ], 200);
+        }
+
         // Pastikan lahan_id dalam bentuk array
         $lahanIds = is_array($request->lahan_id) ? $request->lahan_id : [$request->lahan_id];
 
@@ -76,7 +103,6 @@ class ProduksiController extends Controller
             ]);
 
             // 2. HITUNG SPLIT JUMLAH TBS DAN PENDAPATAN PER LAHAN
-            // Ambil data lahan yang dipilih dari database
             $lahans = Lahan::whereIn('lahan_id', $lahanIds)->get();
             if ($lahans->isEmpty()) {
                 $lahans = Lahan::whereIn('id', $lahanIds)->get();
@@ -89,7 +115,7 @@ class ProduksiController extends Controller
 
             $countLahan = count($lahanIds);
 
-            // Ambil array detail jika dikirim langsung dari request
+            // Ambil array detail dari request jika ada
             $jumlahTbsArr = $request->input('jumlah_tbs_detail') 
                 ?? $request->input('jumlah_produksi') 
                 ?? [];
@@ -159,7 +185,6 @@ class ProduksiController extends Controller
             ], 500);
         }
     }
-
 
     public function show($id)
     {
