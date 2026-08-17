@@ -182,37 +182,73 @@
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @foreach ($pemasukan as $masuk)
-                    <tr class="hover:bg-gray-50 transition">
-                        <td class="p-4 text-xs text-center text-gray-500 font-mono"></td>
-                        <td class="p-4 text-xs text-gray-800 font-medium" data-order="{{ $masuk->produksi_tanggal }}">
-                            {{ $masuk->produksi_tanggal ? date('Y-m-d', strtotime($masuk->produksi_tanggal)) : '-' }}
-                        </td>
-                        <td class="p-4 text-xs text-gray-800 font-medium">{{ $masuk->lahan->lahan_nama ?? ($masuk->detailProduksi->first()?->lahan->lahan_nama ?? '-') }}</td>
-                        <td class="p-4 text-xs text-gray-800 font-medium text-justify">{{ $masuk->jumlah_tbs ? number_format($masuk->jumlah_tbs, 0, ',', '.') . ' Kg' : '-' }}</td>
-                        <td class="p-4 text-xs text-gray-800 font-medium text-justify">Rp {{ number_format($masuk->harga_tbs ?? 0, 0, ',', '.') }}</td>
-                        <td class="p-4 text-xs text-green-600 font-bold text-justify pr-6">
-                            Rp {{ number_format($masuk->total_pendapatan, 0, ',', '.') }}
-                        </td>
-                        <td class="p-4 text-xs text-justify">
-                            @if($masuk->produksi_bukti)
-                                <a href="{{ Storage::url($masuk->produksi_bukti) }}" target="_blank" class="text-blue-600 hover:text-blue-800 transition" title="Lihat Bukti">
-                                    <x-heroicon-o-document-text class="w-5 h-5" />
-                                </a>
-                            @else
-                                <span class="text-gray-400">-</span>
-                            @endif
-                        </td>
-                        <td class="p-4 text-xs text-gray-500 max-w-xs truncate" title="{{ $masuk->produksi_ket ?? $masuk->keterangan }}">
-                            {{ $masuk->produksi_ket ?? $masuk->keterangan ?? '-' }}
-                        </td>
-                        @if(auth()->user()->user_role === 'super_admin')
-                        <td class="p-4 text-xs text-justify">
-                            <a href="{{ route('produksi.edit', $masuk->id ?? $masuk->produksi_id) }}" class="p-1.5 bg-[#184D2E]/10 text-[#184D2E] hover:bg-[#184D2E] hover:text-white rounded-lg transition-colors border border-[#184D2E]/20 inline-block" title="Edit Data">
-                                <x-heroicon-o-pencil-square class="w-5 h-5" />
-                            </a>
-                        </td>
+                        @if($masuk->detailProduksi && $masuk->detailProduksi->count() > 0)
+                            @foreach($masuk->detailProduksi as $dp)
+                            <tr class="hover:bg-gray-50 transition">
+                                <td class="p-4 text-xs text-center text-gray-500 font-mono"></td>
+                                <td class="p-4 text-xs text-gray-800 font-medium" data-order="{{ $masuk->produksi_tanggal }}">
+                                    {{ $masuk->produksi_tanggal ? date('Y-m-d', strtotime($masuk->produksi_tanggal)) : '-' }}
+                                </td>
+                                <td class="p-4 text-xs text-gray-800 font-medium">{{ $dp->lahan->lahan_nama ?? '-' }}</td>
+                                <td class="p-4 text-xs text-gray-800 font-medium text-justify">{{ $dp->jumlah_tbs ? number_format($dp->jumlah_tbs, 2, ',', '.') . ' Kg' : '-' }}</td>
+                                <td class="p-4 text-xs text-gray-800 font-medium text-justify">Rp {{ number_format($masuk->harga_tbs ?? 0, 0, ',', '.') }}</td>
+                                <td class="p-4 text-xs text-green-600 font-bold text-justify pr-6">
+                                    Rp {{ number_format($dp->subtotal_pendapatan, 0, ',', '.') }}
+                                </td>
+                                <td class="p-4 text-xs text-justify">
+                                    @if($masuk->produksi_bukti)
+                                        <a href="{{ Storage::url($masuk->produksi_bukti) }}" target="_blank" class="text-blue-600 hover:text-blue-800 transition" title="Lihat Bukti">
+                                            <x-heroicon-o-document-text class="w-5 h-5" />
+                                        </a>
+                                    @else
+                                        <span class="text-gray-400">-</span>
+                                    @endif
+                                </td>
+                                <td class="p-4 text-xs text-gray-500 max-w-xs truncate" title="{{ $masuk->produksi_ket ?? $masuk->keterangan }}">
+                                    {{ $masuk->produksi_ket ?? $masuk->keterangan ?? '-' }}
+                                </td>
+                                @if(auth()->user()->user_role === 'super_admin')
+                                <td class="p-4 text-xs text-justify">
+                                    <a href="{{ route('produksi.edit', $masuk->id ?? $masuk->produksi_id) }}" class="p-1.5 bg-[#184D2E]/10 text-[#184D2E] hover:bg-[#184D2E] hover:text-white rounded-lg transition-colors border border-[#184D2E]/20 inline-block" title="Edit Data">
+                                        <x-heroicon-o-pencil-square class="w-5 h-5" />
+                                    </a>
+                                </td>
+                                @endif
+                            </tr>
+                            @endforeach
+                        @else
+                            <tr class="hover:bg-gray-50 transition">
+                                <td class="p-4 text-xs text-center text-gray-500 font-mono"></td>
+                                <td class="p-4 text-xs text-gray-800 font-medium" data-order="{{ $masuk->produksi_tanggal }}">
+                                    {{ $masuk->produksi_tanggal ? date('Y-m-d', strtotime($masuk->produksi_tanggal)) : '-' }}
+                                </td>
+                                <td class="p-4 text-xs text-gray-800 font-medium">{{ $masuk->lahan->lahan_nama ?? '-' }}</td>
+                                <td class="p-4 text-xs text-gray-800 font-medium text-justify">{{ $masuk->jumlah_tbs ? number_format($masuk->jumlah_tbs, 2, ',', '.') . ' Kg' : '-' }}</td>
+                                <td class="p-4 text-xs text-gray-800 font-medium text-justify">Rp {{ number_format($masuk->harga_tbs ?? 0, 0, ',', '.') }}</td>
+                                <td class="p-4 text-xs text-green-600 font-bold text-justify pr-6">
+                                    Rp {{ number_format($masuk->total_pendapatan, 0, ',', '.') }}
+                                </td>
+                                <td class="p-4 text-xs text-justify">
+                                    @if($masuk->produksi_bukti)
+                                        <a href="{{ Storage::url($masuk->produksi_bukti) }}" target="_blank" class="text-blue-600 hover:text-blue-800 transition" title="Lihat Bukti">
+                                            <x-heroicon-o-document-text class="w-5 h-5" />
+                                        </a>
+                                    @else
+                                        <span class="text-gray-400">-</span>
+                                    @endif
+                                </td>
+                                <td class="p-4 text-xs text-gray-500 max-w-xs truncate" title="{{ $masuk->produksi_ket ?? $masuk->keterangan }}">
+                                    {{ $masuk->produksi_ket ?? $masuk->keterangan ?? '-' }}
+                                </td>
+                                @if(auth()->user()->user_role === 'super_admin')
+                                <td class="p-4 text-xs text-justify">
+                                    <a href="{{ route('produksi.edit', $masuk->id ?? $masuk->produksi_id) }}" class="p-1.5 bg-[#184D2E]/10 text-[#184D2E] hover:bg-[#184D2E] hover:text-white rounded-lg transition-colors border border-[#184D2E]/20 inline-block" title="Edit Data">
+                                        <x-heroicon-o-pencil-square class="w-5 h-5" />
+                                    </a>
+                                </td>
+                                @endif
+                            </tr>
                         @endif
-                    </tr>
                     @endforeach
                 </tbody>
                 </table>

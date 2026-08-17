@@ -335,8 +335,7 @@
             </div>
         </div>
     </div>
-<<<<<<< HEAD
-</div>
+@endforeach
 
 {{-- Modals for History --}}
 @foreach($audit as $nama_petani => $history)
@@ -403,8 +402,6 @@
         </div>
     </div>
     @endif
-=======
->>>>>>> cb386937efc6a2e8e41ea1b25ba8691153557fff
 @endforeach
 
 <script>
