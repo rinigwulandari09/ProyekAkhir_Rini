@@ -10,6 +10,7 @@ use App\Models\DetailProduksi;
 use App\Models\Lahan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class ProduksiController extends Controller
 {
@@ -43,15 +44,18 @@ class ProduksiController extends Controller
             'produksi_bukti'      => 'nullable'
         ]);
 
-        // CEK DUPLIKASI ENTRY SECARA AMAN (Mencegah request ganda dalam 10 detik)
+        // CEK DUPLIKASI ENTRY SECARA AMAN (Memeriksa created_at hanya jika kolom tersebut ada)
         $queryDuplicate = Produksi::where('petani_id', $request->petani_id)
             ->where('produksi_tanggal', $request->produksi_tanggal)
             ->where('jumlah_tbs', $request->jumlah_tbs)
-            ->where('harga_tbs', $request->harga_tbs)
-            ->where('created_at', '>=', now()->subSeconds(10));
+            ->where('harga_tbs', $request->harga_tbs);
 
         if ($request->filled('produksi_ket')) {
             $queryDuplicate->where('produksi_ket', $request->produksi_ket);
+        }
+
+        if (Schema::hasColumn('produksi', 'created_at')) {
+            $queryDuplicate->where('created_at', '>=', now()->subSeconds(10));
         }
 
         $existing = $queryDuplicate->first();
