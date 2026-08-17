@@ -43,14 +43,18 @@ class ProduksiController extends Controller
             'produksi_bukti'      => 'nullable'
         ]);
 
-        // CEK DUPLIKASI ENTRY (Mencegah request ganda dalam rentang 10 detik)
-        $existing = Produksi::where('petani_id', $request->petani_id)
+        // CEK DUPLIKASI ENTRY SECARA AMAN (Mencegah request ganda dalam 10 detik)
+        $queryDuplicate = Produksi::where('petani_id', $request->petani_id)
             ->where('produksi_tanggal', $request->produksi_tanggal)
             ->where('jumlah_tbs', $request->jumlah_tbs)
             ->where('harga_tbs', $request->harga_tbs)
-            ->where('produksi_ket', $request->produksi_ket)
-            ->where('created_at', '>=', now()->subSeconds(10))
-            ->first();
+            ->where('created_at', '>=', now()->subSeconds(10));
+
+        if ($request->filled('produksi_ket')) {
+            $queryDuplicate->where('produksi_ket', $request->produksi_ket);
+        }
+
+        $existing = $queryDuplicate->first();
 
         if ($existing) {
             return response()->json([
@@ -102,10 +106,27 @@ class ProduksiController extends Controller
                 'produksi_bukti'   => $fotoPath
             ]);
 
-            // 2. HITUNG SPLIT JUMLAH TBS DAN PENDAPATAN PER LAHAN
-            $lahans = Lahan::whereIn('lahan_id', $lahanIds)->get();
-            if ($lahans->isEmpty()) {
-                $lahans = Lahan::whereIn('id', $lahanIds)->get();
+            // 2. AMBIL DATA LAHAN DENGAN FALLBACK AMAN
+            $lahans = collect();
+            if (class_exists(Lahan::class)) {
+                try {
+                    $lahans = Lahan::whereIn('lahan_id', $lahanIds)->get();
+                    if ($lahans->isEmpty()) {
+                        $lahans = Lahan::whereIn('id', $lahanIds)->get();
+                    }
+                } catch (\Exception $ex) {
+                    try {
+                        $lahans = DB::table('lahan')->whereIn('lahan_id', $lahanIds)->get();
+                    } catch (\Exception $e) {
+                        $lahans = DB::table('lahan')->whereIn('id', $lahanIds)->get();
+                    }
+                }
+            } else {
+                try {
+                    $lahans = DB::table('lahan')->whereIn('lahan_id', $lahanIds)->get();
+                } catch (\Exception $e) {
+                    $lahans = DB::table('lahan')->whereIn('id', $lahanIds)->get();
+                }
             }
 
             // Hitung total luas lahan terpilih
@@ -115,7 +136,7 @@ class ProduksiController extends Controller
 
             $countLahan = count($lahanIds);
 
-            // Ambil array detail dari request jika ada
+            // Ambil array detail jika dikirim dari request
             $jumlahTbsArr = $request->input('jumlah_tbs_detail') 
                 ?? $request->input('jumlah_produksi') 
                 ?? [];
