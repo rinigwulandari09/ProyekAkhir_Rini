@@ -335,6 +335,76 @@
             </div>
         </div>
     </div>
+<<<<<<< HEAD
+</div>
+
+{{-- Modals for History --}}
+@foreach($audit as $nama_petani => $history)
+    @if($history->count() > 1)
+    <div id="historyModal-{{ md5($nama_petani) }}" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity bg-black/50" aria-hidden="true" onclick="closeHistoryModal('{{ md5($nama_petani) }}')"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="relative inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-xl shadow-xl sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full sm:p-6 z-10">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-gray-900">Riwayat Audit: {{ $nama_petani }}</h3>
+                    <button type="button" onclick="closeHistoryModal('{{ md5($nama_petani) }}')" class="text-gray-400 hover:text-gray-500">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+                <div class="mt-2 overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Attempt</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Auditor</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">File</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach($history as $h)
+                            <tr>
+                                <td class="px-3 py-2 text-sm text-gray-900">{{ $h->audit_attempt ?? '-' }}</td>
+                                <td class="px-3 py-2 text-sm text-gray-900">{{ $h->tanggal }}</td>
+                                <td class="px-3 py-2 text-sm text-gray-900">{{ $h->nama_auditor }}</td>
+                                <td class="px-3 py-2 text-sm">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                        @if($h->status_audit == 'Lulus') bg-green-100 text-green-800 
+                                        @elseif($h->status_audit == 'Perlu Perbaikan') bg-red-100 text-red-800 
+                                        @else bg-yellow-100 text-yellow-800 @endif">
+                                        {{ $h->status_audit ?: 'Pending' }}
+                                    </span>
+                                </td>
+                                <td class="px-3 py-2 text-sm text-gray-500 max-w-[150px] truncate" title="{{ $h->keterangan }}">{{ $h->keterangan ?? '-' }}</td>
+                                <td class="px-3 py-2 text-sm text-gray-500 flex items-center gap-2">
+                                    @if($h->path_file_kunjungan)
+                                    <a href="{{ Storage::url(str_replace(['storage/', 'public/'], '', $h->path_file_kunjungan)) }}" target="_blank" class="text-blue-600 hover:underline">Lihat PDF</a>
+                                    @else
+                                    <span>-</span>
+                                    @endif
+                                    
+                                    <button type="button" 
+                                            data-id="{{ $h->id_audit }}"
+                                            data-status="{{ $h->status_audit ?: '' }}"
+                                            data-keterangan="{{ $h->keterangan ?? '' }}"
+                                            class="btn-edit-status text-yellow-500 hover:scale-110 transition" title="Ubah Status">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"></path></svg>
+                                    </button>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+=======
+>>>>>>> cb386937efc6a2e8e41ea1b25ba8691153557fff
 @endforeach
 
 <script>
