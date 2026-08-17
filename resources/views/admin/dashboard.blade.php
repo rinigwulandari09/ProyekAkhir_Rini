@@ -59,44 +59,44 @@
         {{-- Status Audit (1 Kolom) --}}
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 h-full flex flex-col col-span-1">
             <h3 class="text-xs font-bold text-gray-500 mb-5 uppercase tracking-widest font-poppins flex items-center gap-2">
-                <x-heroicon-o-clipboard-document-check class="w-4 h-4" />
+                <x-heroicon-o-clipboard-document-check class="w-4 h-4 text-[#184D2E]" />
                 Status Audit Internal
             </h3>
-            <div class="flex flex-col gap-4 flex-1 justify-center">
-                <div class="bg-emerald-50/50 p-4 rounded-xl flex items-center justify-between border border-emerald-100/50 group hover:bg-emerald-50 transition">
+             <div class="flex flex-col gap-4 flex-1 justify-center">
+                <div class="bg-[#184D2E]/10 p-4 rounded-xl flex items-center justify-between border border-[#184D2E]/10 group hover:bg-[#184D2E]/20 transition">
                     <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center shrink-0">
+                        <div class="w-10 h-10 bg-[#184D2E]/10 text-[#184D2E] rounded-full flex items-center justify-center shrink-0">
                             <x-heroicon-s-check-circle class="w-6 h-6" />
                         </div>
                         <div>
-                            <p class="text-xs font-bold text-emerald-700 tracking-wider">LULUS</p>
-                            <p class="text-sm text-gray-500 font-medium">Sudah Sesuai</p>
+                            <p class="text-xs font-bold text-[#184D2E] tracking-wider">LULUS</p>
+                            <p class="text-[11px] text-gray-500 font-medium mt-0.5">Sudah Sesuai</p>
                         </div>
                     </div>
                     <p class="text-3xl font-black text-emerald-700 font-poppins">{{ $auditLulus }}</p>
                 </div>
                 
-                <div class="bg-amber-50/50 p-4 rounded-xl flex items-center justify-between border border-amber-100/50 group hover:bg-amber-50 transition">
+                 <div class="bg-[#D4AF37]/10 p-4 rounded-xl flex items-center justify-between border border-[#D4AF37]/20 group hover:bg-[#D4AF37]/20 transition">
                     <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center shrink-0">
+                        <div class="w-10 h-10 bg-[#D4AF37]/20 text-[#b59223] rounded-full flex items-center justify-center shrink-0">
                             <x-heroicon-s-information-circle class="w-6 h-6" />
                         </div>
                         <div>
-                            <p class="text-xs font-bold text-amber-700 tracking-wider"> PERLU PERBAIKAN</p>
-                            <p class="text-sm text-gray-500 font-medium">Butuh tindak lanjut</p>
+                            <p class="text-xs font-bold text-[#856b17] tracking-wider">PERBAIKAN</p>
+                            <p class="text-[11px] text-gray-500 font-medium mt-0.5">Butuh tindak lanjut</p>
                         </div>
                     </div>
                     <p class="text-3xl font-black text-amber-700 font-poppins">{{ $auditPerbaikan }}</p>
                 </div>
 
-                <div class="bg-rose-50/50 p-4 rounded-xl flex items-center justify-between border border-rose-100/50 group hover:bg-rose-50 transition">
+                <div class="bg-rose-50/40 p-4 rounded-xl flex items-center justify-between border border-rose-100/70 group hover:bg-rose-50 transition">
                     <div class="flex items-center gap-4">
                         <div class="w-10 h-10 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center shrink-0">
                             <x-heroicon-s-exclamation-triangle class="w-6 h-6" />
                         </div>
                         <div>
                             <p class="text-xs font-bold text-rose-700 tracking-wider">PENDING</p>
-                            <p class="text-sm text-gray-500 font-medium">Perlu Verifikasi</p>
+                            <p class="text-[11px] text-gray-500 font-medium mt-0.5">Perlu Verifikasi</p>
                         </div>
                     </div>
                     <p class="text-3xl font-black text-rose-700 font-poppins">{{ $auditPending }}</p>
@@ -116,21 +116,27 @@
                 </div>
             </div>
 
-            <div class="overflow-x-auto flex-1">
+            <div class="p-1 flex-1 w-full">
                 <table id="tugasTable" class="w-full text-left border-collapse display responsive">
                     <thead>
                         <tr class="bg-[#D4AF37] border-b border-[#B8860B] shadow-sm text-black">
-                            <th class="p-4 text-[10px] font-bold text-black uppercase tracking-wider rounded-l-xl">Judul</th>
+                            <th class="p-4 text-[10px] font-bold text-black uppercase tracking-wider">No</th>
+                            <th class="p-4 text-[10px] font-bold text-black uppercase tracking-wider">Judul</th>
                             <th class="p-4 text-[10px] font-bold text-black uppercase tracking-wider">Pesan</th>
                             <th class="p-4 text-[10px] font-bold text-black uppercase tracking-wider">Deadline</th>
-                            <th class="p-4 text-[10px] font-bold text-black uppercase tracking-wider text-center rounded-r-xl">Aksi</th>
+                            <th class="p-4 text-[10px] font-bold text-black uppercase tracking-wider text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50">
-                        @forelse($taskNotifications as $task)
+                        @foreach($taskNotifications as $task)
                             <tr class="hover:bg-gray-50/50 transition">
+                                <td class="p-4 text-xs text-gray-500 font-mono"></td>
                                 <td class="p-4 text-xs text-gray-800 font-semibold">{{ $task->judul }}</td>
-                                <td class="p-4 text-xs text-gray-600 whitespace-normal break-words min-w-[150px]">{{ $task->pesan }}</td>
+                                <td class="p-4 text-xs text-gray-600" title="{{ $task->pesan }}">
+                                    <div class="max-w-[200px] xl:max-w-xs whitespace-normal break-words">
+                                        {{ $task->pesan }}
+                                    </div>
+                                </td>
                                 <td class="p-4">
                                     <span class="inline-block whitespace-nowrap px-2.5 py-1 bg-amber-50 text-amber-700 rounded-md text-[11px] font-bold border border-amber-100">
                                         {{ $task->deadline ? date('d/m/Y', strtotime($task->deadline)) : '-' }}
@@ -146,11 +152,7 @@
                                     </form>
                                 </td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="p-8 text-center text-gray-400 text-sm">Belum ada pengingat tugas dari Superadmin.</td>
-                            </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -185,7 +187,7 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         if ($.fn.DataTable.isDataTable('#tugasTable')) { $('#tugasTable').DataTable().destroy(); }
-        $('#tugasTable').DataTable({
+        var tableTugas = $('#tugasTable').DataTable({
             "pageLength": 5, 
             "lengthMenu": [[5, 10, 25, -1], [5, 10, 25, "All"]],
             "language": {
@@ -209,12 +211,23 @@
                 }
             },
             "columnDefs": [
-                { "orderable": false, "searchable": false, "targets": [3] },
-                { "className": "all", "targets": 0 }, 
-                { "className": "min-tablet", "targets": [1, 2, 3] } 
+                { "orderable": false, "searchable": false, "targets": [4] },
+                { "orderable": false, "targets": [0] },
+                { "className": "all", "targets": [0, 1] }, 
+                { "className": "min-tablet", "targets": [2, 3, 4] } 
             ],
-            "dom": '<"flex justify-between items-center w-full mb-4 gap-2" l f> rt <"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4" i p>'
+            "dom": '<"flex justify-between items-center w-full mb-4 gap-2" l f> <"overflow-x-auto w-full" tr> <"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4" i p>'
         });
+
+        tableTugas.on('order.dt search.dt draw.dt', function () {
+            let start = tableTugas.page.info().start;
+            tableTugas.column(0, {
+                search: 'applied',
+                order: 'applied'
+            }).nodes().each(function(cell, i) {
+                cell.innerHTML = start + i + 1;
+            });
+        }).draw();
         const ctxPemasukan = document.getElementById('chartPemasukan').getContext('2d');
         const dataPemasukan = @json(array_values($pemasukanGrafik));
 

@@ -99,7 +99,7 @@
                             <div class="flex justify-center gap-2">
                                 <button type="button" onclick="openDetailModal('{{ md5($k->id_kunjungan) }}')" class="inline-flex items-center gap-1.5 bg-[#234323] text-white px-3 py-1.5 rounded-lg text-[10px] font-bold hover:bg-[#1a331a] hover:shadow-md transition whitespace-nowrap">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-                                    Tinjau & Verifikasi
+                                    {{ auth()->user()->user_role == 'super_admin' ? 'Tinjau & Verifikasi' : 'Detail Kunjungan' }}
                                 </button>
                             </div>
                         </td>
@@ -373,6 +373,7 @@
                                 </div>
                             </div>
 
+                            @if(auth()->user()->user_role == 'super_admin')
                             <form action="/audit/kunjungan/{{ $k->id_kunjungan }}/status" method="POST" class="mt-5 border-t pt-4">
                                 @csrf
                                 @method('PUT')
@@ -393,6 +394,7 @@
                                     Simpan Keputusan
                                 </button>
                             </form>
+                            @endif
                         </div>
                     </div>
                 </div>

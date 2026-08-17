@@ -207,7 +207,7 @@
                         </td>
                         @if(auth()->user()->user_role === 'super_admin')
                         <td class="p-4 text-xs text-justify">
-                            <a href="{{ route('produksi.edit', $masuk->id ?? $masuk->produksi_id) }}" class="inline-block text-green-700 hover:scale-110 transition" title="Edit Data">
+                            <a href="{{ route('produksi.edit', $masuk->id ?? $masuk->produksi_id) }}" class="p-1.5 bg-[#184D2E]/10 text-[#184D2E] hover:bg-[#184D2E] hover:text-white rounded-lg transition-colors border border-[#184D2E]/20 inline-block" title="Edit Data">
                                 <x-heroicon-o-pencil-square class="w-5 h-5" />
                             </a>
                         </td>
@@ -280,7 +280,7 @@
                         </td>
                         @if(auth()->user()->user_role === 'super_admin')
                         <td class="p-4 text-xs text-justify">
-                            <a href="{{ route('biaya_operasional.edit', $keluar->id ?? $keluar->biaya_id ?? $keluar->biaya_operasional_id) }}" class="inline-block text-green-700 hover:scale-110 transition" title="Edit Data">
+                            <a href="{{ route('biaya_operasional.edit', $keluar->id ?? $keluar->biaya_id ?? $keluar->biaya_operasional_id) }}" class="p-1.5 bg-[#184D2E]/10 text-[#184D2E] hover:bg-[#184D2E] hover:text-white rounded-lg transition-colors border border-[#184D2E]/20 inline-block" title="Edit Data">
                                 <x-heroicon-o-pencil-square class="w-5 h-5" />
                             </a>
                         </td>

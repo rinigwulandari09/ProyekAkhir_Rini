@@ -89,7 +89,7 @@
                     <h1 class="font-poppins">PENGINGAT</h1>
                 </div>
                 <p class="mb-3 leading-tight">Tambahkan pengingat atau informasi!</p>
-                <a href="{{ route('pengingat.create') }}" class="w-full bg-[#234323] py-2 rounded font-bold text-white hover:bg-[#D4AF37]/20 transition inline-block text-center">
+                <a href="{{ route('pengingat.create') }}" class="w-full bg-[#234323] py-2 rounded font-bold text-white hover:bg-[#3D5A3E] transition inline-block text-center">
                     TAMBAH
                 </a>
             </div>
@@ -164,7 +164,7 @@
                     Batal
                 </button>
                 <button @click="confirmLogout()" 
-                        class="px-4 py-2 bg-[#234323] text-white rounded-lg hover:bg-[#D4AF37]/20 transition font-medium">
+                        class="px-4 py-2 bg-[#234323] text-white rounded-lg hover:bg-[#3D5A3E] transition font-medium">
                     Keluar
                 </button>
             </div>
