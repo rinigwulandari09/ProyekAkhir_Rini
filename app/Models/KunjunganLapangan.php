@@ -20,14 +20,14 @@ class KunjunganLapangan extends Model
         'desa_kebun',
         'desa_kepengurusan',
         'nama_auditor',
-        'nama_petani',         // <-- Tambahan
-        'user_id',             // <-- Tambahan FK Admin
-        'petani_id',           // <-- Tambahan FK Petani
+        'nama_petani',         
+        'user_id',             // fk admin
+        'petani_id',           // fk petani
         'path_file_kunjungan',
         'status',
         'keterangan',
-        'periode',             // <-- Tambahan
-        'visit_attempt'        // <-- Tambahan
+        'periode',             
+        'visit_attempt'        
     ];
 
     // Relasi ke tabel User (Admin / Auditor)

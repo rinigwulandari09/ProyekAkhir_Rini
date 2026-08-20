@@ -36,7 +36,7 @@ class AuditInternalController extends Controller
             $kunjunganQuery->whereRaw('EXTRACT(YEAR FROM CAST(tanggal_kunjungan AS DATE)) = ?', [$tahun]);
         }
         if ($status) {
-            if ($status === 'Menunggu Konfirmasi') {
+            if ($status === 'Menunggu Keputusan') {
                 $kunjunganQuery->where(function($q) {
                     $q->whereNull('status')->orWhere('status', '');
                 });
@@ -44,8 +44,13 @@ class AuditInternalController extends Controller
                 $kunjunganQuery->where('status', $status);
             }
         }
-        $kunjungan = $kunjunganQuery->orderBy('tanggal_kunjungan', 'desc')->get();
-
+        $kunjunganRaw = $kunjunganQuery
+            ->orderBy('tanggal_kunjungan', 'desc')
+            ->orderBy('visit_attempt', 'desc')
+            ->orderBy('id_kunjungan', 'desc')
+            ->get();
+        // Group by nama_petani
+        $kunjungan = $kunjunganRaw->groupBy('nama_petani');
         // Audit Query
         $auditQuery = AuditInternal::query();
 
@@ -61,7 +66,7 @@ class AuditInternalController extends Controller
             $auditQuery->whereRaw('EXTRACT(YEAR FROM CAST(tanggal AS DATE)) = ?', [$tahun]);
         }
         if ($status) {
-            if ($status === 'Menunggu Konfirmasi') {
+            if ($status === 'Menunggu Keputusan') {
                 $auditQuery->where(function($q) {
                     $q->whereNull('status_audit')->orWhere('status_audit', '');
                 });
@@ -143,7 +148,7 @@ class AuditInternalController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'status_audit' => 'required|string|in:Lulus,Perlu Perbaikan,Ditolak',
+            'status_audit' => 'required|string|in:Lulus,Perlu Perbaikan,Menunggu Keputusan',
             'keterangan' => 'nullable|string'
         ]);
 

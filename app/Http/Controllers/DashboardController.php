@@ -145,7 +145,7 @@ class DashboardController extends Controller
             ->where(function ($query) {
                 $query->whereNull('status_audit')
                       ->orWhere('status_audit', '')
-                      ->orWhere('status_audit', 'Menunggu Konfirmasi');
+                      ->orWhere('status_audit', 'Menunggu Keputusan');
             })
             ->count();
 

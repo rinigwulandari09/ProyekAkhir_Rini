@@ -38,7 +38,7 @@
 
             <select name="status" class="bg-white border-gray-200 text-gray-700 rounded-lg py-2 pl-3 pr-8 text-xs font-medium focus:ring-2 focus:ring-[#234323]/20 focus:border-[#234323] hover:border-[#234323] hover:shadow-md transition-all duration-300 shadow-sm cursor-pointer outline-none">
                 <option value="">Semua Status</option>
-                <option value="Menunggu Konfirmasi" {{ request('status') == 'Menunggu Konfirmasi' && request('tab', 'audit') == 'audit' ? 'selected' : '' }}>Menunggu Konfirmasi</option>
+                <option value="Menunggu Keputusan" {{ request('status') == 'Menunggu Keputusan' && request('tab', 'audit') == 'audit' ? 'selected' : '' }}>Menunggu Keputusan</option>
                 <option value="Lulus" {{ request('status') == 'Lulus' && request('tab', 'audit') == 'audit' ? 'selected' : '' }}>Lulus</option>
                 <option value="Perlu Perbaikan" {{ request('status') == 'Perlu Perbaikan' && request('tab', 'audit') == 'audit' ? 'selected' : '' }}>Perlu Perbaikan</option>
             </select>
@@ -83,11 +83,11 @@
                         <td class="p-4 text-xs text-gray-500">{{ $a->nama_auditor ?? '-' }}</td>
                         <td class="p-4 text-xs">
                             @php
-                                $displayStatus = $a->status_audit ?: 'Menunggu Konfirmasi';
+                                $displayStatus = $a->status_audit ?: 'Menunggu Keputusan';
                                 $statusColor = match(strtolower($displayStatus)) {
                                     'disetujui', 'lolos', 'lulus', 'selesai' => 'bg-green-50 text-green-700 border-green-200',
                                     'ditolak', 'tidak lolos', 'gagal', 'perlu perbaikan' => 'bg-red-50 text-red-700 border-red-200',
-                                    'proses', 'pending', 'menunggu', 'menunggu konfirmasi' => 'bg-yellow-50 text-yellow-700 border-yellow-200',
+                                    'proses', 'pending', 'menunggu', 'menunggu konfirmasi', 'menunggu keputusan' => 'bg-yellow-50 text-yellow-700 border-yellow-200',
                                     default => 'bg-gray-50 text-gray-700 border-gray-200'
                                 };
                             @endphp
@@ -258,10 +258,10 @@
                                             <option value="" disabled {{ !$latest->status_audit ? 'selected' : '' }} hidden>Pilih Status...</option>
                                             <option value="Lulus" {{ $latest->status_audit == 'Lulus' ? 'selected' : '' }}>Lulus</option>
                                             <option value="Perlu Perbaikan" {{ in_array($latest->status_audit, ['Perlu Perbaikan', 'Tidak Lolos', 'Gagal']) ? 'selected' : '' }}>Perlu Perbaikan</option>
-                                            <option value="Ditolak" {{ $latest->status_audit == 'Ditolak' ? 'selected' : '' }}>Ditolak</option>
+                                            <option value="Menunggu Keputusan" {{ $latest->status_audit == 'Menunggu Keputusan' ? 'selected' : '' }}>Menunggu Keputusan</option>
                                         </select>
                                     </div>
-                                    <div id="ket-container-{{ md5($nama_petani) }}" class="mb-4 {{ in_array($latest->status_audit, ['Perlu Perbaikan', 'Ditolak', 'Tidak Lolos', 'Gagal']) ? '' : 'hidden' }}">
+                                    <div id="ket-container-{{ md5($nama_petani) }}" class="mb-4 {{ in_array($latest->status_audit, ['Perlu Perbaikan', 'Tidak Lolos', 'Gagal']) ? '' : 'hidden' }}">
                                         <label class="block text-xs font-bold text-gray-700 mb-1.5">Alasan / Keterangan</label>
                                         <textarea name="keterangan" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-sm focus:ring-[#234323] focus:border-[#234323]" placeholder="Tulis catatan di sini...">{{ $latest->keterangan }}</textarea>
                                     </div>
@@ -301,7 +301,7 @@
                                                 <td class="px-4 py-3 text-xs text-gray-900">{{ $h->nama_auditor ?? '-' }}</td>
                                                 <td class="px-4 py-3 text-xs whitespace-nowrap">
                                                     @php
-                                                        $statusLabel = $h->status_audit ?: 'Menunggu';
+                                                        $statusLabel = $h->status_audit ?: 'Menunggu Keputusan';
                                                         $badge = match(strtolower($statusLabel)) {
                                                             'disetujui', 'lolos', 'lulus', 'selesai' => 'bg-green-100 text-green-700',
                                                             'ditolak', 'tidak lolos', 'gagal', 'perlu perbaikan' => 'bg-red-100 text-red-700',
@@ -407,7 +407,7 @@
 <script>
     function toggleKeteranganFieldDalamModal(selectElement, id) {
         const container = document.getElementById('ket-container-' + id);
-        if (selectElement.value === 'Perlu Perbaikan' || selectElement.value === 'Ditolak') {
+        if (selectElement.value === 'Perlu Perbaikan') {
             container.classList.remove('hidden');
         } else {
             container.classList.add('hidden');

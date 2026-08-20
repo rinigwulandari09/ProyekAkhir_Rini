@@ -38,7 +38,7 @@
 
             <select name="status" class="bg-white border-gray-200 text-gray-700 rounded-lg py-2 pl-3 pr-8 text-xs font-medium focus:ring-2 focus:ring-[#234323]/20 focus:border-[#234323] hover:border-[#234323] hover:shadow-md transition-all duration-300 shadow-sm cursor-pointer outline-none">
                 <option value="">Semua Status</option>
-                <option value="Menunggu Konfirmasi" {{ request('status') == 'Menunggu Konfirmasi' && request('tab') == 'kunjungan' ? 'selected' : '' }}>Menunggu Konfirmasi</option>
+                <option value="Menunggu Keputusan" {{ request('status') == 'Menunggu Keputusan' && request('tab') == 'kunjungan' ? 'selected' : '' }}>Menunggu Keputusan</option>
                 <option value="Lulus" {{ request('status') == 'Lulus' && request('tab') == 'kunjungan' ? 'selected' : '' }}>Lulus</option>
                 <option value="Perlu Perbaikan" {{ request('status') == 'Perlu Perbaikan' && request('tab') == 'kunjungan' ? 'selected' : '' }}>Perlu Perbaikan</option>
             </select>
@@ -61,32 +61,37 @@
             <thead>
                 <tr class="bg-[#D4AF37] border-b border-[#B8860B] shadow-sm text-black">
                     <th class="p-4 text-xs font-extrabold uppercase text-center w-12 rounded-tl-lg tracking-wider">No</th>
+                    <th class="p-4 text-xs font-extrabold uppercase text-left tracking-wider">Nama Petani</th>
                     <th class="p-4 text-xs font-extrabold uppercase text-left tracking-wider">Tanggal Kunjungan</th>
+                    <th class="p-4 text-xs font-extrabold uppercase text-left tracking-wider">Nama Auditor</th>
                     <th class="p-4 text-xs font-extrabold uppercase text-left tracking-wider">Desa Kebun</th>
                     <th class="p-4 text-xs font-extrabold uppercase text-left tracking-wider">Desa Kepengurusan</th>
-                    <th class="p-4 text-xs font-extrabold uppercase text-left tracking-wider">Nama Auditor</th>
+                    <th class="p-4 text-xs font-extrabold uppercase text-left tracking-wider">Periode</th>
                     <th class="p-4 text-xs font-extrabold uppercase text-left tracking-wider">Status</th>
                     <th class="p-4 text-xs font-extrabold uppercase text-left tracking-wider">Keterangan</th>
                     <th class="p-4 text-xs font-extrabold uppercase text-center rounded-tr-lg tracking-wider">Aksi</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
-                    @foreach($kunjungan as $k)
+                    @foreach($kunjungan as $nama_petani => $history)
+                    @php $k = $history->first(); @endphp
                     <tr class="hover:bg-gray-50 transition">
                         <td class="p-4 text-xs text-center text-gray-500 font-mono"></td>
+                        <td class="p-4 text-xs text-gray-800">{{ $k->nama_petani ?? '-' }}</td>
                         <td class="p-4 text-xs text-gray-800 font-medium">
                             {{ $k->tanggal_kunjungan ? date('Y-m-d', strtotime($k->tanggal_kunjungan)) : '-' }}
                         </td>
+                        <td class="p-4 text-xs text-gray-500">{{ $k->nama_auditor ?? '-' }}</td>
                         <td class="p-4 text-xs text-gray-600">{{ $k->desa_kebun ?? '-' }}</td>
                         <td class="p-4 text-xs text-gray-800">{{ $k->desa_kepengurusan ?? '-' }}</td>
-                        <td class="p-4 text-xs text-gray-500">{{ $k->nama_auditor ?? '-' }}</td>
+                        <td class="p-4 text-xs text-gray-800">{{ $k->periode ?? '-' }}</td>
                         <td class="p-4 text-xs">
                             @php
-                                $displayStatusK = $k->status ?: 'Menunggu Konfirmasi';
+                                $displayStatusK = $k->status ?: 'Menunggu Keputusan';
                                 $statusColorK = match(strtolower($displayStatusK)) {
                                     'disetujui', 'lolos', 'lulus', 'selesai' => 'bg-green-50 text-green-700 border-green-200',
                                     'ditolak', 'tidak lolos', 'gagal', 'perlu perbaikan' => 'bg-red-50 text-red-700 border-red-200',
-                                    'proses', 'pending', 'menunggu', 'menunggu konfirmasi' => 'bg-yellow-50 text-yellow-700 border-yellow-200',
+                                    'proses', 'pending', 'menunggu', 'menunggu konfirmasi', 'menunggu keputusan' => 'bg-yellow-50 text-yellow-700 border-yellow-200',
                                     default => 'bg-gray-50 text-gray-700 border-gray-200'
                                 };
                             @endphp
@@ -97,13 +102,14 @@
                         <td class="p-4 text-xs text-gray-600 max-w-xs truncate" title="{{ $k->keterangan }}">{{ $k->keterangan ?? '-' }}</td>
                         <td class="p-4">
                             <div class="flex justify-center gap-2">
-                                <button type="button" onclick="openDetailModal('{{ md5($k->id_kunjungan) }}')" class="inline-flex items-center gap-1.5 bg-[#234323] text-white px-3 py-1.5 rounded-lg text-[10px] font-bold hover:bg-[#1a331a] hover:shadow-md transition whitespace-nowrap">
+                                <button type="button" onclick="openDetailModal('{{ md5($nama_petani) }}')" class="inline-flex items-center gap-1.5 bg-[#234323] text-white px-3 py-1.5 rounded-lg text-[10px] font-bold hover:bg-[#1a331a] hover:shadow-md transition whitespace-nowrap">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
                                     {{ auth()->user()->user_role == 'super_admin' ? 'Tinjau & Verifikasi' : 'Detail Kunjungan' }}
                                 </button>
                             </div>
                         </td>
                     </tr>
+                    
                     @endforeach
                 </tbody>
             </table>
@@ -162,12 +168,12 @@
                     }
                 }
             },
-            "order": [[ 1, "desc" ]],
+            "order": [[ 2, "desc" ]],
             "columnDefs": [ 
-                { "orderable": false, "searchable": false, "targets": [0, 7] },
+                { "orderable": false, "searchable": false, "targets": [0, 9] },
                 { "className": "text-center all", "targets": 0 }, 
-                { "className": "all", "targets": 1 }, 
-                { "className": "min-tablet", "targets": [2, 3, 4, 5, 6, 7] } 
+                { "className": "all", "targets": [1, 2] }, 
+                { "className": "min-tablet", "targets": [3, 4, 5, 6, 7, 8, 9] } 
             ],
             "buttons": [
                 {
@@ -175,7 +181,7 @@
                     text: '<div class="flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path></svg><span>Export Excel</span></div>',
                     className: 'btn-export-excel',
                     title: 'Data_Kunjungan_Lapangan',
-                    exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6], format: cleanExportFormat }
+                    exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8], format: cleanExportFormat }
                 },
                 {
                     extend: 'pdfHtml5',
@@ -185,9 +191,9 @@
                     filename: 'Data_Kunjungan_Lapangan',
                     orientation: 'landscape',
                     pageSize: 'A4',
-                    exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6], format: cleanExportFormat },
+                    exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8], format: cleanExportFormat },
                     customize: function (doc) {
-                        doc.content[1].table.widths = ['auto', '*', '*', '*', '*', '*', '*'];
+                        doc.content[1].table.widths = ['auto', '*', '*', '*', '*', '*', '*', '*', '*'];
                         doc.styles.tableHeader.alignment = 'center';
                         if (doc.content[0]) {
                             doc.content[0].alignment = 'center';
@@ -316,85 +322,138 @@
     .dataTables_wrapper .dataTables_paginate .paginate_button.disabled, .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover { color: #9ca3af !important; background: #f9fafb !important; border-color: #e5e7eb !important; cursor: not-allowed; }
 </style>
 
-{{-- Modal Detail & Update Status Kunjungan --}}
-@foreach($kunjungan as $k)
-    <div id="detailModal-{{ md5($k->id_kunjungan) }}" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+{{-- Modals for Detail & History --}}
+@foreach($kunjungan as $nama_petani => $history)
+    @php $latest = $history->first(); @endphp
+    <div id="detailModal-{{ md5($nama_petani) }}" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 transition-opacity bg-black/50" aria-hidden="true" onclick="closeDetailModal('{{ md5($k->id_kunjungan) }}')"></div>
+            <div class="fixed inset-0 transition-opacity bg-black/50" aria-hidden="true" onclick="closeDetailModal('{{ md5($nama_petani) }}')"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div class="relative inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-2xl shadow-2xl sm:my-8 sm:align-middle sm:max-w-xl sm:w-full z-10">
+            <div class="relative inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-2xl shadow-2xl sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full z-10">
                 
                 {{-- Header --}}
                 <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
                     <div>
-                        <h3 class="text-lg font-extrabold text-gray-900">Kelola Kunjungan Lapangan</h3>
-                        <p class="text-xs text-gray-500 mt-1">Tinjau detail kunjungan dan verifikasi status.</p>
+                        <h3 class="text-lg font-extrabold text-gray-900">Kelola Kunjungan: {{ $nama_petani }}</h3>
+                        <p class="text-xs text-gray-500 mt-1">Tinjau hasil kunjungan terbaru dan lihat riwayat sebelumnya.</p>
                     </div>
-                    <button type="button" onclick="closeDetailModal('{{ md5($k->id_kunjungan) }}')" class="text-gray-400 hover:text-red-500 transition-colors p-2 rounded-full hover:bg-red-50">
+                    <button type="button" onclick="closeDetailModal('{{ md5($nama_petani) }}')" class="text-gray-400 hover:text-red-500 transition-colors p-2 rounded-full hover:bg-red-50">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
                 </div>
 
                 <div class="p-6">
-                    <div class="flex flex-col gap-5">
-                        <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm relative overflow-hidden">
-                            <div class="absolute top-0 left-0 w-1 h-full bg-[#EAB308]"></div>
-                            <h4 class="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
-                                <svg class="w-4 h-4 text-[#EAB308]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                Detail Kunjungan
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                        @if(auth()->user()->user_role == 'super_admin')
+                        {{-- Kiri: Form Verifikasi Kunjungan Terakhir --}}
+                        <div class="lg:col-span-5 flex flex-col gap-5">
+                            <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm relative overflow-hidden">
+                                <div class="absolute top-0 left-0 w-1 h-full bg-[#EAB308]"></div>
+                                <h4 class="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-[#EAB308]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    Verifikasi Kunjungan Terakhir
+                                </h4>
+                                
+                                <div class="mb-4 space-y-2">
+                                    <div class="flex justify-between text-xs border-b border-dashed pb-2">
+                                        <span class="text-gray-500">Tanggal</span>
+                                        <span class="font-semibold text-gray-800">{{ $latest->tanggal_kunjungan ? date('Y-m-d', strtotime($latest->tanggal_kunjungan)) : '-' }}</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs border-b border-dashed pb-2">
+                                        <span class="text-gray-500">Auditor</span>
+                                        <span class="font-semibold text-gray-800">{{ $latest->nama_auditor ?? '-' }}</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs border-b border-dashed pb-2">
+                                        <span class="text-gray-500">File Bukti</span>
+                                        @if($latest->path_file_kunjungan)
+                                            <a href="{{ Storage::url(str_replace(['storage/', 'public/'], '', $latest->path_file_kunjungan)) }}" target="_blank" class="text-blue-600 font-semibold hover:underline flex items-center gap-1">
+                                                Lihat PDF <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                            </a>
+                                        @else
+                                            <span class="text-gray-400 italic">Tidak ada</span>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <form action="/audit/kunjungan/{{ $latest->id_kunjungan }}/status" method="POST" class="mt-5 border-t pt-4">
+                                    @csrf
+                                    @method('PUT')
+                                    <div class="mb-4">
+                                        <label class="block text-xs font-bold text-gray-700 mb-1.5">Ubah Status</label>
+                                        <select name="status" onchange="toggleKeteranganFieldDalamModal(this, '{{ md5($nama_petani) }}')" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-sm focus:ring-[#234323] focus:border-[#234323]">
+                                            <option value="" disabled {{ !$latest->status ? 'selected' : '' }} hidden>Pilih Status...</option>
+                                            <option value="Lulus" {{ $latest->status == 'Lulus' ? 'selected' : '' }}>Lulus</option>
+                                            <option value="Perlu Perbaikan" {{ in_array($latest->status, ['Perlu Perbaikan', 'Tidak Lolos', 'Gagal']) ? 'selected' : '' }}>Perlu Perbaikan</option>
+                                        </select>
+                                    </div>
+                                    <div id="ket-container-{{ md5($nama_petani) }}" class="mb-4 {{ in_array($latest->status, ['Perlu Perbaikan', 'Ditolak', 'Tidak Lolos', 'Gagal']) ? '' : 'hidden' }}">
+                                        <label class="block text-xs font-bold text-gray-700 mb-1.5">Alasan / Keterangan</label>
+                                        <textarea name="keterangan" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-sm focus:ring-[#234323] focus:border-[#234323]" placeholder="Tulis catatan di sini...">{{ $latest->keterangan }}</textarea>
+                                    </div>
+                                    <button type="submit" class="w-full bg-[#234323] text-white py-2.5 rounded-lg text-sm font-bold shadow-md hover:bg-[#1a331a] hover:shadow-lg transition flex justify-center items-center gap-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                        Simpan Keputusan
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        @endif
+
+                        {{-- Kanan: Riwayat Kunjungan (Semua attempt) --}}
+                        <div class="{{ auth()->user()->user_role == 'super_admin' ? 'lg:col-span-7' : 'lg:col-span-12' }} flex flex-col">
+                            <h4 class="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                Riwayat Kunjungan Keseluruhan
                             </h4>
-                            
-                            <div class="mb-4 space-y-2">
-                                <div class="flex justify-between text-xs border-b border-dashed pb-2">
-                                    <span class="text-gray-500">Tanggal</span>
-                                    <span class="font-semibold text-gray-800">{{ $k->tanggal_kunjungan ? date('Y-m-d', strtotime($k->tanggal_kunjungan)) : '-' }}</span>
-                                </div>
-                                <div class="flex justify-between text-xs border-b border-dashed pb-2">
-                                    <span class="text-gray-500">Desa Kebun</span>
-                                    <span class="font-semibold text-gray-800">{{ $k->desa_kebun ?? '-' }}</span>
-                                </div>
-                                <div class="flex justify-between text-xs border-b border-dashed pb-2">
-                                    <span class="text-gray-500">Desa Kepengurusan</span>
-                                    <span class="font-semibold text-gray-800">{{ $k->desa_kepengurusan ?? '-' }}</span>
-                                </div>
-                                <div class="flex justify-between text-xs border-b border-dashed pb-2">
-                                    <span class="text-gray-500">Auditor</span>
-                                    <span class="font-semibold text-gray-800">{{ $k->nama_auditor ?? '-' }}</span>
-                                </div>
-                                <div class="flex justify-between text-xs border-b border-dashed pb-2">
-                                    <span class="text-gray-500">File Bukti</span>
-                                    @if($k->path_file_kunjungan)
-                                        <a href="{{ Storage::url(str_replace(['storage/', 'public/'], '', $k->path_file_kunjungan)) }}" target="_blank" class="text-blue-600 font-semibold hover:underline flex items-center gap-1">
-                                            Lihat PDF <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                                        </a>
-                                    @else
-                                        <span class="text-gray-400 italic">Tidak ada</span>
-                                    @endif
+                            <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden flex-1">
+                                <div class="overflow-y-auto max-h-[400px]">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50 sticky top-0 z-10">
+                                            <tr>
+                                                <th class="px-4 py-3 text-left text-[10px] font-bold text-gray-500 uppercase tracking-wider">Tanggal</th>
+                                                <th class="px-4 py-3 text-left text-[10px] font-bold text-gray-500 uppercase tracking-wider">Auditor</th>
+                                                <th class="px-4 py-3 text-left text-[10px] font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                                                <th class="px-4 py-3 text-left text-[10px] font-bold text-gray-500 uppercase tracking-wider">Catatan</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-100">
+                                            @foreach($history as $index => $h)
+                                            <tr class="{{ $index === 0 ? 'bg-blue-50/30' : 'hover:bg-gray-50' }}">
+                                                <td class="px-4 py-3 text-xs text-gray-900 whitespace-nowrap">
+                                                    {{ $h->tanggal_kunjungan ? date('Y-m-d', strtotime($h->tanggal_kunjungan)) : '-' }}
+                                                    @if($index === 0) <span class="ml-1 text-[9px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full font-bold">Terbaru</span> @endif
+                                                </td>
+                                                <td class="px-4 py-3 text-xs text-gray-900">{{ $h->nama_auditor ?? '-' }}</td>
+                                                <td class="px-4 py-3 text-xs whitespace-nowrap">
+                                                    @php
+                                                        $statusLabel = $h->status ?: 'Menunggu Keputusan';
+                                                        $badge = match(strtolower($statusLabel)) {
+                                                            'disetujui', 'lolos', 'lulus', 'selesai' => 'bg-green-100 text-green-700',
+                                                            'ditolak', 'tidak lolos', 'gagal', 'perlu perbaikan' => 'bg-red-100 text-red-700',
+                                                            default => 'bg-yellow-100 text-yellow-700'
+                                                        };
+                                                    @endphp
+                                                    <span class="px-2 py-1 inline-flex text-[10px] leading-4 font-bold rounded-full {{ $badge }}">
+                                                        {{ $statusLabel }}
+                                                    </span>
+                                                </td>
+                                                <td class="px-4 py-3 text-xs text-gray-500 min-w-[150px]">
+                                                    {{ $h->keterangan ?? '-' }}
+                                                    @if($h->path_file_kunjungan)
+                                                    <div class="mt-1">
+                                                        <a href="{{ Storage::url(str_replace(['storage/', 'public/'], '', $h->path_file_kunjungan)) }}" target="_blank" class="text-blue-600 hover:underline text-[10px] inline-flex items-center gap-0.5">
+                                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
+                                                            Lampiran
+                                                        </a>
+                                                    </div>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
-
-                            @if(auth()->user()->user_role == 'super_admin')
-                            <form action="/audit/kunjungan/{{ $k->id_kunjungan }}/status" method="POST" class="mt-5 border-t pt-4">
-                                @csrf
-                                @method('PUT')
-                                <div class="mb-4">
-                                    <label class="block text-xs font-bold text-gray-700 mb-1.5">Ubah Status</label>
-                                    <select name="status" onchange="toggleKeteranganFieldDalamModal(this, '{{ md5($k->id_kunjungan) }}')" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-sm focus:ring-[#234323] focus:border-[#234323]">
-                                        <option value="" disabled {{ !$k->status ? 'selected' : '' }} hidden>Pilih Status...</option>
-                                        <option value="Lulus" {{ $k->status == 'Lulus' ? 'selected' : '' }}>Lulus</option>
-                                        <option value="Perlu Perbaikan" {{ in_array($k->status, ['Perlu Perbaikan', 'Tidak Lolos', 'Gagal']) ? 'selected' : '' }}>Perlu Perbaikan</option>
-                                    </select>
-                                </div>
-                                <div id="ket-container-{{ md5($k->id_kunjungan) }}" class="mb-4 {{ in_array($k->status, ['Perlu Perbaikan', 'Ditolak', 'Tidak Lolos', 'Gagal']) ? '' : 'hidden' }}">
-                                    <label class="block text-xs font-bold text-gray-700 mb-1.5">Alasan / Keterangan</label>
-                                    <textarea name="keterangan" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-sm focus:ring-[#234323] focus:border-[#234323]" placeholder="Tulis catatan di sini...">{{ $k->keterangan }}</textarea>
-                                </div>
-                                <button type="submit" class="w-full bg-[#234323] text-white py-2.5 rounded-lg text-sm font-bold shadow-md hover:bg-[#1a331a] hover:shadow-lg transition flex justify-center items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                    Simpan Keputusan
-                                </button>
-                            </form>
-                            @endif
                         </div>
                     </div>
                 </div>
@@ -421,3 +480,4 @@
         document.getElementById('detailModal-' + id).classList.add('hidden');
     }
 </script>
+

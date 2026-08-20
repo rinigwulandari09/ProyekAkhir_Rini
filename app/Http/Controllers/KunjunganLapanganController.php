@@ -9,7 +9,18 @@ class KunjunganLapanganController extends Controller
 {
     public function index()
     {
-        $kunjungan = KunjunganLapangan::orderBy('id_kunjungan', 'desc')->get();
+        $kunjunganRaw = KunjunganLapangan::orderBy('tanggal_kunjungan', 'desc')
+            ->orderBy('visit_attempt', 'desc')
+            ->orderBy('id_kunjungan', 'desc')
+            ->get();
+            
+        $kunjungan = $kunjunganRaw->groupBy('nama_petani');
+        
+        $user = auth()->user();
+        if ($user && $user->user_role === 'admin') {
+            return view('admin.Audit.kunjungan', compact('kunjungan'));
+        }
+        
         return view('super_admin.Audit.kunjungan', compact('kunjungan'));
     }
 }
