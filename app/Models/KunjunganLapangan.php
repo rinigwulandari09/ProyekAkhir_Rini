@@ -11,15 +11,34 @@ class KunjunganLapangan extends Model
 
     protected $table = 'kunjungan_lapangan';
     protected $primaryKey = 'id_kunjungan';
-    public $timestamps = false; // Assuming no created_at/updated_at based on the schema
+    
+    // Di foto database Anda terdapat kolom created_at dan updated_at
+    public $timestamps = true; 
 
     protected $fillable = [
         'tanggal_kunjungan',
         'desa_kebun',
         'desa_kepengurusan',
         'nama_auditor',
+        'nama_petani',         // <-- Tambahan
+        'user_id',             // <-- Tambahan FK Admin
+        'petani_id',           // <-- Tambahan FK Petani
         'path_file_kunjungan',
         'status',
-        'keterangan'
+        'keterangan',
+        'periode',             // <-- Tambahan
+        'visit_attempt'        // <-- Tambahan
     ];
+
+    // Relasi ke tabel User (Admin / Auditor)
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
+    }
+
+    // Relasi ke tabel Petani
+    public function petani()
+    {
+        return $this->belongsTo(Petani::class, 'petani_id', 'petani_id');
+    }
 }
