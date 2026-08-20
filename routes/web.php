@@ -10,7 +10,11 @@ use App\Http\Controllers\KeuanganController;
 use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\AuditInternalController;
 
-Route::get('/', [LoginController::class,'index'])
+Route::get('/', function () {
+    return view('landing');
+})->name('landing');
+
+Route::get('/login', [LoginController::class, 'index'])
     ->name('login');
 
 Route::post('/login', [LoginController::class,'authenticate'])

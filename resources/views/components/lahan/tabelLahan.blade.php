@@ -78,19 +78,19 @@
                         <td class="p-4 text-xs text-gray-600">{{ $lahan->lahan_lokasi }}</td>
                         <td class="p-4">
                             <div class="flex text-justify gap-3 items-justify">
-                                <a href="{{ route('lahan.show', $lahan->lahan_id) }}" class="text-blue-600 hover:scale-110 transition" title="Lihat Peta / Detail">
+                                <a href="{{ route('lahan.show', $lahan->lahan_id) }}" class="p-1.5 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg transition-colors border border-blue-100" title="Lihat Peta / Detail">
                                     <x-heroicon-o-map-pin class="w-5 h-5" />
                                 </a>
                                 
                                 @if(in_array(auth()->user()->user_role, ['admin', 'super_admin']))
-                                <a href="{{ route('lahan.edit', $lahan->lahan_id) }}" class="text-green-700 hover:scale-110 transition" title="Edit Lahan">
+                                <a href="{{ route('lahan.edit', $lahan->lahan_id) }}" class="p-1.5 bg-[#184D2E]/10 text-[#184D2E] hover:bg-[#184D2E] hover:text-white rounded-lg transition-colors border border-[#184D2E]/20" title="Edit Lahan">
                                     <x-heroicon-o-pencil-square class="w-5 h-5" />
                                 </a>
                                 
                                 <form action="{{ route('lahan.destroy', $lahan->lahan_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data lahan ini?')">
                                     @csrf 
                                     @method('DELETE')
-                                    <button type="submit" class="text-red-500 hover:scale-110 transition cursor-pointer" title="Hapus Lahan">
+                                    <button type="submit" class="p-1.5 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-lg transition-colors border border-red-100 cursor-pointer" title="Hapus Lahan">
                                         <x-heroicon-o-trash class="w-5 h-5" />
                                     </button>
                                 </form>

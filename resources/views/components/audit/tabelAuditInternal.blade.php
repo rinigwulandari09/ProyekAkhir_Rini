@@ -100,7 +100,7 @@
                             <div class="flex gap-2">
                                 <button type="button" onclick="openDetailModal('{{ md5($nama_petani) }}')" class="inline-flex items-center gap-1.5 bg-[#234323] text-white px-3 py-1.5 rounded-lg text-[10px] font-bold hover:bg-[#1a331a] hover:shadow-md transition whitespace-nowrap">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-                                    Tinjau & Verifikasi
+                                    {{ auth()->user()->user_role == 'super_admin' ? 'Tinjau & Verifikasi' : 'Riwayat Audit' }}
                                 </button>
                             </div>
                         </td>
@@ -218,6 +218,7 @@
 
                 <div class="p-6">
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                        @if(auth()->user()->user_role == 'super_admin')
                         {{-- Kiri: Form Verifikasi Audit Terakhir --}}
                         <div class="lg:col-span-5 flex flex-col gap-5">
                             <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm relative overflow-hidden">
@@ -271,9 +272,10 @@
                                 </form>
                             </div>
                         </div>
+                        @endif
 
                         {{-- Kanan: Riwayat Audit (Semua attempt) --}}
-                        <div class="lg:col-span-7 flex flex-col">
+                        <div class="{{ auth()->user()->user_role == 'super_admin' ? 'lg:col-span-7' : 'lg:col-span-12' }} flex flex-col">
                             <h4 class="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
                                 <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                 Riwayat Audit Keseluruhan
@@ -333,8 +335,7 @@
             </div>
         </div>
     </div>
-<<<<<<< HEAD
-</div>
+@endforeach
 
 {{-- Modals for History --}}
 @foreach($audit as $nama_petani => $history)
@@ -401,8 +402,6 @@
         </div>
     </div>
     @endif
-=======
->>>>>>> cb386937efc6a2e8e41ea1b25ba8691153557fff
 @endforeach
 
 <script>

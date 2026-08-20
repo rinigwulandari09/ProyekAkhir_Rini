@@ -128,7 +128,7 @@
                     </td>
                     <td class="p-4">
                         <div class="flex justify-start gap-3">
-                            <a href="{{ route('keuangan.show', $petani->petani_id) }}" class="text-green-700 hover:scale-110 transition" title="Lihat Detail Transaksi">
+                            <a href="{{ route('keuangan.show', $petani->petani_id) }}" class="p-1.5 bg-[#184D2E]/10 text-[#184D2E] hover:bg-[#184D2E] hover:text-white rounded-lg transition-colors border border-[#184D2E]/20 inline-block" title="Lihat Detail Transaksi">
                                 <x-heroicon-o-arrow-top-right-on-square class="w-5 h-5" />
                             </a>
                         </div>

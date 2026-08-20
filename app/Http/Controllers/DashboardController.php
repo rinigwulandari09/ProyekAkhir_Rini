@@ -115,8 +115,18 @@ class DashboardController extends Controller
             ->whereNotNull('deadline')
             ->get(['id', 'judul', 'pesan', 'deadline', 'is_done']);
 
-        // Data Audit Internal
-        $auditQuery = DB::table('audit_internal');
+        // Data Audit Internal (Status Terakhir Per Petani)
+        $latestAuditsSubQuery = DB::table('audit_internal')
+            ->select(DB::raw('DISTINCT ON (nama_petani) id_audit'))
+            ->orderBy('nama_petani')
+            ->orderBy('tanggal', 'desc')
+            ->orderBy('audit_attempt', 'desc')
+            ->orderBy('id_audit', 'desc');
+
+        $auditQuery = DB::table('audit_internal')
+            ->joinSub($latestAuditsSubQuery, 'latest_audits', function ($join) {
+                $join->on('audit_internal.id_audit', '=', 'latest_audits.id_audit');
+            });
         
         if ($user->user_role === 'admin' && $user->desa_id) {
             $auditQuery->join('petani', 'audit_internal.petani_id', '=', 'petani.petani_id')

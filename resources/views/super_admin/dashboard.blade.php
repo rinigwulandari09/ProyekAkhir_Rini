@@ -74,7 +74,7 @@
                 Status Audit Internal
             </h3>
             <div class="flex flex-col gap-4 flex-1 justify-center">
-                <div class="bg-white p-4 rounded-xl flex items-center justify-between border border-[#184D2E]/10 group hover:bg-[#184D2E]/5 transition">
+                <div class="bg-[#184D2E]/10 p-4 rounded-xl flex items-center justify-between border border-[#184D2E]/10 group hover:bg-[#184D2E]/20 transition">
                     <div class="flex items-center gap-4">
                         <div class="w-10 h-10 bg-[#184D2E]/10 text-[#184D2E] rounded-full flex items-center justify-center shrink-0">
                             <x-heroicon-s-check-circle class="w-6 h-6" />
@@ -87,7 +87,7 @@
                     <p class="text-3xl font-black text-[#184D2E] font-poppins">{{ $auditLulus }}</p>
                 </div>
                 
-                <div class="bg-white p-4 rounded-xl flex items-center justify-between border border-[#D4AF37]/20 group hover:bg-[#D4AF37]/10 transition">
+                <div class="bg-[#D4AF37]/10 p-4 rounded-xl flex items-center justify-between border border-[#D4AF37]/20 group hover:bg-[#D4AF37]/20 transition">
                     <div class="flex items-center gap-4">
                         <div class="w-10 h-10 bg-[#D4AF37]/20 text-[#b59223] rounded-full flex items-center justify-center shrink-0">
                             <x-heroicon-s-information-circle class="w-6 h-6" />
@@ -100,7 +100,7 @@
                     <p class="text-3xl font-black text-[#856b17] font-poppins">{{ $auditPerbaikan }}</p>
                 </div>
 
-                <div class="bg-rose-50/50 p-4 rounded-xl flex items-center justify-between border border-rose-100/50 group hover:bg-rose-50 transition">
+                <div class="bg-rose-50/40 p-4 rounded-xl flex items-center justify-between border border-rose-100/70 group hover:bg-rose-50 transition">
                     <div class="flex items-center gap-4">
                         <div class="w-10 h-10 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center shrink-0">
                             <x-heroicon-s-exclamation-triangle class="w-6 h-6" />
@@ -121,7 +121,7 @@
                 <x-heroicon-o-user-plus class="w-5 h-5 text-[#184D2E]" />
                 <h3 class="text-[11px] font-bold text-gray-500 uppercase tracking-wider font-poppins">Aktivasi Akun Petani</h3>
             </div>
-            <div class="overflow-x-auto p-1 flex-1">
+            <div class="p-1 flex-1 w-full">
                 <table id="tabelPetani" class="w-full text-left border-collapse display responsive nowrap">
                     <thead>
                         <tr class="bg-[#D4AF37] border-b border-[#B8860B] shadow-sm text-black">
@@ -430,7 +430,7 @@
             { "className": "all", "targets": [0, 1] }, 
             { "className": "min-tablet", "targets": [2, 3, 4] } 
         ],
-        "dom": '<"flex justify-between items-center w-full mb-4 gap-2" l f> rt <"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4" i p>'
+        "dom": '<"flex justify-between items-center w-full mb-4 gap-2" l f> <"overflow-x-auto w-full" tr> <"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4" i p>'
     });
 
     table.on('order.dt search.dt draw.dt', function () {

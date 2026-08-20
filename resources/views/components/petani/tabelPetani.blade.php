@@ -69,13 +69,13 @@
                         </td>
                         <td class="p-4">
                             <div class="flex justify-center gap-3">
-                                <a href="{{ route('petani.edit', $p->petani_id) }}" class="text-green-700 hover:scale-110 transition">
+                                <a href="{{ route('petani.edit', $p->petani_id) }}" class="p-1.5 bg-[#184D2E]/10 text-[#184D2E] hover:bg-[#184D2E] hover:text-white rounded-lg transition-colors border border-[#184D2E]/20">
                                     <x-heroicon-o-pencil-square class="w-5 h-5" />
                                 </a>
                                 <form action="{{ route('petani.destroy', $p->petani_id) }}" method="POST" onsubmit="return confirm('Yakin hapus?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="text-red-500 hover:scale-110 transition">
+                                    <button type="submit" class="p-1.5 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-lg transition-colors border border-red-100">
                                         <x-heroicon-o-trash class="w-5 h-5" />
                                     </button>
                                 </form>

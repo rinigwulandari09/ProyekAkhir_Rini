@@ -7,19 +7,10 @@
     <link rel="icon" href="{{ asset('foto/logo.png') }}" type="image/png">
     <!-- Menghubungkan ke Vite (Tailwind) -->
     @vite('resources/css/app.css')
-    <!-- Google Fonts for better typography -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-    </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased selection:bg-[#234323]/20 selection:text-[#234323]">
 
-    <div class="min-h-screen flex">
+    <div class="h-screen flex overflow-hidden">
         <!-- Image Section - Hidden on mobile, visible on desktop (lg and up) -->
         <div class="hidden lg:flex lg:w-1/2 relative bg-[#234323] items-center justify-center overflow-hidden">
             <!-- Background Image -->
@@ -38,22 +29,31 @@
         </div>
 
         <!-- Form Section -->
-        <div class="w-full lg:w-1/2 flex items-center justify-center bg-transparent lg:bg-white p-6 sm:p-12 relative z-10">
+        <div class="w-full lg:w-1/2 flex flex-col items-center justify-center bg-transparent lg:bg-white p-6 sm:p-12 relative z-10 h-full overflow-y-auto">
+            
+            <!-- Back to Home (Fixed at Top Left) -->
+            <div class="absolute top-6 left-6 sm:top-8 sm:left-8">
+                <a href="{{ route('landing') }}" class="inline-flex items-center text-sm font-semibold text-gray-400 hover:text-[#234323] transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Kembali ke Beranda
+                </a>
+            </div>
+
             <!-- Container -->
             <div class="w-full max-w-md bg-white rounded-3xl shadow-xl sm:shadow-2xl sm:border border-gray-100 p-8 sm:p-10 transform transition-all hover:-translate-y-1 hover:shadow-[#234323]/10 duration-300">
                 
                 <!-- Mobile Logo/Header (Visible on smaller screens) -->
-                <div class="text-center mb-8">
-                    <div class="inline-flex items-center justify-center w-16 h-16 bg-[#234323]/10 text-[#234323] rounded-full mb-4 shadow-inner">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
-                        </svg>
+                <div class="text-center mb-6">
+                    <div class="inline-flex items-center justify-center mb-3">
+                        <img src="{{ asset('foto/logo.png') }}" alt="Logo SILAUSA" class="h-20 w-20 object-contain drop-shadow-md">
                     </div>
-                    <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">SILAUSA</h1>
-                    <p class="text-gray-500 text-sm mt-2 font-medium">Silakan masuk ke akun Anda</p>
+                    <h1 class="text-3xl font-extrabold text-[#234323] tracking-tight">SILAUSA</h1>
+                    <p class="text-gray-500 text-sm mt-1 font-medium">Silakan masuk ke akun Anda</p>
                 </div>
 
-                <form action="{{ route('login.process') }}" method="POST" class="space-y-6">
+                <form action="{{ route('login.process') }}" method="POST" class="space-y-5">
                     @csrf 
 
                     <!-- Username Field -->
