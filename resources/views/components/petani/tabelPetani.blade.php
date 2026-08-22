@@ -6,10 +6,10 @@
             <p class="text-sm text-gray-500">Daftar seluruh petani sawit yang terdaftar.</p>
         </div>
         
-        <a href="{{ route('petani.create') }}" class="bg-[#214122] text-white px-4 py-2.5 rounded-lg inline-flex items-center gap-2 hover:bg-green-900 transition shadow-md font-semibold text-sm">
+        <!-- <a href="{{ route('petani.create') }}" class="bg-[#214122] text-white px-4 py-2.5 rounded-lg inline-flex items-center gap-2 hover:bg-green-900 transition shadow-md font-semibold text-sm">
             <x-heroicon-o-user-plus class="w-5 h-5" />
             Tambah Petani
-        </a>
+        </a> -->
     </div>
 
     @if(session('success'))

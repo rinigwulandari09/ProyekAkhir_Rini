@@ -174,7 +174,11 @@ class KeuanganController extends Controller
 
         // PERBAIKAN UTAMA DETAIL: Urutkan berdasarkan tanggal transaksi terbaru (DESC)
         $pemasukan = $produksiQuery
-            ->with(['lahan', 'detailProduksi.lahan'])
+            ->with(['lahan', 'detailProduksi' => function($q) use ($lahanId) {
+                if ($lahanId) {
+                    $q->where('lahan_id', $lahanId);
+                }
+            }, 'detailProduksi.lahan'])
             ->orderBy('produksi_tanggal', 'desc')
             ->get();
 
@@ -183,7 +187,16 @@ class KeuanganController extends Controller
             ->get();
 
         // 4. Hitung ringkasan total akumulasi nominal
-        $totalPemasukan = $pemasukan->sum('total_pendapatan');
+        $totalPemasukan = 0;
+        foreach ($pemasukan as $masuk) {
+            if ($masuk->detailProduksi && $masuk->detailProduksi->count() > 0) {
+                $totalPemasukan += $masuk->detailProduksi->sum('subtotal_pendapatan');
+            } else {
+                if (!$lahanId || $masuk->lahan_id == $lahanId) {
+                    $totalPemasukan += $masuk->total_pendapatan;
+                }
+            }
+        }
         $totalPengeluaran = $pengeluaran->sum('biaya_total');
 
         // 5. Ambil data lahan untuk dropdown filter

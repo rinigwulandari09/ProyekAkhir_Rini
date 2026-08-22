@@ -258,7 +258,6 @@
                                             <option value="" disabled {{ !$latest->status_audit ? 'selected' : '' }} hidden>Pilih Status...</option>
                                             <option value="Lulus" {{ $latest->status_audit == 'Lulus' ? 'selected' : '' }}>Lulus</option>
                                             <option value="Perlu Perbaikan" {{ in_array($latest->status_audit, ['Perlu Perbaikan', 'Tidak Lolos', 'Gagal']) ? 'selected' : '' }}>Perlu Perbaikan</option>
-                                            <option value="Menunggu Keputusan" {{ $latest->status_audit == 'Menunggu Keputusan' ? 'selected' : '' }}>Menunggu Keputusan</option>
                                         </select>
                                     </div>
                                     <div id="ket-container-{{ md5($nama_petani) }}" class="mb-4 {{ in_array($latest->status_audit, ['Perlu Perbaikan', 'Tidak Lolos', 'Gagal']) ? '' : 'hidden' }}">
