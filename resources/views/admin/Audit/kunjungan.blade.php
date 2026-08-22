@@ -88,7 +88,7 @@
                         
                         {{-- 10. Aksi --}}
                         <td class="p-4 text-center">
-                            <button type="button" onclick="openDetailModal('{{ md5($nama_petani) }}')" class="inline-flex items-center gap-1.5 bg-[#234323] text-white px-3 py-1.5 rounded-lg text-[10px] font-bold hover:bg-[#1a331a] hover:shadow-md transition whitespace-nowrap">
+                            <button type="button" onclick="openKunjunganModal('{{ md5($nama_petani) }}')" class="inline-flex items-center gap-1.5 bg-[#234323] text-white px-3 py-1.5 rounded-lg text-[10px] font-bold hover:bg-[#1a331a] hover:shadow-md transition whitespace-nowrap">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
                                 {{ auth()->user()->user_role == 'super_admin' ? 'Tinjau & Verifikasi' : 'Riwayat Kunjungan' }}
                             </button>
@@ -387,9 +387,9 @@
 {{-- Modals for Detail & History --}}
 @foreach($kunjungan as $nama_petani => $history)
     @php $latest = $history->first(); @endphp
-    <div id="detailModal-{{ md5($nama_petani) }}" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div id="kunjunganModal-{{ md5($nama_petani) }}" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 transition-opacity bg-black/50" aria-hidden="true" onclick="closeDetailModal('{{ md5($nama_petani) }}')"></div>
+            <div class="fixed inset-0 transition-opacity bg-black/50" aria-hidden="true" onclick="closeKunjunganModal('{{ md5($nama_petani) }}')"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
             <div class="relative inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-2xl shadow-2xl sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full z-10">
                 
@@ -399,7 +399,7 @@
                         <h3 class="text-lg font-extrabold text-gray-900">Kelola Kunjungan: {{ $nama_petani }}</h3>
                         <p class="text-xs text-gray-500 mt-1">Tinjau hasil kunjungan terbaru dan lihat riwayat sebelumnya.</p>
                     </div>
-                    <button type="button" onclick="closeDetailModal('{{ md5($nama_petani) }}')" class="text-gray-400 hover:text-red-500 transition-colors p-2 rounded-full hover:bg-red-50">
+                    <button type="button" onclick="closeKunjunganModal('{{ md5($nama_petani) }}')" class="text-gray-400 hover:text-red-500 transition-colors p-2 rounded-full hover:bg-red-50">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
                 </div>
@@ -442,7 +442,7 @@
                                     @method('PUT')
                                     <div class="mb-4">
                                         <label class="block text-xs font-bold text-gray-700 mb-1.5">Ubah Status</label>
-                                        <select name="status" onchange="toggleKeteranganFieldDalamModal(this, '{{ md5($nama_petani) }}')" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-sm focus:ring-[#234323] focus:border-[#234323]">
+                                        <select name="status" onchange="toggleKeteranganFieldKunjungan(this, '{{ md5($nama_petani) }}')" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm text-sm focus:ring-[#234323] focus:border-[#234323]">
                                             <option value="" disabled {{ !$latest->status ? 'selected' : '' }} hidden>Pilih Status...</option>
                                             <option value="Lulus" {{ $latest->status == 'Lulus' ? 'selected' : '' }}>Lulus</option>
                                             <option value="Perlu Perbaikan" {{ in_array($latest->status, ['Perlu Perbaikan', 'Tidak Lolos', 'Gagal']) ? 'selected' : '' }}>Perlu Perbaikan</option>
@@ -525,7 +525,7 @@
 @endforeach
 
 <script>
-    function toggleKeteranganFieldDalamModal(selectElement, id) {
+    function toggleKeteranganFieldKunjungan(selectElement, id) {
         const container = document.getElementById('ket-container-' + id);
         if (selectElement.value === 'Perlu Perbaikan' || selectElement.value === 'Ditolak') {
             container.classList.remove('hidden');
@@ -534,12 +534,12 @@
         }
     }
 
-    function openDetailModal(id) {
-        document.getElementById('detailModal-' + id).classList.remove('hidden');
+    function openKunjunganModal(id) {
+        document.getElementById('kunjunganModal-' + id).classList.remove('hidden');
     }
 
-    function closeDetailModal(id) {
-        document.getElementById('detailModal-' + id).classList.add('hidden');
+    function closeKunjunganModal(id) {
+        document.getElementById('kunjunganModal-' + id).classList.add('hidden');
     }
 </script>
 
