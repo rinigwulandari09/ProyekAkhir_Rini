@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Http\Controllers\Api;
 
@@ -18,49 +18,41 @@ class RiwayatKeuanganController extends Controller
         $lahanId = $request->lahan_id;
         $tipe = $request->tipe;
 
-        // PEMASUKAN (Diubah menggunakan Join ke tabel detail_produksi)
-        $pemasukan = DB::table('produksi')
-            ->join('detail_produksi', 'produksi.id', '=', 'detail_produksi.produksi_id')
+        // PEMASUKAN (Tampil per-lahan yang di-split dari detail_produksi)
+        $pemasukan = DB::table('detail_produksi')
+            ->join('produksi', 'detail_produksi.produksi_id', '=', 'produksi.id')
             ->join('lahan', 'detail_produksi.lahan_id', '=', 'lahan.lahan_id')
             ->select(
-                'produksi.id',
+                'produksi.id as id',
+                'detail_produksi.id as detail_id',
                 'produksi.produksi_tanggal as tanggal',
-                'produksi.total_pendapatan as nominal',
+                'detail_produksi.subtotal_pendapatan as nominal',
+                'detail_produksi.jumlah_tbs_detail as jumlah_tbs',
                 DB::raw("'pemasukan' as tipe"),
                 DB::raw("'Penjualan TBS' as judul"),
-                // Menggabungkan nama-nama lahan produksi
-                DB::raw("string_agg(lahan.lahan_nama, ', ') as lahan_nama"),
+                'lahan.lahan_nama as lahan_nama',
+                'detail_produksi.lahan_id as lahan_id',
                 DB::raw("'produksi' as source_table")
             )
-            ->where('produksi.petani_id', $petaniId)
-            ->groupBy(
-                'produksi.id',
-                'produksi.produksi_tanggal',
-                'produksi.total_pendapatan'
-            );
+            ->where('produksi.petani_id', $petaniId);
 
-        
-        // PENGELUARAN (Menggunakan Join ke tabel detail_biaya_operasional)
-        $pengeluaran = DB::table('biaya_operasional')
-            ->join('detail_biaya_operasional', 'biaya_operasional.id', '=', 'detail_biaya_operasional.biaya_operasional_id')
+        // PENGELUARAN (Tampil per-lahan yang di-split dari detail_biaya_operasional)
+        $pengeluaran = DB::table('detail_biaya_operasional')
+            ->join('biaya_operasional', 'detail_biaya_operasional.biaya_operasional_id', '=', 'biaya_operasional.id')
             ->join('lahan', 'detail_biaya_operasional.lahan_id', '=', 'lahan.lahan_id')
             ->select(
-                'biaya_operasional.id',
+                'biaya_operasional.id as id',
+                'detail_biaya_operasional.id as detail_id',
                 'biaya_operasional.biaya_tanggal as tanggal',
-                'biaya_operasional.biaya_total as nominal',
+                DB::raw("COALESCE(detail_biaya_operasional.subtotal, biaya_operasional.biaya_total) as nominal"),
+                DB::raw("biaya_operasional.biaya_jumlah as jumlah_tbs"),
                 DB::raw("'pengeluaran' as tipe"),
                 'biaya_operasional.biaya_nama as judul',
-                // Menggabungkan nama-nama lahan pengeluaran
-                DB::raw("string_agg(lahan.lahan_nama, ', ') as lahan_nama"), 
+                'lahan.lahan_nama as lahan_nama',
+                'detail_biaya_operasional.lahan_id as lahan_id',
                 DB::raw("'biaya' as source_table")
             )
-            ->where('biaya_operasional.petani_id', $petaniId)
-            ->groupBy(
-                'biaya_operasional.id', 
-                'biaya_operasional.biaya_tanggal', 
-                'biaya_operasional.biaya_total', 
-                'biaya_operasional.biaya_nama'
-            );
+            ->where('biaya_operasional.petani_id', $petaniId);
 
         // FILTER BULAN
         if ($bulan) {
@@ -76,7 +68,6 @@ class RiwayatKeuanganController extends Controller
 
         // FILTER LAHAN
         if ($lahanId) {
-            // Filter berdasarkan lahan yang ada di detail masing-masing
             $pemasukan->where('detail_produksi.lahan_id', $lahanId);
             $pengeluaran->where('detail_biaya_operasional.lahan_id', $lahanId);
         }
@@ -118,7 +109,6 @@ class RiwayatKeuanganController extends Controller
         $source = $request->source;
 
         if ($source == "produksi") {
-            // Memuat relasi detailProduksi beserta data lahan di dalamnya
             $data = Produksi::with('detailProduksi.lahan')->findOrFail($id);
 
             return response()->json([
@@ -129,7 +119,6 @@ class RiwayatKeuanganController extends Controller
         }
 
         if ($source == "biaya") {
-            // Memuat relasi detailBiayaOperasional beserta data lahan di dalamnya
             $data = BiayaOperasional::with('detailBiayaOperasional.lahan')->findOrFail($id);
 
             return response()->json([
