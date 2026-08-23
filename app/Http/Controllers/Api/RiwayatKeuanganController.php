@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Http\Controllers\Api;
 
@@ -87,7 +87,7 @@ class RiwayatKeuanganController extends Controller
                         'biaya_operasional.biaya_tanggal as tanggal',
                         'biaya_operasional.biaya_total as nominal',
                         'biaya_operasional.biaya_jumlah as jumlah_tbs',
-                        'biaya_operasional.biaya_nama as judul',
+                        DB::raw("COALESCE(biaya_operasional.biaya_jenis, biaya_operasional.biaya_nama, '') as judul"),
                         DB::raw("COALESCE(detail_biaya_operasional.lahan_id, biaya_operasional.lahan_id) as lahan_id"),
                         DB::raw("COALESCE(lahan.lahan_nama, '') as lahan_nama"),
                         DB::raw("'pengeluaran' as tipe"),
