@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Http\Controllers\Api;
 
@@ -147,10 +147,13 @@ class AuditInternalController extends Controller
                 ];
             });
 
-        // Merge and Sort by Date Descending
+        // Merge and Sort by Date Descending, then ID Descending (agar notifikasi terbaru selalu di paling atas)
         $notifications = $audit->concat($produksi)
                                ->concat($pengeluaran)
-                               ->sortByDesc('tanggal')
+                               ->sortBy([
+                                   ['tanggal', 'desc'],
+                                   ['id', 'desc']
+                               ])
                                ->values();
 
         return response()->json([
