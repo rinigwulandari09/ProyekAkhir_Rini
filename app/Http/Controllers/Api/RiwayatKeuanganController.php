@@ -28,7 +28,7 @@ class RiwayatKeuanganController extends Controller
                     ->join('lahan', 'detail_produksi.lahan_id', '=', 'lahan.lahan_id')
                     ->select(
                         'produksi.id as id',
-                        'detail_produksi.id as detail_id',
+                        'detail_produksi.detail_produksi_id as detail_id',
                         'produksi.produksi_tanggal as tanggal',
                         'produksi.total_pendapatan as total_nominal',
                         'produksi.jumlah_tbs as total_tbs',
@@ -91,7 +91,7 @@ class RiwayatKeuanganController extends Controller
                     ->join('lahan', 'detail_biaya_operasional.lahan_id', '=', 'lahan.lahan_id')
                     ->select(
                         'biaya_operasional.id as id',
-                        'detail_biaya_operasional.id as detail_id',
+                        'detail_biaya_operasional.detail_biaya_operasional_id as detail_id',
                         'biaya_operasional.biaya_tanggal as tanggal',
                         'biaya_operasional.biaya_total as total_nominal',
                         'biaya_operasional.biaya_jumlah as total_tbs',
