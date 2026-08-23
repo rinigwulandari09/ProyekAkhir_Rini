@@ -27,7 +27,7 @@ class RiwayatKeuanganController extends Controller
                 'detail_produksi.id as detail_id',
                 'produksi.produksi_tanggal as tanggal',
                 'detail_produksi.subtotal_pendapatan as nominal',
-                'detail_produksi.jumlah_tbs_detail as jumlah_tbs',
+                'detail_produksi.jumlah_tbs as jumlah_tbs',
                 DB::raw("'pemasukan' as tipe"),
                 DB::raw("'Penjualan TBS' as judul"),
                 'lahan.lahan_nama as lahan_nama',
