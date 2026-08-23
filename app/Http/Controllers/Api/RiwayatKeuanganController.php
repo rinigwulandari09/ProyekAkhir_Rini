@@ -23,17 +23,17 @@ class RiwayatKeuanganController extends Controller
 
             // 1. PEMASUKAN
             if ($tipe == 'semua' || $tipe == 'pemasukan') {
-                $pemasukanQuery = DB::table('detail_produksi')
-                    ->join('produksi', 'detail_produksi.produksi_id', '=', 'produksi.id')
-                    ->join('lahan', 'detail_produksi.lahan_id', '=', 'lahan.lahan_id')
+                $pemasukanQuery = DB::table('produksi')
+                    ->leftJoin('detail_produksi', 'produksi.id', '=', 'detail_produksi.produksi_id')
+                    ->leftJoin('lahan', DB::raw("COALESCE(detail_produksi.lahan_id, produksi.lahan_id)"), '=', 'lahan.lahan_id')
                     ->select(
                         'produksi.id as id',
                         'detail_produksi.detail_produksi_id as detail_id',
                         'produksi.produksi_tanggal as tanggal',
-                        'produksi.total_pendapatan as total_nominal',
-                        'produksi.jumlah_tbs as total_tbs',
-                        'detail_produksi.lahan_id as lahan_id',
-                        'lahan.lahan_nama as lahan_nama',
+                        DB::raw("COALESCE(detail_produksi.subtotal_pendapatan, produksi.total_pendapatan, 0) as nominal"),
+                        DB::raw("COALESCE(detail_produksi.jumlah_tbs, produksi.jumlah_tbs, 0) as jumlah_tbs"),
+                        DB::raw("COALESCE(detail_produksi.lahan_id, produksi.lahan_id) as lahan_id"),
+                        DB::raw("COALESCE(lahan.lahan_nama, '') as lahan_nama"),
                         DB::raw("'pemasukan' as tipe"),
                         DB::raw("'Penjualan TBS' as judul"),
                         DB::raw("'produksi' as source_table")
@@ -52,52 +52,44 @@ class RiwayatKeuanganController extends Controller
                 }
 
                 if ($lahanId) {
-                    $pemasukanQuery->where('detail_produksi.lahan_id', $lahanId);
+                    $pemasukanQuery->where(function($q) use ($lahanId) {
+                        $q->where('detail_produksi.lahan_id', $lahanId)
+                          ->orWhere('produksi.lahan_id', $lahanId);
+                    });
                 }
 
-                $listPemasukan = $pemasukanQuery->get();
-
-                $lahanCounts = DB::table('detail_produksi')
-                    ->select('produksi_id', DB::raw('count(*) as count_lahan'))
-                    ->groupBy('produksi_id')
-                    ->pluck('count_lahan', 'produksi_id');
-
-                $pemasukanFormatted = $listPemasukan->map(function($item) use ($lahanCounts) {
-                    $count = $lahanCounts[$item->id] ?? 1;
-                    $nominalSplit = $count > 0 ? ((float)$item->total_nominal / $count) : (float)$item->total_nominal;
-                    $tbsSplit = $count > 0 ? ((float)$item->total_tbs / $count) : (float)$item->total_tbs;
-
+                $listPemasukan = $pemasukanQuery->get()->map(function($item) {
                     return [
-                        'id'           => $item->id,
-                        'detail_id'    => $item->detail_id,
-                        'tanggal'      => $item->tanggal,
-                        'nominal'      => round($nominalSplit, 2),
-                        'jumlah_tbs'   => round($tbsSplit, 2),
+                        'id'           => (int) $item->id,
+                        'detail_id'    => $item->detail_id ? (int) $item->detail_id : null,
+                        'tanggal'      => (string) $item->tanggal,
+                        'nominal'      => (float) $item->nominal,
+                        'jumlah_tbs'   => (float) $item->jumlah_tbs,
                         'tipe'         => 'pemasukan',
-                        'judul'        => $item->judul,
-                        'lahan_nama'   => $item->lahan_nama,
-                        'lahan_id'     => $item->lahan_id,
+                        'judul'        => (string) $item->judul,
+                        'lahan_nama'   => (string) $item->lahan_nama,
+                        'lahan_id'     => $item->lahan_id ? (int) $item->lahan_id : null,
                         'source_table' => 'produksi'
                     ];
                 });
 
-                $result = $result->concat($pemasukanFormatted);
+                $result = $result->concat($listPemasukan);
             }
 
             // 2. PENGELUARAN
             if ($tipe == 'semua' || $tipe == 'pengeluaran') {
-                $pengeluaranQuery = DB::table('detail_biaya_operasional')
-                    ->join('biaya_operasional', 'detail_biaya_operasional.biaya_operasional_id', '=', 'biaya_operasional.id')
-                    ->join('lahan', 'detail_biaya_operasional.lahan_id', '=', 'lahan.lahan_id')
+                $pengeluaranQuery = DB::table('biaya_operasional')
+                    ->leftJoin('detail_biaya_operasional', 'biaya_operasional.id', '=', 'detail_biaya_operasional.biaya_operasional_id')
+                    ->leftJoin('lahan', DB::raw("COALESCE(detail_biaya_operasional.lahan_id, biaya_operasional.lahan_id)"), '=', 'lahan.lahan_id')
                     ->select(
                         'biaya_operasional.id as id',
                         'detail_biaya_operasional.detail_biaya_operasional_id as detail_id',
                         'biaya_operasional.biaya_tanggal as tanggal',
-                        'biaya_operasional.biaya_total as total_nominal',
-                        'biaya_operasional.biaya_jumlah as total_tbs',
-                        'detail_biaya_operasional.lahan_id as lahan_id',
-                        'lahan.lahan_nama as lahan_nama',
+                        'biaya_operasional.biaya_total as nominal',
+                        'biaya_operasional.biaya_jumlah as jumlah_tbs',
                         'biaya_operasional.biaya_nama as judul',
+                        DB::raw("COALESCE(detail_biaya_operasional.lahan_id, biaya_operasional.lahan_id) as lahan_id"),
+                        DB::raw("COALESCE(lahan.lahan_nama, '') as lahan_nama"),
                         DB::raw("'pengeluaran' as tipe"),
                         DB::raw("'biaya' as source_table")
                     );
@@ -115,35 +107,28 @@ class RiwayatKeuanganController extends Controller
                 }
 
                 if ($lahanId) {
-                    $pengeluaranQuery->where('detail_biaya_operasional.lahan_id', $lahanId);
+                    $pengeluaranQuery->where(function($q) use ($lahanId) {
+                        $q->where('detail_biaya_operasional.lahan_id', $lahanId)
+                          ->orWhere('biaya_operasional.lahan_id', $lahanId);
+                    });
                 }
 
-                $listPengeluaran = $pengeluaranQuery->get();
-
-                $lahanCountsBiaya = DB::table('detail_biaya_operasional')
-                    ->select('biaya_operasional_id', DB::raw('count(*) as count_lahan'))
-                    ->groupBy('biaya_operasional_id')
-                    ->pluck('count_lahan', 'biaya_operasional_id');
-
-                $pengeluaranFormatted = $listPengeluaran->map(function($item) use ($lahanCountsBiaya) {
-                    $count = $lahanCountsBiaya[$item->id] ?? 1;
-                    $nominalSplit = $count > 0 ? ((float)$item->total_nominal / $count) : (float)$item->total_nominal;
-
+                $listPengeluaran = $pengeluaranQuery->get()->map(function($item) {
                     return [
-                        'id'           => $item->id,
-                        'detail_id'    => $item->detail_id,
-                        'tanggal'      => $item->tanggal,
-                        'nominal'      => round($nominalSplit, 2),
-                        'jumlah_tbs'   => (float)$item->total_tbs,
+                        'id'           => (int) $item->id,
+                        'detail_id'    => $item->detail_id ? (int) $item->detail_id : null,
+                        'tanggal'      => (string) $item->tanggal,
+                        'nominal'      => (float) $item->nominal,
+                        'jumlah_tbs'   => (float) $item->jumlah_tbs,
                         'tipe'         => 'pengeluaran',
-                        'judul'        => $item->judul,
-                        'lahan_nama'   => $item->lahan_nama,
-                        'lahan_id'     => $item->lahan_id,
+                        'judul'        => (string) $item->judul,
+                        'lahan_nama'   => (string) $item->lahan_nama,
+                        'lahan_id'     => $item->lahan_id ? (int) $item->lahan_id : null,
                         'source_table' => 'biaya'
                     ];
                 });
 
-                $result = $result->concat($pengeluaranFormatted);
+                $result = $result->concat($listPengeluaran);
             }
 
             $sortedData = $result->sortByDesc('tanggal')->values();
