@@ -19,86 +19,145 @@ class RiwayatKeuanganController extends Controller
             $lahanId  = $request->query('lahan_id') ?? $request->lahan_id;
             $tipe     = $request->query('tipe') ?? $request->tipe ?? 'semua';
 
-            // 1. PEMASUKAN
-            $pemasukanQuery = DB::table('produksi')
-                ->leftJoin('detail_produksi', 'produksi.id', '=', 'detail_produksi.produksi_id')
-                ->leftJoin('lahan', 'detail_produksi.lahan_id', '=', 'lahan.lahan_id')
-                ->select(
-                    'produksi.id as id',
-                    'detail_produksi.id as detail_id',
-                    'produksi.produksi_tanggal as tanggal',
-                    DB::raw("COALESCE(detail_produksi.subtotal_pendapatan, produksi.total_pendapatan, 0) as nominal"),
-                    DB::raw("COALESCE(detail_produksi.jumlah_tbs, produksi.jumlah_tbs, 0) as jumlah_tbs"),
-                    DB::raw("'pemasukan' as tipe"),
-                    DB::raw("'Penjualan TBS' as judul"),
-                    DB::raw("COALESCE(lahan.lahan_nama, '') as lahan_nama"),
-                    'detail_produksi.lahan_id as lahan_id',
-                    DB::raw("'produksi' as source_table")
-                );
+            $result = collect();
 
-            if ($petaniId) {
-                $pemasukanQuery->where('produksi.petani_id', $petaniId);
+            // 1. PEMASUKAN
+            if ($tipe == 'semua' || $tipe == 'pemasukan') {
+                $pemasukanQuery = DB::table('detail_produksi')
+                    ->join('produksi', 'detail_produksi.produksi_id', '=', 'produksi.id')
+                    ->join('lahan', 'detail_produksi.lahan_id', '=', 'lahan.lahan_id')
+                    ->select(
+                        'produksi.id as id',
+                        'detail_produksi.id as detail_id',
+                        'produksi.produksi_tanggal as tanggal',
+                        'produksi.total_pendapatan as total_nominal',
+                        'produksi.jumlah_tbs as total_tbs',
+                        'detail_produksi.lahan_id as lahan_id',
+                        'lahan.lahan_nama as lahan_nama',
+                        DB::raw("'pemasukan' as tipe"),
+                        DB::raw("'Penjualan TBS' as judul"),
+                        DB::raw("'produksi' as source_table")
+                    );
+
+                if ($petaniId) {
+                    $pemasukanQuery->where('produksi.petani_id', $petaniId);
+                }
+
+                if ($bulan && $bulan != 'Semua Bulan') {
+                    $pemasukanQuery->whereMonth('produksi.produksi_tanggal', $bulan);
+                }
+
+                if ($tahun && $tahun != 'Semua Tahun') {
+                    $pemasukanQuery->whereYear('produksi.produksi_tanggal', $tahun);
+                }
+
+                if ($lahanId) {
+                    $pemasukanQuery->where('detail_produksi.lahan_id', $lahanId);
+                }
+
+                $listPemasukan = $pemasukanQuery->get();
+
+                $lahanCounts = DB::table('detail_produksi')
+                    ->select('produksi_id', DB::raw('count(*) as count_lahan'))
+                    ->groupBy('produksi_id')
+                    ->pluck('count_lahan', 'produksi_id');
+
+                $pemasukanFormatted = $listPemasukan->map(function($item) use ($lahanCounts) {
+                    $count = $lahanCounts[$item->id] ?? 1;
+                    $nominalSplit = $count > 0 ? ((float)$item->total_nominal / $count) : (float)$item->total_nominal;
+                    $tbsSplit = $count > 0 ? ((float)$item->total_tbs / $count) : (float)$item->total_tbs;
+
+                    return [
+                        'id'           => $item->id,
+                        'detail_id'    => $item->detail_id,
+                        'tanggal'      => $item->tanggal,
+                        'nominal'      => round($nominalSplit, 2),
+                        'jumlah_tbs'   => round($tbsSplit, 2),
+                        'tipe'         => 'pemasukan',
+                        'judul'        => $item->judul,
+                        'lahan_nama'   => $item->lahan_nama,
+                        'lahan_id'     => $item->lahan_id,
+                        'source_table' => 'produksi'
+                    ];
+                });
+
+                $result = $result->concat($pemasukanFormatted);
             }
 
             // 2. PENGELUARAN
-            $pengeluaranQuery = DB::table('biaya_operasional')
-                ->leftJoin('detail_biaya_operasional', 'biaya_operasional.id', '=', 'detail_biaya_operasional.biaya_operasional_id')
-                ->leftJoin('lahan', 'detail_biaya_operasional.lahan_id', '=', 'lahan.lahan_id')
-                ->select(
-                    'biaya_operasional.id as id',
-                    'detail_biaya_operasional.id as detail_id',
-                    'biaya_operasional.biaya_tanggal as tanggal',
-                    'biaya_operasional.biaya_total as nominal',
-                    'biaya_operasional.biaya_jumlah as jumlah_tbs',
-                    DB::raw("'pengeluaran' as tipe"),
-                    'biaya_operasional.biaya_nama as judul',
-                    DB::raw("COALESCE(lahan.lahan_nama, '') as lahan_nama"),
-                    'detail_biaya_operasional.lahan_id as lahan_id',
-                    DB::raw("'biaya' as source_table")
-                );
+            if ($tipe == 'semua' || $tipe == 'pengeluaran') {
+                $pengeluaranQuery = DB::table('detail_biaya_operasional')
+                    ->join('biaya_operasional', 'detail_biaya_operasional.biaya_operasional_id', '=', 'biaya_operasional.id')
+                    ->join('lahan', 'detail_biaya_operasional.lahan_id', '=', 'lahan.lahan_id')
+                    ->select(
+                        'biaya_operasional.id as id',
+                        'detail_biaya_operasional.id as detail_id',
+                        'biaya_operasional.biaya_tanggal as tanggal',
+                        'biaya_operasional.biaya_total as total_nominal',
+                        'biaya_operasional.biaya_jumlah as total_tbs',
+                        'detail_biaya_operasional.lahan_id as lahan_id',
+                        'lahan.lahan_nama as lahan_nama',
+                        'biaya_operasional.biaya_nama as judul',
+                        DB::raw("'pengeluaran' as tipe"),
+                        DB::raw("'biaya' as source_table")
+                    );
 
-            if ($petaniId) {
-                $pengeluaranQuery->where('biaya_operasional.petani_id', $petaniId);
+                if ($petaniId) {
+                    $pengeluaranQuery->where('biaya_operasional.petani_id', $petaniId);
+                }
+
+                if ($bulan && $bulan != 'Semua Bulan') {
+                    $pengeluaranQuery->whereMonth('biaya_operasional.biaya_tanggal', $bulan);
+                }
+
+                if ($tahun && $tahun != 'Semua Tahun') {
+                    $pengeluaranQuery->whereYear('biaya_operasional.biaya_tanggal', $tahun);
+                }
+
+                if ($lahanId) {
+                    $pengeluaranQuery->where('detail_biaya_operasional.lahan_id', $lahanId);
+                }
+
+                $listPengeluaran = $pengeluaranQuery->get();
+
+                $lahanCountsBiaya = DB::table('detail_biaya_operasional')
+                    ->select('biaya_operasional_id', DB::raw('count(*) as count_lahan'))
+                    ->groupBy('biaya_operasional_id')
+                    ->pluck('count_lahan', 'biaya_operasional_id');
+
+                $pengeluaranFormatted = $listPengeluaran->map(function($item) use ($lahanCountsBiaya) {
+                    $count = $lahanCountsBiaya[$item->id] ?? 1;
+                    $nominalSplit = $count > 0 ? ((float)$item->total_nominal / $count) : (float)$item->total_nominal;
+
+                    return [
+                        'id'           => $item->id,
+                        'detail_id'    => $item->detail_id,
+                        'tanggal'      => $item->tanggal,
+                        'nominal'      => round($nominalSplit, 2),
+                        'jumlah_tbs'   => (float)$item->total_tbs,
+                        'tipe'         => 'pengeluaran',
+                        'judul'        => $item->judul,
+                        'lahan_nama'   => $item->lahan_nama,
+                        'lahan_id'     => $item->lahan_id,
+                        'source_table' => 'biaya'
+                    ];
+                });
+
+                $result = $result->concat($pengeluaranFormatted);
             }
 
-            // FILTER BULAN
-            if ($bulan && $bulan != 'Semua Bulan') {
-                $pemasukanQuery->whereMonth('produksi.produksi_tanggal', $bulan);
-                $pengeluaranQuery->whereMonth('biaya_operasional.biaya_tanggal', $bulan);
-            }
-
-            // FILTER TAHUN
-            if ($tahun && $tahun != 'Semua Tahun') {
-                $pemasukanQuery->whereYear('produksi.produksi_tanggal', $tahun);
-                $pengeluaranQuery->whereYear('biaya_operasional.biaya_tanggal', $tahun);
-            }
-
-            // FILTER LAHAN
-            if ($lahanId) {
-                $pemasukanQuery->where('detail_produksi.lahan_id', $lahanId);
-                $pengeluaranQuery->where('detail_biaya_operasional.lahan_id', $lahanId);
-            }
-
-            if ($tipe == 'pemasukan') {
-                $data = $pemasukanQuery->orderByDesc('produksi.produksi_tanggal')->get();
-            } else if ($tipe == 'pengeluaran') {
-                $data = $pengeluaranQuery->orderByDesc('biaya_operasional.biaya_tanggal')->get();
-            } else {
-                $dataPemasukan = $pemasukanQuery->get();
-                $dataPengeluaran = $pengeluaranQuery->get();
-                $data = $dataPemasukan->concat($dataPengeluaran)->sortByDesc('tanggal')->values();
-            }
+            $sortedData = $result->sortByDesc('tanggal')->values();
 
             return response()->json([
                 'success' => true,
-                'data' => $data
+                'data'    => $sortedData
             ]);
         } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Error: ' . $e->getMessage(),
-                'line' => $e->getLine(),
-                'file' => $e->getFile()
+                'line'    => $e->getLine(),
+                'file'    => $e->getFile()
             ], 500);
         }
     }
