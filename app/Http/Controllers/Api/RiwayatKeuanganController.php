@@ -131,7 +131,20 @@ class RiwayatKeuanganController extends Controller
                 $result = $result->concat($listPengeluaran);
             }
 
-            $sortedData = $result->sortByDesc("tanggal")->values();
+            $sortedData = $result->sort(function ($a, $b) {
+                $dateCmp = strcmp((string)$b["tanggal"], (string)$a["tanggal"]);
+                if ($dateCmp !== 0) {
+                    return $dateCmp;
+                }
+                $idB = (int)($b["id"] ?? 0);
+                $idA = (int)($a["id"] ?? 0);
+                if ($idB !== $idA) {
+                    return $idB <=> $idA;
+                }
+                $detailB = (int)($b["detail_id"] ?? 0);
+                $detailA = (int)($a["detail_id"] ?? 0);
+                return $detailB <=> $detailA;
+            })->values();
 
             return response()->json([
                 "success" => true,
