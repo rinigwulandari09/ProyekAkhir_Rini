@@ -139,23 +139,31 @@ class BiayaOperasionalController extends Controller
             }
 
             $totalLuasLahan = $lahans->sum(function ($lahan) {
-                return $lahan->lahan_luas ?? $lahan->luas_lahan ?? $lahan->luas ?? 0;
+                return (float) ($lahan->lahan_luas ?? $lahan->luas_lahan ?? $lahan->luas ?? 0);
             });
 
             $countLahan = count($lahanIds);
             $totalDihitung = 0;
 
+            $subtotalArr = $request->input("subtotal_detail") 
+                ?? $request->input("subtotal") 
+                ?? [];
+
             foreach ($lahanIds as $key => $lahanId) {
                 $lahanModel = $lahans->firstWhere("lahan_id", $lahanId) ?? $lahans->firstWhere("id", $lahanId);
-                $luasLahan = $lahanModel ? ($lahanModel->lahan_luas ?? $lahanModel->luas_lahan ?? $lahanModel->luas ?? 0) : 0;
+                $luasLahan = $lahanModel ? ((float) ($lahanModel->lahan_luas ?? $lahanModel->luas_lahan ?? $lahanModel->luas ?? 0)) : 0;
 
-                if ($key == $countLahan - 1) {
-                    $subtotalDetail = $totalBiaya - $totalDihitung;
+                if (isset($subtotalArr[$key]) && (float)$subtotalArr[$key] > 0) {
+                    $subtotalDetail = (float)$subtotalArr[$key];
                 } else {
-                    if ($totalLuasLahan > 0) {
-                        $subtotalDetail = ($totalBiaya / $totalLuasLahan) * $luasLahan;
+                    if ($key == $countLahan - 1) {
+                        $subtotalDetail = $totalBiaya - $totalDihitung;
                     } else {
-                        $subtotalDetail = $totalBiaya / $countLahan;
+                        if ($totalLuasLahan > 0 && $luasLahan > 0) {
+                            $subtotalDetail = ($totalBiaya / $totalLuasLahan) * $luasLahan;
+                        } else {
+                            $subtotalDetail = $countLahan > 0 ? ($totalBiaya / $countLahan) : 0;
+                        }
                     }
                 }
                 $totalDihitung += $subtotalDetail;
