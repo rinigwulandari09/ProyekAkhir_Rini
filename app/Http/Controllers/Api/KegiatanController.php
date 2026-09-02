@@ -36,6 +36,9 @@ class KegiatanController extends Controller
             'kegiatan_jumlah'    => 'required|numeric',
             'kegiatan_satuan'    => 'required|string|max:50',
             'kegiatan_ket'       => 'nullable|string',
+            'nama_bahan'         => 'nullable|string',
+            'jenis_limbah'       => 'nullable|string',
+            'status_limbah'      => 'nullable|string',
             'lahan_id'           => 'required|array',
             'lahan_id.*'         => 'integer',
         ]);
@@ -46,7 +49,10 @@ class KegiatanController extends Controller
             'kegiatan_tanggal'   => $request->kegiatan_tanggal,
             'kegiatan_jumlah'    => $request->kegiatan_jumlah,
             'kegiatan_satuan'    => $request->kegiatan_satuan,
-            'kegiatan_ket'       => $request->kegiatan_ket,
+            'kegiatan_ket'       => $request->kegiatan_ket ?? $request->nama_bahan,
+            'nama_bahan'         => $request->nama_bahan ?? $request->kegiatan_ket,
+            'jenis_limbah'       => $request->jenis_limbah,
+            'status_limbah'      => $request->status_limbah ?? 'Belum Disetor',
         ]);
 
         foreach ($request->lahan_id as $lahanId) {

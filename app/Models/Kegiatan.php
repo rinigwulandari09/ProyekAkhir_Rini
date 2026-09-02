@@ -18,7 +18,10 @@ class Kegiatan extends Model
         'kegiatan_tanggal',
         'kegiatan_jumlah',
         'kegiatan_satuan',
-        'kegiatan_ket'
+        'kegiatan_ket',
+        'nama_bahan',
+        'jenis_limbah',
+        'status_limbah'
     ];
 
 
