@@ -14,6 +14,7 @@ class Kegiatan extends Model
 
     protected $fillable = [
         'petani_id',
+        'nama_kegiatan',
         'jenis_kegiatan_id',
         'kegiatan_tanggal',
         'kegiatan_jumlah',

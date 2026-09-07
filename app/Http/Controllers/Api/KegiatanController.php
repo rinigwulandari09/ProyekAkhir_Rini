@@ -31,7 +31,8 @@ class KegiatanController extends Controller
     {
         $request->validate([
             'petani_id'          => 'required|integer',
-            'jenis_kegiatan_id'  => 'required|integer',
+            'jenis_kegiatan_id'  => 'nullable|integer',
+            'nama_kegiatan'      => 'nullable|string',
             'kegiatan_tanggal'   => 'required|date',
             'kegiatan_jumlah'    => 'required|numeric',
             'kegiatan_satuan'    => 'required|string|max:50',
