@@ -6,7 +6,6 @@
 {{-- Include Leaflet.js Assets & Chart.js --}}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 {{-- Tambahan CSS Buttons --}}
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
@@ -51,14 +50,14 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="bg-white p-5 rounded-xl shadow-sm h-80 flex flex-col">
             <p class="text-[11px] font-bold text-gray-500 mb-2 uppercase tracking-wider font-poppins">Pemasukan Per Bulan</p>
-            <div class="relative flex-1 w-full h-full">
+            <div class="relative flex-1 w-full h-full min-h-[220px]">
                 <canvas id="chartPemasukan"></canvas>
             </div>
         </div>
         
         <div class="bg-white p-5 rounded-xl shadow-sm h-80 flex flex-col">
             <p class="text-[11px] font-bold text-gray-500 mb-2 uppercase tracking-wider font-poppins">Pengeluaran Per Kategori</p>
-            <div class="relative flex-1 w-full h-full flex justify-center">
+            <div class="relative flex-1 w-full h-full min-h-[220px] flex justify-center">
                 <canvas id="chartPengeluaran"></canvas>
             </div>
         </div>
@@ -170,7 +169,7 @@
             <h3 class="text-[10px] font-bold text-gray-500 uppercase font-poppins">Sebaran Lahan Anggota</h3>
         </div>
         {{-- Container Peta Sebaran --}}
-        <div id="mapSebaran" class="w-full h-96 rounded-lg bg-gray-100 relative border border-gray-200" style="z-index: 1;"></div>
+        <div id="mapSebaran" class="w-full h-96 min-h-[384px] rounded-lg bg-gray-100 relative border border-gray-200" style="z-index: 1;"></div>
     </div>
 
 </div>
@@ -263,185 +262,202 @@
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    function initSuperAdminDashboard() {
         // --- 1. CONFIG GRAFIK PEMASUKAN (LINE CHART) ---
-        const ctxPemasukan = document.getElementById('chartPemasukan').getContext('2d');
-        const dataPemasukan = @json(array_values($pemasukanGrafik)); 
+        const canvasPemasukan = document.getElementById('chartPemasukan');
+        if (canvasPemasukan) {
+            const ctxPemasukan = canvasPemasukan.getContext('2d');
+            const dataPemasukan = @json(array_values($pemasukanGrafik ?? [])); 
 
-        new Chart(ctxPemasukan, {
-            type: 'line',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
-                datasets: [{
-                    label: 'Total Pemasukan (Rp)',
-                    data: dataPemasukan,
-                    borderColor: '#234323', 
-                    backgroundColor: 'rgba(35, 67, 35, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.3
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: { callback: value => 'Rp ' + value.toLocaleString('id-ID') }
+            new Chart(ctxPemasukan, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                    datasets: [{
+                        label: 'Total Pemasukan (Rp)',
+                        data: dataPemasukan,
+                        borderColor: '#234323', 
+                        backgroundColor: 'rgba(35, 67, 35, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { callback: value => 'Rp ' + Number(value).toLocaleString('id-ID') }
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
 
         // --- 2. CONFIG GRAFIK PENGELUARAN (PIE CHART) ---
-        const ctxPengeluaran = document.getElementById('chartPengeluaran').getContext('2d');
-        const rawPengeluaran = @json($pengeluaranGrafik);
-        const labelsPengeluaran = rawPengeluaran.map(item => item.biaya_jenis);
-        const dataPengeluaran = rawPengeluaran.map(item => item.total);
+        const canvasPengeluaran = document.getElementById('chartPengeluaran');
+        if (canvasPengeluaran) {
+            const ctxPengeluaran = canvasPengeluaran.getContext('2d');
+            const rawPengeluaran = @json($pengeluaranGrafik ?? []);
+            const labelsPengeluaran = Array.isArray(rawPengeluaran) ? rawPengeluaran.map(item => item.biaya_jenis) : [];
+            const dataPengeluaran = Array.isArray(rawPengeluaran) ? rawPengeluaran.map(item => item.total) : [];
 
-        new Chart(ctxPengeluaran, {
-            type: 'pie',
-            data: {
-                labels: labelsPengeluaran.length ? labelsPengeluaran : ['Belum Ada Pengeluaran'],
-                datasets: [{
-                    data: dataPengeluaran.length ? dataPengeluaran : [1],
-                    backgroundColor: ['#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#EC4899'],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: { boxWidth: 12, font: { size: 10 } }
-                    }
-                }
-            }
-        });
-
-        // --- 3. CONFIG LEAFLET MAPS - SEBARAN BANYAK LAHAN (FIXED) ---
-        const mapSebaran = L.map('mapSebaran').setView([-0.489, 101.406], 12);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(mapSebaran);
-
-        const polygonGroup = L.featureGroup().addTo(mapSebaran);
-        const listLahan = @json($semuaLahan ?? []);
-
-        listLahan.forEach(function(lahan) {
-            if (lahan.area_lahan) {
-                try {
-                    let areaData = typeof lahan.area_lahan === 'string' ? JSON.parse(lahan.area_lahan) : lahan.area_lahan;
-                    
-                    // Ekstraksi data jika dibungkus format GeoJSON standard (geometry.coordinates)
-                    if (areaData.geometry && areaData.geometry.coordinates) {
-                        areaData = areaData.geometry.coordinates[0];
-                    } else if (areaData.coordinates) {
-                        areaData = areaData.coordinates[0];
-                    } else if (areaData.features && areaData.features[0]) {
-                        areaData = areaData.features[0].geometry.coordinates[0];
-                    }
-
-                    if (Array.isArray(areaData) && areaData.length > 0) {
-                        const polyCoords = areaData.map(coord => {
-                            if (coord !== null && typeof coord === 'object' && 'lat' in coord && 'lng' in coord) {
-                                return [coord.lat, coord.lng];
-                            } else if (Array.isArray(coord) && coord.length >= 2) {
-                                // Koreksi otomatis jika koordinat terbalik [longitude, latitude] dari format GeoJSON Postgres
-                                if (Math.abs(coord[0]) > 90) {
-                                    return [coord[1], coord[0]];
-                                }
-                                return [coord[0], coord[1]];
-                            }
-                            return null;
-                        }).filter(c => c !== null);
-
-                        if (polyCoords.length > 0) {
-                            const polygon = L.polygon(polyCoords, {
-                                color: '#214122',       
-                                fillColor: '#214122',   
-                                fillOpacity: 0.4,      
-                                weight: 3              
-                            });
-
-                            polygon.bindPopup(`
-                                <div style="font-family: sans-serif; font-size: 12px; min-width: 160px;">
-                                    <strong style="color: #214122; font-size: 13px;">Detail Lahan Anggota</strong><br>
-                                    <hr style="margin: 6px 0; border: 0; border-top: 1px solid #eee;">
-                                    <b>Nama Petani:</b> ${lahan.petani_nama || '-'}<br>
-                                    <b>Lokasi Lahan:</b> ${lahan.lahan_lokasi || '-'}<br>
-                                    <b>Luas Lahan:</b> ${lahan.lahan_luas || '0'} Ha<br>
-                                    <b>Tahun Tanam:</b> ${lahan.tahun_tanam || '-'}<br>
-                                    <b>No Surat:</b> ${lahan.lahan_no_surat || '-'}
-                                </div>
-                            `);
-
-                            polygon.addTo(polygonGroup);
+            new Chart(ctxPengeluaran, {
+                type: 'pie',
+                data: {
+                    labels: labelsPengeluaran.length ? labelsPengeluaran : ['Belum Ada Pengeluaran'],
+                    datasets: [{
+                        data: dataPengeluaran.length ? dataPengeluaran : [1],
+                        backgroundColor: ['#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#EC4899'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { boxWidth: 12, font: { size: 10 } }
                         }
                     }
-                } catch (e) {
-                    console.error("Gagal membaca koordinat lahan ID: " + lahan.lahan_id, e);
                 }
-            }
-        });
+            });
+        }
 
-        // Trigger otomatis agar Leaflet menyesuaikan bound map dan ukuran container
-        if (polygonGroup.getLayers().length > 0) {
+        // --- 3. CONFIG LEAFLET MAPS - SEBARAN BANYAK LAHAN ---
+        const mapEl = document.getElementById('mapSebaran');
+        if (mapEl && typeof L !== 'undefined') {
+            const mapSebaran = L.map('mapSebaran').setView([-0.489, 101.406], 12);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(mapSebaran);
+
+            const polygonGroup = L.featureGroup().addTo(mapSebaran);
+            const listLahan = @json($semuaLahan ?? []);
+
+            listLahan.forEach(function(lahan) {
+                if (lahan.area_lahan) {
+                    try {
+                        let areaData = typeof lahan.area_lahan === 'string' ? JSON.parse(lahan.area_lahan) : lahan.area_lahan;
+                        
+                        if (areaData && areaData.geometry && areaData.geometry.coordinates) {
+                            areaData = areaData.geometry.coordinates[0];
+                        } else if (areaData && areaData.coordinates) {
+                            areaData = areaData.coordinates[0];
+                        } else if (areaData && areaData.features && areaData.features[0]) {
+                            areaData = areaData.features[0].geometry.coordinates[0];
+                        }
+
+                        if (Array.isArray(areaData) && areaData.length > 0) {
+                            const polyCoords = areaData.map(coord => {
+                                if (coord !== null && typeof coord === 'object' && 'lat' in coord && 'lng' in coord) {
+                                    return [coord.lat, coord.lng];
+                                } else if (Array.isArray(coord) && coord.length >= 2) {
+                                    if (Math.abs(coord[0]) > 90) {
+                                        return [coord[1], coord[0]];
+                                    }
+                                    return [coord[0], coord[1]];
+                                }
+                                return null;
+                            }).filter(c => c !== null);
+
+                            if (polyCoords.length > 0) {
+                                const polygon = L.polygon(polyCoords, {
+                                    color: '#214122',       
+                                    fillColor: '#214122',   
+                                    fillOpacity: 0.4,      
+                                    weight: 3              
+                                });
+
+                                polygon.bindPopup(`
+                                    <div style="font-family: sans-serif; font-size: 12px; min-width: 160px;">
+                                        <strong style="color: #214122; font-size: 13px;">Detail Lahan Anggota</strong><br>
+                                        <hr style="margin: 6px 0; border: 0; border-top: 1px solid #eee;">
+                                        <b>Nama Petani:</b> ${lahan.petani_nama || '-'}<br>
+                                        <b>Lokasi Lahan:</b> ${lahan.lahan_lokasi || '-'}<br>
+                                        <b>Luas Lahan:</b> ${lahan.lahan_luas || '0'} Ha<br>
+                                        <b>Tahun Tanam:</b> ${lahan.tahun_tanam || '-'}<br>
+                                        <b>No Surat:</b> ${lahan.lahan_no_surat || '-'}
+                                    </div>
+                                `);
+
+                                polygon.addTo(polygonGroup);
+                            }
+                        }
+                    } catch (e) {
+                        console.error("Gagal membaca koordinat lahan ID: " + lahan.lahan_id, e);
+                    }
+                }
+            });
+
             setTimeout(() => {
                 mapSebaran.invalidateSize();
-                mapSebaran.fitBounds(polygonGroup.getBounds(), { padding: [40, 40] });
+                if (polygonGroup.getLayers().length > 0) {
+                    mapSebaran.fitBounds(polygonGroup.getBounds(), { padding: [40, 40] });
+                }
             }, 300);
         }
-    });
 
-    // --- 4. INITIALISASI DATATABLES (AUTO NUMBER & BAHASA INDONESIA) ---
-    var table = $('#tabelPetani').DataTable({
-        "pageLength": 5,
-        "lengthMenu": [[5, 10, 25, -1], [5, 10, 25, "All"]],
-        "order": [[ 1, "asc" ]], 
-        "language": {
-            "search": "",
-            "searchPlaceholder": "Cari data...",
-            "emptyTable": "Tidak ada data aktif untuk ditampilkan."
-        },
-        "responsive": {
-            "details": {
-                "renderer": function (api, rowIdx, columns) {
-                    var data = $.map(columns, function (col) {
-                        if (col.hidden) {
-                            var value = col.data;
-                            if (value === null || value === undefined || value === '') { value = '-'; }
-                            return '<div class="flex items-start justify-between gap-3 py-1.5 text-xs leading-snug border-b border-gray-200 last:border-0"><span class="font-semibold text-gray-600">' + col.title + '</span><span class="text-gray-700 text-right">' + value + '</span></div>';
-                        }
-                        return '';
-                    }).join('');
-                    return data ? $('<div class="rounded-lg bg-gray-50 p-3 shadow-inner space-y-1 w-full mt-2"></div>').append(data).prop('outerHTML') : false;
-                }
+        // --- 4. INITIALISASI DATATABLES ---
+        if (typeof $ !== 'undefined' && $('#tabelPetani').length) {
+            if ($.fn.DataTable.isDataTable('#tabelPetani')) {
+                $('#tabelPetani').DataTable().destroy();
             }
-        },
-        "columnDefs": [
-            { "orderable": false, "searchable": false, "targets": [4] },
-            { "orderable": false, "targets": [0] },
-            { "className": "all", "targets": [0, 1] }, 
-            { "className": "min-tablet", "targets": [2, 3, 4] } 
-        ],
-        "dom": '<"flex justify-between items-center w-full mb-4 gap-2" l f> <"overflow-x-auto w-full" tr> <"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4" i p>'
-    });
+            var table = $('#tabelPetani').DataTable({
+                "pageLength": 5,
+                "lengthMenu": [[5, 10, 25, -1], [5, 10, 25, "All"]],
+                "order": [[ 1, "asc" ]], 
+                "language": {
+                    "search": "",
+                    "searchPlaceholder": "Cari data...",
+                    "emptyTable": "Tidak ada data aktif untuk ditampilkan."
+                },
+                "responsive": {
+                    "details": {
+                        "renderer": function (api, rowIdx, columns) {
+                            var data = $.map(columns, function (col) {
+                                if (col.hidden) {
+                                    var value = col.data;
+                                    if (value === null || value === undefined || value === '') { value = '-'; }
+                                    return '<div class="flex items-start justify-between gap-3 py-1.5 text-xs leading-snug border-b border-gray-200 last:border-0"><span class="font-semibold text-gray-600">' + col.title + '</span><span class="text-gray-700 text-right">' + value + '</span></div>';
+                                }
+                                return '';
+                            }).join('');
+                            return data ? $('<div class="rounded-lg bg-gray-50 p-3 shadow-inner space-y-1 w-full mt-2"></div>').append(data).prop('outerHTML') : false;
+                        }
+                    }
+                },
+                "columnDefs": [
+                    { "orderable": false, "searchable": false, "targets": [4] },
+                    { "orderable": false, "targets": [0] },
+                    { "className": "all", "targets": [0, 1] }, 
+                    { "className": "min-tablet", "targets": [2, 3, 4] } 
+                ],
+                "dom": '<"flex justify-between items-center w-full mb-4 gap-2" l f> <"overflow-x-auto w-full" tr> <"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4" i p>'
+            });
 
-    table.on('order.dt search.dt draw.dt', function () {
-        let start = table.page.info().start;
-        table.column(0, {
-            search: 'applied',
-            order: 'applied'
-        }).nodes().each(function(cell, i) {
-            cell.innerHTML = start + i + 1;
-        });
-    }).draw();
+            table.on('order.dt search.dt draw.dt', function () {
+                let start = table.page.info().start;
+                table.column(0, {
+                    search: 'applied',
+                    order: 'applied'
+                }).nodes().each(function(cell, i) {
+                    cell.innerHTML = start + i + 1;
+                });
+            }).draw();
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initSuperAdminDashboard);
+    } else {
+        initSuperAdminDashboard();
+    }
 </script>
 
 {{-- Script Modal Edit --}}

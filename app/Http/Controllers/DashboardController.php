@@ -58,10 +58,17 @@ class DashboardController extends Controller
         $petaniPending = $petaniPendingQuery
             ->get(['petani.*', 'desa.desa_nama']);
 
+        $driver = DB::connection()->getDriverName();
+        $monthExpr = match ($driver) {
+            'pgsql' => "DATE_PART('month', produksi_tanggal)",
+            'sqlite' => "CAST(strftime('%m', produksi_tanggal) AS INTEGER)",
+            default => "MONTH(produksi_tanggal)",
+        };
+
         $pemasukanData = $pemasukanDataQuery
-            ->select(DB::raw("DATE_PART('month', produksi_tanggal) as bulan"), DB::raw("SUM(total_pendapatan) as total"))
+            ->select(DB::raw("$monthExpr as bulan"), DB::raw("SUM(total_pendapatan) as total"))
             ->whereYear('produksi_tanggal', date('Y'))
-            ->groupBy('bulan')
+            ->groupBy(DB::raw($monthExpr))
             ->orderBy('bulan', 'asc')
             ->get();
 
