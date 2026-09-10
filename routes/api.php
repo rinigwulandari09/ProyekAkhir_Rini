@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\PetaniController;
 use App\Http\Controllers\Api\AuditInternalController;
 use App\Http\Controllers\Api\DashboardApiController;
+use App\Http\Controllers\HargaTbsController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -24,6 +25,8 @@ Route::get('/petani/{petani_id}', [AuthController::class, 'getPetani']);
 Route::post('/petani/update/{petani_id}', [PetaniController::class, 'update']);
 Route::post('/petani/ubah-pin/{petani_id}', [PetaniController::class, 'ubahPin']);
 
+// harga tbs (Public endpoint for mobile apps)
+Route::get('/harga-tbs/latest', [HargaTbsController::class, 'getLatestHargaApi']);
 
 // users
 Route::get('/users/admins', [UserController::class, 'getAdmins']);
@@ -47,21 +50,16 @@ Route::get('/riwayat-keuangan', [RiwayatKeuanganController::class, 'index']);
 Route::get('/riwayat-keuangan/detail', [RiwayatKeuanganController::class, 'detail']);
 
 // jenis  kegiatan
-// Route untuk menampilkan semua jenis kegiatan
 Route::get('/jenis-kegiatan', [JenisKegiatanController::class, 'index']);
-// Route untuk menampilkan detail satu jenis kegiatan berdasarkan id
 Route::get('/jenis-kegiatan/{id}', [JenisKegiatanController::class, 'show']);
 
 // kegiatan 
-// Route untuk menampilkan semua kegiatan dan menyimpan kegiatan baru
 Route::get('/kegiatan', [KegiatanController::class, 'index']);
 Route::post('/kegiatan', [KegiatanController::class, 'store']);
-// Route untuk menampilkan detail satu kegiatan berdasarkan id
 Route::get('/kegiatan/{id}', [KegiatanController::class, 'show']);
 
 Route::get('/kegiatan', [KegiatanController::class, 'riwayat']);
 Route::get('/kegiatan/{id}', [KegiatanController::class, 'detail']);
-
 
 // lahan
 Route::get('/lahan', [LahanController::class, 'index']);

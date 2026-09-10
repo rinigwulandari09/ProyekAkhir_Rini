@@ -9,6 +9,7 @@ use App\Http\Controllers\LahanController;
 use App\Http\Controllers\KeuanganController;
 use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\AuditInternalController;
+use App\Http\Controllers\HargaTbsController;
 
 Route::get('/', function () {
     return view('landing');
@@ -80,34 +81,13 @@ Route::middleware(['auth'])->group(function () {
 
     
     //DATA LAHAN
-    // Route::get('/data-lahan', [LahanController::class, 'index'])->name('lahan.index');
-
-    // Route::get('/data-lahan/{id}', [LahanController::class, 'show'])->name('lahan.show');
-
-
-    //DATA LAHAN
-    //Halaman Utama Daftar Lahan (Bisa diakses Admin & Super Admin)
     Route::get('/lahan', [LahanController::class, 'index'])->name('lahan.index');
-
-    //Halaman Form Tambah Lahan
     Route::get('/lahan/create', [LahanController::class, 'create'])->name('lahan.create');
-
-    //Simpan Data Lahan Baru ke Database
     Route::post('/lahan', [LahanController::class, 'store'])->name('lahan.store');
-
-    //Halaman Detail Lahan / Lihat Peta
     Route::get('/lahan/{id}', [LahanController::class, 'show'])->name('lahan.show');
-
-    //Halaman Edit Lahan
     Route::get('/lahan/{id}/edit', [LahanController::class, 'edit'])->name('lahan.edit');
-
-    //Update Data Lahan
     Route::put('/lahan/{id}', [LahanController::class, 'update'])->name('lahan.update');
-
-    //Hapus Data Lahan
     Route::delete('/lahan/{id}', [LahanController::class, 'destroy'])->name('lahan.destroy');
-
-
     Route::post('/lahan/import-geojson', [App\Http\Controllers\LahanController::class, 'importGeoJson'])->name('lahan.import_geojson');
 
     //KEUANGAN
@@ -120,6 +100,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/biaya-operasional/{id}/edit', [KeuanganController::class, 'editBiayaOperasional'])->name('biaya_operasional.edit');
     Route::put('/biaya-operasional/{id}', [KeuanganController::class, 'updateBiayaOperasional'])->name('biaya_operasional.update');
 
+    //HARGA TBS
+    Route::get('/harga-tbs', [HargaTbsController::class, 'index'])->name('harga_tbs.index');
+    Route::post('/harga-tbs', [HargaTbsController::class, 'store'])->name('harga_tbs.store');
+
     //AUDIT INTERNAL
     Route::get('/audit', [AuditInternalController::class, 'index'])->name('audit.index');
     Route::delete('/audit/kunjungan/{id}', [AuditInternalController::class, 'destroyKunjungan'])->name('audit.kunjungan.destroy');
@@ -127,15 +111,9 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/audit/internal/{id}', [AuditInternalController::class, 'destroyInternal'])->name('audit.internal.destroy');
     Route::put('/audit/internal/{id}/status', [AuditInternalController::class, 'updateStatus'])->name('audit.internal.updateStatus');
 
-
     //PENGINGAT
     Route::get('/pengingat/tambah', [App\Http\Controllers\PengingatController::class, 'create'])->name('pengingat.create');
     Route::post('/pengingat/send', [App\Http\Controllers\PengingatController::class, 'send'])->name('pengingat.send');
-
-    //Lahan Admin
-    // Route::get('/admin/lahan', [LahanController::class, 'index'])->name('admin.lahan.index');
-    // Route::get('/admin/lahan/create', [LahanController::class, 'create'])->name('admin.lahan.create');
-    // Route::post('/admin/lahan/store', [LahanController::class, 'store'])->name('admin.lahan.store');
 
     // lahan
     Route::post('/lahan/preview-import', [LahanController::class, 'previewImport'])
@@ -144,15 +122,11 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/lahan/process-import', [LahanController::class, 'processImport'])
         ->name('lahan.process_import');
 
-
     //Notifikasi
     Route::get('/notifikasi', [NotifikasiController::class, 'index'])->name('notifikasi.index');
     Route::get('/notifikasi/popup', [NotifikasiController::class, 'getPopup']);
     Route::get('/notifikasi/count', [NotifikasiController::class, 'count']);
-
     Route::post('/notifikasi/mark-all', [NotifikasiController::class, 'markAllAsRead'])->name('notifikasi.markAllAsRead');
-
-    //notif di admin
     Route::post('/notifikasi/read/{id}', [NotifikasiController::class, 'markAsRead'])->name('notifikasi.markAsRead');
     Route::post('/tugas/{id}/selesai', [DashboardController::class, 'completeTask'])->name('tugas.complete');
-    });
+});
