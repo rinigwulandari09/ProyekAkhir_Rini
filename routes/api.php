@@ -82,3 +82,9 @@ Route::put('/notifications/read', [AuditInternalController::class, 'markAsRead']
 // dashboard
 Route::get('/dashboard', [DashboardApiController::class, 'index']);
 Route::get('/dashboard/petani/{petani_id}', [DashboardApiController::class, 'petaniSummary']);
+
+// tugas & FCM push notification API
+use App\Http\Controllers\Api\TugasApiController;
+Route::get('/tugas', [TugasApiController::class, 'index']);
+Route::post('/tugas/{id}/complete', [TugasApiController::class, 'complete']);
+Route::post('/user/fcm-token', [TugasApiController::class, 'updateFcmToken']);

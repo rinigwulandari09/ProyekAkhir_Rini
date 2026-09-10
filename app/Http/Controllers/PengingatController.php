@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PengingatMail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class PengingatController extends Controller
 {
@@ -32,6 +33,7 @@ class PengingatController extends Controller
         ]);
 
         $recipients = [];
+        $fcmTokens = [];
 
         if ($data['recipient_category'] === 'petani') {
             if ($data['recipient_scope'] === 'all') {
@@ -43,13 +45,19 @@ class PengingatController extends Controller
         } else {
             if ($data['recipient_scope'] === 'all') {
                 $recipients = User::whereIn('user_role', ['admin','super_admin'])->whereNotNull('user_email')->pluck('user_email')->filter()->unique()->toArray();
+                if (Schema::hasColumn('users', 'fcm_token')) {
+                    $fcmTokens = User::whereIn('user_role', ['admin','super_admin'])->whereNotNull('fcm_token')->pluck('fcm_token')->filter()->unique()->toArray();
+                }
             } else {
                 $u = User::find($data['recipient_id']);
                 if ($u && $u->user_email) $recipients[] = $u->user_email;
+                if ($u && Schema::hasColumn('users', 'fcm_token') && !empty($u->fcm_token)) {
+                    $fcmTokens[] = $u->fcm_token;
+                }
             }
         }
 
-        // Jika tidak ada penerima yang ditemukan
+        // Jika tidak ada penerima email yang ditemukan
         if (empty($recipients)) {
             return redirect()->back()->with('error', 'Gagal mengirim pengingat: Tidak ada data email penerima yang ditemukan.');
         }
@@ -57,7 +65,7 @@ class PengingatController extends Controller
         $successCount = 0;
         $failCount = 0;
 
-        // send emails
+        // 1. Send Email Notification
         foreach ($recipients as $email) {
             try {
                 logger("Mengirim email ke : ".$email);
@@ -76,7 +84,7 @@ class PengingatController extends Controller
             }
         }
 
-        // juga simpan di tabel tugas jika kategori admin
+        // 2. Simpan di tabel tugas jika kategori admin
         if ($data['recipient_category'] === 'admin') {
             $now = now();
             $taskData = [
@@ -97,15 +105,60 @@ class PengingatController extends Controller
             }
 
             DB::table('tugas')->insert($taskData);
+
+            // 3. Send Mobile Push Notification (FCM)
+            $this->sendPushNotification($fcmTokens, "Tugas Baru: " . $data['judul'], $data['message']);
         }
 
-        // Atur pesan alert berdasarkan status pengiriman log email
         if ($successCount > 0 && $failCount == 0) {
-            return redirect()->back()->with('success', "Pengingat berhasil dikirim ke seluruh ($successCount) penerima.");
+            return redirect()->back()->with('success', "Pengingat dan tugas berhasil dikirim ke seluruh ($successCount) penerima.");
         } elseif ($successCount > 0 && $failCount > 0) {
             return redirect()->back()->with('warning', "Pengingat terkirim ke $successCount penerima, tetapi gagal dikirim ke $failCount penerima. Periksa log sistem.");
         } else {
             return redirect()->back()->with('error', "Gagal mengirim pengingat ke semua ($failCount) penerima. Silakan periksa jaringan atau konfigurasi email.");
+        }
+    }
+
+    protected function sendPushNotification(array $tokens, string $title, string $body)
+    {
+        $serverKey = env('FCM_SERVER_KEY');
+        if (empty($serverKey) || empty($tokens)) {
+            return;
+        }
+
+        $tokens = array_values(array_filter($tokens));
+        if (empty($tokens)) return;
+
+        $url = 'https://fcm.googleapis.com/fcm/send';
+        $payload = [
+            'registration_ids' => $tokens,
+            'notification' => [
+                'title' => $title,
+                'body' => $body,
+                'sound' => 'default',
+            ],
+            'data' => [
+                'type' => 'tugas',
+                'title' => $title,
+                'body' => $body,
+            ]
+        ];
+
+        try {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Authorization: key=' . $serverKey,
+                'Content-Type: application/json',
+            ]);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+            $result = curl_exec($ch);
+            curl_close($ch);
+            logger("FCM Result: " . $result);
+        } catch (\Exception $e) {
+            logger("FCM Error: " . $e->getMessage());
         }
     }
 }
