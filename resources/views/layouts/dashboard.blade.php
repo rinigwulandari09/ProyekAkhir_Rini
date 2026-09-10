@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -64,6 +64,10 @@
                 <a href="{{ route('lahan.index') }}" class="flex items-center gap-3 {{ request()->routeIs('lahan.*') ? 'bg-[#D4AF37]/20' : '' }} p-3 rounded-lg hover:bg-[#D4AF37]/20 transition" :class="!sidebarOpen && 'justify-center'">
                     <x-heroicon-o-map class="w-5 h-5 shrink-0" /> 
                     <span x-show="sidebarOpen">Data Lahan</span>
+                </a>
+                <a href="{{ route('harga_tbs.index') }}" class="flex items-center gap-3 {{ request()->routeIs('harga_tbs.*') ? 'bg-[#D4AF37]/20' : '' }} p-3 rounded-lg hover:bg-[#D4AF37]/20 transition" :class="!sidebarOpen && 'justify-center'">
+                    <x-heroicon-o-currency-dollar class="w-5 h-5 shrink-0" /> 
+                    <span x-show="sidebarOpen">Harga TBS</span>
                 </a>
                 <a href="{{ route('keuangan.index') }}" class="flex items-center gap-3 {{ request()->routeIs('keuangan.*') ? 'bg-[#D4AF37]/20' : '' }} p-3 rounded-lg hover:bg-[#D4AF37]/20 transition" :class="!sidebarOpen && 'justify-center'">
                     <x-heroicon-o-banknotes class="w-5 h-5 shrink-0" /> 
