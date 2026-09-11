@@ -42,6 +42,19 @@ class AuthController extends Controller
             $filePath = 'petani/'.$fileName;
         }
 
+        if (!empty($request->petani_username)) {
+            $username = $request->petani_username;
+            $existsInPetani = Petani::where('petani_username', $username)->exists();
+            $existsInUsers = User::where('user_username', $username)->exists();
+
+            if ($existsInPetani || $existsInUsers) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Username sudah digunakan. Silakan gunakan username lain.'
+                ], 400);
+            }
+        }
+
         $petani = Petani::create([
             'petani_nama' => $request->petani_nama,
             'petani_alamat' => $request->petani_alamat,
@@ -151,6 +164,21 @@ class AuthController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'PIN berhasil diresett. Silakan login dengan PIN baru Anda.'
+            ]);
+        }
+
+        // CEK USER / ADMIN
+        $user = User::where('user_username', $request->username)
+            ->where('user_email', $request->email)
+            ->first();
+
+        if ($user) {
+            $user->user_password = Hash::make($request->pin_baru);
+            $user->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'PIN berhasil direset. Silakan login dengan PIN baru Anda.'
             ]);
         }
 

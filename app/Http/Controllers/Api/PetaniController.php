@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Petani;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -53,6 +54,19 @@ class PetaniController extends Controller
             $message .= ' Foto profil diunggah.';
         } else {
             $message .= ' Tidak ada foto yang diunggah dari Android.';
+        }
+
+        if (!empty($request->petani_username)) {
+            $username = $request->petani_username;
+            $existsInPetani = Petani::where('petani_username', $username)->where('petani_id', '!=', $petani_id)->exists();
+            $existsInUsers = User::where('user_username', $username)->exists();
+
+            if ($existsInPetani || $existsInUsers) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Username sudah digunakan. Silakan gunakan username lain.'
+                ], 400);
+            }
         }
 
         $petani->petani_nama = $request->petani_nama;

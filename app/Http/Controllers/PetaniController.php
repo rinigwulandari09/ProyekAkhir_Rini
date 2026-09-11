@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Petani;
+use App\Models\User;
 use App\Models\Desa;
 use Illuminate\Http\Request;
 
@@ -58,6 +59,11 @@ class PetaniController extends Controller
             'petani_pin' => 'required|string|min:6'
         ]);
 
+        $username = $request->petani_username;
+        if (User::where('user_username', $username)->exists()) {
+            return back()->withErrors(['petani_username' => 'Username ini sudah terdaftar sebagai akun Admin!'])->withInput();
+        }
+
         Petani::create([
             'petani_nama' => $request->petani_nama,
             'petani_username' => $request->petani_username,
@@ -109,6 +115,14 @@ class PetaniController extends Controller
         ]);
 
         $petani = Petani::findOrFail($id);
+
+        $username = $request->petani_username;
+        if (User::where('user_username', $username)->exists()) {
+            return back()->withErrors(['petani_username' => 'Username ini sudah terdaftar sebagai akun Admin!'])->withInput();
+        }
+        if (Petani::where('petani_username', $username)->where('petani_id', '!=', $id)->exists()) {
+            return back()->withErrors(['petani_username' => 'Username ini sudah terdaftar pada akun Petani lain!'])->withInput();
+        }
 
         $petani->update([
             'petani_nama' => $request->petani_nama,

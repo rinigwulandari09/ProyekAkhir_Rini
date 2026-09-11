@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Petani;
 use App\Models\Desa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -43,6 +44,11 @@ class UserController extends Controller
             'user_password.required' => 'Password wajib diisi.',
             'user_password.digits' => 'Password harus berupa 6 angka.'
         ]);
+
+        $username = $request->user_username;
+        if (Petani::where('petani_username', $username)->exists()) {
+            return back()->withErrors(['user_username' => 'Username ini sudah terdaftar sebagai akun Petani!'])->withInput();
+        }
 
         User::create([
             'user_nama' => $request->user_nama,
@@ -95,6 +101,11 @@ class UserController extends Controller
         // Hanya ganti password jika diisi di form edit
         if ($request->filled('user_password')) {
             $data['user_password'] = Hash::make($request->user_password);
+        }
+
+        $username = $request->user_username;
+        if (Petani::where('petani_username', $username)->exists()) {
+            return back()->withErrors(['user_username' => 'Username ini sudah terdaftar sebagai akun Petani!'])->withInput();
         }
 
         $user->update($data);

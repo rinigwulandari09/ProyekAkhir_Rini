@@ -24,6 +24,8 @@ Route::get('/petani', [PetaniController::class, 'getAll']); // Taruh di atas rut
 Route::get('/petani/{petani_id}', [AuthController::class, 'getPetani']);
 Route::post('/petani/update/{petani_id}', [PetaniController::class, 'update']);
 Route::post('/petani/ubah-pin/{petani_id}', [PetaniController::class, 'ubahPin']);
+Route::post('/user/ubah-pin/{id}', [UserController::class, 'ubahPin']);
+Route::post('/users/ubah-pin/{id}', [UserController::class, 'ubahPin']);
 
 // harga tbs (Public endpoint for mobile apps)
 Route::get('/harga-tbs/latest', [HargaTbsController::class, 'getLatestHargaApi']);
