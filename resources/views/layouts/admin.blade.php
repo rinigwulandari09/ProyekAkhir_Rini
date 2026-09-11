@@ -48,43 +48,47 @@
                 <span x-show="sidebarOpen" class="tracking-wider text-lg font-bold whitespace-nowrap font-poppins">SILAUSA</span>
             </div>
 
-            <nav class="flex-1 p-3 space-y-1 mt-4 text-sm overflow-y-auto">
-                <a href="{{ url('/dashboard') }}" class="flex items-center gap-3 {{ request()->is('dashboard') ? 'bg-[#D4AF37]/20' : '' }} p-3 rounded-lg hover:bg-[#D4AF37]/20 transition" :class="!sidebarOpen && 'justify-center'">
+            <nav class="flex-1 p-3 space-y-1.5 mt-4 text-sm overflow-y-auto">
+                <a href="{{ url('/dashboard') }}" class="flex items-center gap-3 p-3 rounded-xl transition {{ request()->is('dashboard') ? 'bg-[#D4AF37] text-[#234323] font-bold shadow-sm' : 'text-white/85 hover:text-white hover:bg-white/10' }}" :class="!sidebarOpen && 'justify-center'">
                     <x-heroicon-o-home class="w-5 h-5 shrink-0" />
                     <span x-show="sidebarOpen">Beranda</span>
                 </a>
-                <a href="{{ route('petani.index') }}" class="flex items-center gap-3 {{ request()->routeIs('petani.*') ? 'bg-[#D4AF37]/20' : '' }} p-3 rounded-lg hover:bg-[#D4AF37]/20 transition" :class="!sidebarOpen && 'justify-center'">
+                <a href="{{ route('petani.index') }}" class="flex items-center gap-3 p-3 rounded-xl transition {{ request()->routeIs('petani.*') ? 'bg-[#D4AF37] text-[#234323] font-bold shadow-sm' : 'text-white/85 hover:text-white hover:bg-white/10' }}" :class="!sidebarOpen && 'justify-center'">
                     <x-heroicon-o-user-group class="w-5 h-5 shrink-0" /> 
                     <span x-show="sidebarOpen">Data Petani</span>
                 </a>
-                <a href="{{ route('lahan.index') }}" class="flex items-center gap-3 {{ request()->routeIs('lahan.*') ? 'bg-[#D4AF37]/20' : '' }} p-3 rounded-lg hover:bg-[#D4AF37]/20 transition" :class="!sidebarOpen && 'justify-center'">
+                <a href="{{ route('lahan.index') }}" class="flex items-center gap-3 p-3 rounded-xl transition {{ request()->routeIs('lahan.*') ? 'bg-[#D4AF37] text-[#234323] font-bold shadow-sm' : 'text-white/85 hover:text-white hover:bg-white/10' }}" :class="!sidebarOpen && 'justify-center'">
                     <x-heroicon-o-map class="w-5 h-5 shrink-0" />
                     <span x-show="sidebarOpen">Data Lahan</span>
                 </a>
-                <a href="{{ route('produksi.index') }}" class="flex items-center gap-3 {{ request()->routeIs('produksi.index') ? 'bg-[#D4AF37]/20' : '' }} p-3 rounded-lg hover:bg-[#D4AF37]/20 transition" :class="!sidebarOpen && 'justify-center'">
+                <a href="{{ route('produksi.index') }}" class="flex items-center gap-3 p-3 rounded-xl transition {{ request()->routeIs('produksi.*') ? 'bg-[#D4AF37] text-[#234323] font-bold shadow-sm' : 'text-white/85 hover:text-white hover:bg-white/10' }}" :class="!sidebarOpen && 'justify-center'">
                     <x-heroicon-o-chart-bar class="w-5 h-5 shrink-0" /> 
                     <span x-show="sidebarOpen">Data Produksi</span>
                 </a>
-                <a href="{{ route('harga_tbs.index') }}" class="flex items-center gap-3 {{ request()->routeIs('harga_tbs.*') ? 'bg-[#D4AF37]/20' : '' }} p-3 rounded-lg hover:bg-[#D4AF37]/20 transition" :class="!sidebarOpen && 'justify-center'">
+                <a href="{{ route('harga_tbs.index') }}" class="flex items-center gap-3 p-3 rounded-xl transition {{ request()->routeIs('harga_tbs.*') ? 'bg-[#D4AF37] text-[#234323] font-bold shadow-sm' : 'text-white/85 hover:text-white hover:bg-white/10' }}" :class="!sidebarOpen && 'justify-center'">
                     <x-heroicon-o-currency-dollar class="w-5 h-5 shrink-0" /> 
                     <span x-show="sidebarOpen">Harga TBS</span>
                 </a>
-                <a href="{{ route('keuangan.index') }}" class="flex items-center gap-3 {{ request()->routeIs('keuangan.*') ? 'bg-[#D4AF37]/20' : '' }} p-3 rounded-lg hover:bg-[#D4AF37]/20 transition" :class="!sidebarOpen && 'justify-center'">
+                <a href="{{ route('keuangan.index') }}" class="flex items-center gap-3 p-3 rounded-xl transition {{ request()->routeIs('keuangan.*') ? 'bg-[#D4AF37] text-[#234323] font-bold shadow-sm' : 'text-white/85 hover:text-white hover:bg-white/10' }}" :class="!sidebarOpen && 'justify-center'">
                     <x-heroicon-o-banknotes class="w-5 h-5 shrink-0" /> 
                     <span x-show="sidebarOpen">Data Keuangan</span>
                 </a>
-                <a href="{{ route('audit.index') }}" class="flex items-center gap-3 {{ request()->routeIs('audit.*') ? 'bg-[#D4AF37]/20' : '' }} p-3 rounded-lg hover:bg-[#D4AF37]/20 transition" :class="!sidebarOpen && 'justify-center'">
+                <a href="{{ route('audit.index') }}" class="flex items-center gap-3 p-3 rounded-xl transition {{ request()->routeIs('audit.*') ? 'bg-[#D4AF37] text-[#234323] font-bold shadow-sm' : 'text-white/85 hover:text-white hover:bg-white/10' }}" :class="!sidebarOpen && 'justify-center'">
                     <x-heroicon-o-document-text class="w-5 h-5 shrink-0" /> 
                     <span x-show="sidebarOpen">Audit</span>
                 </a>
-                <button @click="showLogoutConfirm = true" class="flex items-center gap-3 p-3 rounded-lg w-full text-left hover:bg-[#D4AF37]/20 transition" :class="!sidebarOpen && 'justify-center'">
+            </nav>
+
+            {{-- Logout Button (Pill Merah Khas HARMONITAS) --}}
+            <div class="p-3 shrink-0">
+                <button @click="showLogoutConfirm = true" class="flex items-center gap-2.5 p-3 rounded-xl w-full justify-center bg-[#E53E3E] hover:bg-red-700 text-white font-bold transition shadow-sm" :class="!sidebarOpen && 'justify-center p-2.5'">
                     <x-heroicon-o-arrow-left-start-on-rectangle class="w-5 h-5 shrink-0" /> 
-                    <span x-show="sidebarOpen">Keluar</span>
+                    <span x-show="sidebarOpen" class="text-xs font-bold tracking-wide">Keluar / Logout</span>
                 </button>
                 <form id="logoutForm" method="POST" action="{{ route('logout') }}" class="hidden">
                     @csrf
                 </form>
-            </nav>
+            </div>
 
             {{-- Widget Bawah Sidebar --}}
             <div x-show="sidebarOpen" class="m-4 p-4 bg-white/10 rounded-xl text-xs text-white shrink-0 border border-white/10 backdrop-blur-sm">

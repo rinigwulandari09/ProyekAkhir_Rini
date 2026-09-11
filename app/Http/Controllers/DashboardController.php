@@ -178,6 +178,7 @@ class DashboardController extends Controller
             return view('super_admin.dashboard', compact(
                 'jumlahPetani', 'jumlahLahan', 'pendapatanBulanIni', 'petaniPending',
                 'pemasukanGrafik', 'pengeluaranGrafik', 'semuaLahan', 'jumlahProduksiHariIni',
+                'taskNotifications', 'kalenderEvents',
                 'auditLulus', 'auditPerbaikan', 'auditPending'
             ));
         } elseif ($user->user_role === 'admin') {
