@@ -364,47 +364,72 @@
                 {{-- Tabel Aktivasi Akun Petani Pending --}}
                 <div class="pt-2 border-t border-gray-100">
                     <div class="flex items-center justify-between mb-3">
-                        <h4 class="text-xs font-bold text-gray-700 font-poppins">Aktivasi Akun Petani Baru</h4>
-                        <span class="text-[10px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                        <div>
+                            <h4 class="text-xs font-bold text-gray-800 font-poppins">Aktivasi Akun Petani Baru</h4>
+                            <p class="text-[10.5px] text-gray-400">Verifikasi & persetujuan akun anggota terdaftar</p>
+                        </div>
+                        <span class="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-200">
                             {{ count($petaniPending) }} Menunggu
                         </span>
                     </div>
 
-                    <div class="overflow-x-auto w-full">
-                        <table id="tabelPetani" class="w-full text-left border-collapse display responsive nowrap">
+                    {{-- Custom Modern Search Bar --}}
+                    <div class="relative w-full mb-3">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                            <x-heroicon-o-magnifying-glass class="w-4 h-4 text-emerald-700" />
+                        </div>
+                        <input type="text" id="customSearchPetani" 
+                               class="w-full pl-9 pr-24 py-2 bg-gray-50/80 hover:bg-gray-100/70 focus:bg-white border border-gray-200 focus:border-[#234323] focus:ring-2 focus:ring-[#234323]/15 rounded-xl text-xs text-gray-800 placeholder-gray-400 transition shadow-2xs outline-none"
+                               placeholder="Cari nama petani, email, status...">
+                        <div class="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none">
+                            <span class="text-[10px] font-bold text-[#234323] bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-md">
+                                {{ count($petaniPending) }} Pengajuan
+                            </span>
+                        </div>
+                    </div>
+
+                    {{-- Table Container --}}
+                    <div class="w-full overflow-hidden rounded-xl border border-gray-100 shadow-2xs">
+                        <table id="tabelPetani" class="w-full text-left border-collapse table-auto">
                             <thead>
-                                <tr class="bg-[#D4AF37] text-black">
-                                    <th class="p-2.5 text-[10px] font-bold uppercase tracking-wider rounded-l-lg">No</th>
-                                    <th class="p-2.5 text-[10px] font-bold uppercase tracking-wider">Nama & Email</th>
-                                    <th class="p-2.5 text-[10px] font-bold uppercase tracking-wider text-center">Status</th>
-                                    <th class="p-2.5 text-[10px] font-bold uppercase tracking-wider text-center rounded-r-lg">Aksi</th>
+                                <tr class="bg-gradient-to-r from-[#234323] to-[#1C3B1C] text-white">
+                                    <th class="py-2.5 px-3 text-[10px] font-extrabold uppercase tracking-wider text-center w-10 text-[#D4AF37]">#</th>
+                                    <th class="py-2.5 px-3 text-[10px] font-extrabold uppercase tracking-wider">Nama & Email</th>
+                                    <th class="py-2.5 px-3 text-[10px] font-extrabold uppercase tracking-wider text-center w-24">Status</th>
+                                    <th class="py-2.5 px-3 text-[10px] font-extrabold uppercase tracking-wider text-center w-24">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-50">
+                            <tbody class="divide-y divide-gray-100 text-xs bg-white">
                                 @forelse($petaniPending as $index => $petani)
-                                <tr class="hover:bg-gray-50/50 transition">
-                                    <td class="p-2.5 text-xs text-gray-500 font-mono">{{ $index + 1 }}</td>
-                                    <td class="p-2.5 text-xs">
-                                        <p class="font-bold text-gray-800 leading-tight">{{ $petani->petani_nama }}</p>
-                                        <p class="text-[10px] text-gray-400">{{ $petani->petani_email ?? '-' }}</p>
+                                <tr class="hover:bg-emerald-50/25 transition-colors group">
+                                    <td class="py-2.5 px-2 text-center">
+                                        <span class="w-6 h-6 mx-auto rounded-lg bg-gray-100 group-hover:bg-[#234323] group-hover:text-[#D4AF37] text-gray-600 text-[10.5px] font-bold flex items-center justify-center font-mono transition shadow-2xs">{{ $index + 1 }}</span>
                                     </td>
-                                    <td class="p-2.5 text-center">
-                                        <span class="inline-block px-2 py-0.5 bg-amber-50 text-amber-700 rounded text-[10px] font-bold border border-amber-100">
+                                    <td class="py-2.5 px-3">
+                                        <p class="font-bold text-gray-800 group-hover:text-[#234323] transition leading-snug text-xs">{{ $petani->petani_nama }}</p>
+                                        <p class="text-[10.5px] text-gray-500 line-clamp-1 mt-0.5 leading-tight">{{ $petani->petani_email ?? '-' }}</p>
+                                    </td>
+                                    <td class="py-2.5 px-2 text-center whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2 py-0.5 bg-amber-50 text-amber-700 rounded-md text-[10px] font-bold border border-amber-200/80 shadow-2xs">
                                             {{ $petani->petani_status }}
                                         </span>
                                     </td>
-                                    <td class="p-2.5 text-center whitespace-nowrap">
+                                    <td class="py-2.5 px-2 text-center whitespace-nowrap">
                                         <button type="button" title="Verifikasi / Edit" 
-                                                class="px-2.5 py-1 bg-[#234323] hover:bg-[#184D2E] text-white rounded-lg text-xs font-semibold transition shadow-2xs flex items-center gap-1 mx-auto"
+                                                class="inline-flex items-center gap-1 rounded-lg bg-gradient-to-r from-[#234323] to-[#184D2E] hover:from-[#184D2E] hover:to-[#0F351D] px-2.5 py-1 text-[10.5px] font-bold text-white transition shadow-2xs hover:shadow-xs transform hover:-translate-y-0.5 cursor-pointer mx-auto"
                                                 onclick="openEditModal('{{ $petani->petani_id }}', '{{ addslashes($petani->petani_nama) }}', '{{ $petani->petani_status }}', '{{ addslashes($petani->petani_email ?? '-') }}', '{{ addslashes($petani->petani_no_hp ?? '-') }}', '{{ addslashes($petani->petani_alamat ?? '-') }}', '{{ addslashes($petani->petani_jenis_kelamin ?? '-') }}', '{{ addslashes($petani->desa_nama ?? '-') }}')">
-                                            <x-heroicon-o-pencil-square class="w-3.5 h-3.5" />
+                                            <x-heroicon-o-pencil-square class="w-3.5 h-3.5 text-[#D4AF37]" />
                                             <span>Verifikasi</span>
                                         </button>
                                     </td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="4" class="p-4 text-center text-xs text-gray-400">Tidak ada pengajuan akun baru yang pending.</td>
+                                    <td colspan="4" class="py-8 text-center text-xs text-gray-400">
+                                        <x-heroicon-o-user-plus class="w-7 h-7 text-gray-300 mx-auto mb-1" />
+                                        <p class="font-bold text-gray-500">Tidak ada pengajuan akun baru yang pending.</p>
+                                        <p class="text-[10px] text-gray-400">Semua pendaftaran telah diverifikasi.</p>
+                                    </td>
                                 </tr>
                                 @endforelse
                             </tbody>
@@ -537,20 +562,49 @@
     function initSuperAdminDashboard() {
         if (typeof $ !== 'undefined' && $('#tabelPetani').length) {
             if ($.fn.DataTable.isDataTable('#tabelPetani')) { $('#tabelPetani').DataTable().destroy(); }
-            $('#tabelPetani').DataTable({
+            var tablePetani = $('#tabelPetani').DataTable({
                 "pageLength": 5, 
                 "lengthMenu": [[5, 10, 25, -1], [5, 10, 25, "All"]],
                 "language": {
-                    "search": "",
-                    "searchPlaceholder": "Cari petani pending...",
-                    "emptyTable": "Tidak ada pengajuan akun petani baru."
+                    "emptyTable": "Tidak ada pengajuan akun petani baru.",
+                    "info": "Menampilkan _START_-_END_ dari _TOTAL_ pengajuan",
+                    "infoEmpty": "0 pengajuan",
+                    "infoFiltered": "(dari _MAX_ total)",
+                    "paginate": {
+                        "first": "«",
+                        "last": "»",
+                        "next": "›",
+                        "previous": "‹"
+                    }
                 },
-                "responsive": true,
+                "responsive": false,
+                "autoWidth": false,
                 "columnDefs": [
-                    { "orderable": false, "targets": [0, 3] }
+                    { "orderable": false, "searchable": false, "targets": [0, 3] },
+                    { "width": "8%", "targets": 0 },
+                    { "width": "54%", "targets": 1 },
+                    { "width": "20%", "targets": 2 },
+                    { "width": "18%", "targets": 3 }
                 ],
-                "dom": '<"flex justify-between items-center w-full mb-3 gap-2" f> <"overflow-x-auto w-full" tr> <"flex justify-between items-center gap-2 mt-3 text-xs" p>'
+                "dom": 't<"flex flex-col sm:flex-row items-center justify-between gap-2 mt-3 pt-2 text-xs text-gray-500"ip>'
             });
+
+            // Live search dengan custom search bar modern
+            $('#customSearchPetani').off('input').on('input', function () {
+                tablePetani.search(this.value).draw();
+            });
+
+            tablePetani.on('order.dt search.dt draw.dt', function () {
+                let start = tablePetani.page.info().start;
+                tablePetani.column(0, { search: 'applied', order: 'applied' }).nodes().each(function(cell, i) {
+                    let badge = cell.querySelector('span');
+                    if (badge) {
+                        badge.textContent = start + i + 1;
+                    } else {
+                        cell.innerHTML = start + i + 1;
+                    }
+                });
+            }).draw();
         }
 
         const canvasPemasukan = document.getElementById('chartPemasukan');
@@ -791,4 +845,55 @@
         initSuperAdminDashboard();
     }
 </script>
+
+<style>
+    /* Modern Custom DataTables Styling */
+    table.dataTable.no-footer { border-bottom: none !important; }
+    table.dataTable thead th, table.dataTable thead td { border-bottom: none !important; }
+    table.dataTable tbody td { border-top: 1px solid #f3f4f6 !important; }
+    .dataTables_wrapper { width: 100% !important; overflow: hidden !important; }
+    .dataTables_wrapper .dataTables_paginate {
+        display: flex !important;
+        align-items: center !important;
+        gap: 3px !important;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        border-radius: 8px !important;
+        padding: 3px 8px !important;
+        font-size: 11px !important;
+        font-weight: 600 !important;
+        border: 1px solid #e5e7eb !important;
+        background: #ffffff !important;
+        color: #4b5563 !important;
+        margin: 0 !important;
+        cursor: pointer !important;
+        transition: all 0.15s ease !important;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background: #f3f4f6 !important;
+        border-color: #d1d5db !important;
+        color: #1f2937 !important;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+        background: #234323 !important;
+        border-color: #234323 !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+        opacity: 0.35 !important;
+        cursor: not-allowed !important;
+        background: #f9fafb !important;
+        border-color: #f3f4f6 !important;
+        color: #9ca3af !important;
+    }
+    .dataTables_wrapper .dataTables_info {
+        font-size: 10.5px !important;
+        color: #6b7280 !important;
+        padding-top: 0 !important;
+    }
+</style>
 @endsection

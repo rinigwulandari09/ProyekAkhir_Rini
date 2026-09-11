@@ -364,38 +364,62 @@
                 {{-- Tabel Pengingat Tugas --}}
                 <div class="pt-2 border-t border-gray-100">
                     <div class="flex items-center justify-between mb-3">
-                        <h4 class="text-xs font-bold text-gray-700 font-poppins">Daftar Tugas Aktif</h4>
-                        <span class="text-[10px] text-gray-400">Deadline Terdekat</span>
+                        <div>
+                            <h4 class="text-xs font-bold text-gray-800 font-poppins">Daftar Tugas Aktif</h4>
+                            <p class="text-[10.5px] text-gray-400">Tenggat waktu & tindak lanjut operasional</p>
+                        </div>
+                        <span class="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-200">
+                            Deadline Terdekat
+                        </span>
                     </div>
 
-                    <div class="overflow-x-auto w-full">
-                        <table id="tugasTable" class="w-full text-left border-collapse display responsive">
+                    {{-- Custom Modern Search Bar --}}
+                    <div class="relative w-full mb-3">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                            <x-heroicon-o-magnifying-glass class="w-4 h-4 text-emerald-700" />
+                        </div>
+                        <input type="text" id="customSearchTugas" 
+                               class="w-full pl-9 pr-24 py-2 bg-gray-50/80 hover:bg-gray-100/70 focus:bg-white border border-gray-200 focus:border-[#234323] focus:ring-2 focus:ring-[#234323]/15 rounded-xl text-xs text-gray-800 placeholder-gray-400 transition shadow-2xs outline-none"
+                               placeholder="Cari tugas, instruksi, tanggal...">
+                        <div class="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none">
+                            <span class="text-[10px] font-bold text-[#234323] bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-md">
+                                {{ count($taskNotifications) }} Tugas
+                            </span>
+                        </div>
+                    </div>
+
+                    {{-- Table Container --}}
+                    <div class="w-full overflow-hidden rounded-xl border border-gray-100 shadow-2xs">
+                        <table id="tugasTable" class="w-full text-left border-collapse table-auto">
                             <thead>
-                                <tr class="bg-[#D4AF37] text-black">
-                                    <th class="p-2.5 text-[10px] font-bold uppercase tracking-wider rounded-l-lg">No</th>
-                                    <th class="p-2.5 text-[10px] font-bold uppercase tracking-wider">Judul & Pesan</th>
-                                    <th class="p-2.5 text-[10px] font-bold uppercase tracking-wider">Deadline</th>
-                                    <th class="p-2.5 text-[10px] font-bold uppercase tracking-wider text-center rounded-r-lg">Aksi</th>
+                                <tr class="bg-gradient-to-r from-[#234323] to-[#1C3B1C] text-white">
+                                    <th class="py-2.5 px-3 text-[10px] font-extrabold uppercase tracking-wider text-center w-10 text-[#D4AF37]">#</th>
+                                    <th class="py-2.5 px-3 text-[10px] font-extrabold uppercase tracking-wider">Judul & Pesan</th>
+                                    <th class="py-2.5 px-3 text-[10px] font-extrabold uppercase tracking-wider text-center w-28">Deadline</th>
+                                    <th class="py-2.5 px-3 text-[10px] font-extrabold uppercase tracking-wider text-center w-24">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-50">
+                            <tbody class="divide-y divide-gray-100 text-xs bg-white">
                                 @forelse($taskNotifications as $task)
-                                    <tr class="hover:bg-gray-50/50 transition">
-                                        <td class="p-2.5 text-xs text-gray-500 font-mono"></td>
-                                        <td class="p-2.5 text-xs">
-                                            <p class="font-bold text-gray-800 leading-tight">{{ $task->judul }}</p>
-                                            <p class="text-[10px] text-gray-500 line-clamp-1 mt-0.5">{{ $task->pesan }}</p>
+                                    <tr class="hover:bg-emerald-50/25 transition-colors group">
+                                        <td class="py-2.5 px-2 text-center">
+                                            <span class="w-6 h-6 mx-auto rounded-lg bg-gray-100 group-hover:bg-[#234323] group-hover:text-[#D4AF37] text-gray-600 text-[10.5px] font-bold flex items-center justify-center font-mono transition shadow-2xs"></span>
                                         </td>
-                                        <td class="p-2.5">
-                                            <span class="inline-block whitespace-nowrap px-2 py-0.5 bg-amber-50 text-amber-800 rounded text-[10px] font-bold border border-amber-200">
-                                                {{ $task->deadline ? date('d/m/Y', strtotime($task->deadline)) : '-' }}
+                                        <td class="py-2.5 px-3">
+                                            <p class="font-bold text-gray-800 group-hover:text-[#234323] transition leading-snug text-xs">{{ $task->judul }}</p>
+                                            <p class="text-[10.5px] text-gray-500 line-clamp-1 mt-0.5 leading-tight">{{ $task->pesan }}</p>
+                                        </td>
+                                        <td class="py-2.5 px-2 text-center whitespace-nowrap">
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-50 text-amber-800 rounded-md text-[10px] font-bold border border-amber-200/80 shadow-2xs">
+                                                <x-heroicon-o-calendar class="w-3 h-3 text-[#D4AF37]" />
+                                                <span>{{ $task->deadline ? date('d/m/Y', strtotime($task->deadline)) : '-' }}</span>
                                             </span>
                                         </td>
-                                        <td class="p-2.5 text-center whitespace-nowrap">
+                                        <td class="py-2.5 px-2 text-center whitespace-nowrap">
                                             <form action="{{ route('tugas.complete', ['id' => $task->id]) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menandai tugas ini sebagai selesai?')">
                                                 @csrf
-                                                <button type="submit" class="inline-flex items-center gap-1 rounded-lg bg-[#234323] px-2.5 py-1 text-[11px] font-semibold text-white transition hover:bg-[#184D2E] shadow-xs">
-                                                    <x-heroicon-s-check class="w-3 h-3" />
+                                                <button type="submit" class="inline-flex items-center gap-1 rounded-lg bg-gradient-to-r from-[#234323] to-[#184D2E] hover:from-[#184D2E] hover:to-[#0F351D] px-2.5 py-1 text-[10.5px] font-bold text-white transition shadow-2xs hover:shadow-xs transform hover:-translate-y-0.5 cursor-pointer">
+                                                    <x-heroicon-s-check class="w-3.5 h-3.5 text-[#D4AF37]" />
                                                     <span>Selesai</span>
                                                 </button>
                                             </form>
@@ -403,7 +427,11 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="p-4 text-center text-xs text-gray-400">Tidak ada tugas aktif.</td>
+                                        <td colspan="4" class="py-8 text-center text-xs text-gray-400">
+                                            <x-heroicon-o-clipboard-document-check class="w-7 h-7 text-gray-300 mx-auto mb-1" />
+                                            <p class="font-bold text-gray-600">Tidak ada tugas aktif.</p>
+                                            <p class="text-[10px] text-gray-400">Semua target pekerjaan telah selesai.</p>
+                                        </td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -441,21 +469,43 @@
                 "pageLength": 5, 
                 "lengthMenu": [[5, 10, 25, -1], [5, 10, 25, "All"]],
                 "language": {
-                    "search": "",
-                    "searchPlaceholder": "Cari tugas...",
-                    "emptyTable": "Tidak ada tugas aktif untuk ditampilkan."
+                    "emptyTable": "Tidak ada tugas aktif untuk ditampilkan.",
+                    "info": "Menampilkan _START_-_END_ dari _TOTAL_ tugas",
+                    "infoEmpty": "0 tugas",
+                    "infoFiltered": "(dari _MAX_ total)",
+                    "paginate": {
+                        "first": "«",
+                        "last": "»",
+                        "next": "›",
+                        "previous": "‹"
+                    }
                 },
-                "responsive": true,
+                "responsive": false,
+                "autoWidth": false,
                 "columnDefs": [
-                    { "orderable": false, "searchable": false, "targets": [0, 3] }
+                    { "orderable": false, "searchable": false, "targets": [0, 3] },
+                    { "width": "8%", "targets": 0 },
+                    { "width": "54%", "targets": 1 },
+                    { "width": "22%", "targets": 2 },
+                    { "width": "16%", "targets": 3 }
                 ],
-                "dom": '<"flex justify-between items-center w-full mb-3 gap-2" f> <"overflow-x-auto w-full" tr> <"flex justify-between items-center gap-2 mt-3 text-xs" p>'
+                "dom": 't<"flex flex-col sm:flex-row items-center justify-between gap-2 mt-3 pt-2 text-xs text-gray-500"ip>'
+            });
+
+            // Live search dengan custom search bar modern
+            $('#customSearchTugas').off('input').on('input', function () {
+                tableTugas.search(this.value).draw();
             });
 
             tableTugas.on('order.dt search.dt draw.dt', function () {
                 let start = tableTugas.page.info().start;
                 tableTugas.column(0, { search: 'applied', order: 'applied' }).nodes().each(function(cell, i) {
-                    cell.innerHTML = start + i + 1;
+                    let badge = cell.querySelector('span');
+                    if (badge) {
+                        badge.textContent = start + i + 1;
+                    } else {
+                        cell.innerHTML = start + i + 1;
+                    }
                 });
             }).draw();
         }
@@ -725,6 +775,56 @@
 </script>
 
 <style>
+    /* Modern Custom DataTables Styling */
+    table.dataTable.no-footer { border-bottom: none !important; }
+    table.dataTable thead th, table.dataTable thead td { border-bottom: none !important; }
+    table.dataTable tbody td { border-top: 1px solid #f3f4f6 !important; }
+    .dataTables_wrapper { width: 100% !important; overflow: hidden !important; }
+    .dataTables_wrapper .dataTables_paginate {
+        display: flex !important;
+        align-items: center !important;
+        gap: 3px !important;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        border-radius: 8px !important;
+        padding: 3px 8px !important;
+        font-size: 11px !important;
+        font-weight: 600 !important;
+        border: 1px solid #e5e7eb !important;
+        background: #ffffff !important;
+        color: #4b5563 !important;
+        margin: 0 !important;
+        cursor: pointer !important;
+        transition: all 0.15s ease !important;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background: #f3f4f6 !important;
+        border-color: #d1d5db !important;
+        color: #1f2937 !important;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+        background: #234323 !important;
+        border-color: #234323 !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+        opacity: 0.35 !important;
+        cursor: not-allowed !important;
+        background: #f9fafb !important;
+        border-color: #f3f4f6 !important;
+        color: #9ca3af !important;
+    }
+    .dataTables_wrapper .dataTables_info {
+        font-size: 10.5px !important;
+        color: #6b7280 !important;
+        padding-top: 0 !important;
+    }
+
+    /* FullCalendar Styling */
     .fc { font-family: inherit !important; font-size: 0.8rem !important; }
     .fc-theme-standard td, .fc-theme-standard th { border-color: #f3f4f6 !important; }
     .fc-col-header-cell { background-color: #f9fafb; padding: 4px 0 !important; font-weight: 700; font-size: 0.7rem !important; color: #6b7280; text-transform: uppercase; }
