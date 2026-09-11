@@ -71,4 +71,24 @@ class HargaTbsController extends Controller
             ]
         ]);
     }
+
+    public function getRiwayatHargaApi()
+    {
+         = HargaTbs::orderBy('created_at', 'desc')->take(10)->get();
+
+         = ->map(function () {
+            return [
+                'harga_tbs_id' => ->harga_tbs_id,
+                'harga_dinas' => (double) ->harga_dinas,
+                'harga_pt_sar' => (double) ->harga_pt_sar,
+                'tanggal_berlaku' => ->tanggal_berlaku,
+                'created_at' => ->created_at ? ->created_at->format('Y-m-d H:i:s') : null,
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => 
+        ]);
+    }
 }

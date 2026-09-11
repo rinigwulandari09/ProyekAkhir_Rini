@@ -88,3 +88,4 @@ use App\Http\Controllers\Api\TugasApiController;
 Route::get('/tugas', [TugasApiController::class, 'index']);
 Route::post('/tugas/{id}/complete', [TugasApiController::class, 'complete']);
 Route::post('/user/fcm-token', [TugasApiController::class, 'updateFcmToken']);
+Route::get('/harga-tbs/riwayat', [HargaTbsController::class, 'getRiwayatHargaApi']);
