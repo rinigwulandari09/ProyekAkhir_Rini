@@ -65,6 +65,10 @@
                     <x-heroicon-o-map class="w-5 h-5 shrink-0" /> 
                     <span x-show="sidebarOpen">Data Lahan</span>
                 </a>
+                <a href="{{ route('produksi.index') }}" class="flex items-center gap-3 {{ request()->routeIs('produksi.index') ? 'bg-[#D4AF37]/20' : '' }} p-3 rounded-lg hover:bg-[#D4AF37]/20 transition" :class="!sidebarOpen && 'justify-center'">
+                    <x-heroicon-o-chart-bar class="w-5 h-5 shrink-0" /> 
+                    <span x-show="sidebarOpen">Data Produksi</span>
+                </a>
                 <a href="{{ route('harga_tbs.index') }}" class="flex items-center gap-3 {{ request()->routeIs('harga_tbs.*') ? 'bg-[#D4AF37]/20' : '' }} p-3 rounded-lg hover:bg-[#D4AF37]/20 transition" :class="!sidebarOpen && 'justify-center'">
                     <x-heroicon-o-currency-dollar class="w-5 h-5 shrink-0" /> 
                     <span x-show="sidebarOpen">Harga TBS</span>

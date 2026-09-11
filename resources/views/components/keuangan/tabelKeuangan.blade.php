@@ -92,10 +92,16 @@
 
             {{-- BARIS TOMBOL AKSI --}}
             <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 pt-4 border-t border-gray-100">
-                <button type="submit" class="w-full sm:w-auto bg-[#214122] text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-green-900 transition shadow-sm text-center flex items-center justify-center gap-2">
-                    <x-heroicon-o-magnifying-glass class="w-4 h-4" />
-                    Terapkan Filter
-                </button>
+                <div class="flex flex-wrap items-center gap-3">
+                    <button type="submit" class="w-full sm:w-auto bg-[#214122] text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-green-900 transition shadow-sm text-center flex items-center justify-center gap-2">
+                        <x-heroicon-o-magnifying-glass class="w-4 h-4" />
+                        Terapkan Filter
+                    </button>
+                    <a href="{{ route('produksi.index') }}" class="w-full sm:w-auto bg-emerald-50 text-emerald-800 border border-emerald-200 px-4 py-2.5 rounded-xl font-semibold text-sm hover:bg-emerald-100 transition shadow-sm flex items-center justify-center gap-2" title="Lihat Rekap & Ekspor Tonase Produksi Per Plot (RSPO)">
+                        <x-heroicon-o-table-cells class="w-4 h-4 text-emerald-700" />
+                        <span>Rekap Tonase Plot (RSPO)</span>
+                    </a>
+                </div>
                 <div id="exportButtonsContainer" class="w-full sm:w-auto flex justify-start sm:justify-end"></div>
             </div>
         </form>

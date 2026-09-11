@@ -44,6 +44,12 @@ class Lahan extends Model
     // relasi dgn tabel produksi
     public function produksi()
     {
-        return $this->hasMany(Produksi::class, 'lahan_id'. 'lahan_id');
+        return $this->hasMany(Produksi::class, 'lahan_id', 'lahan_id');
+    }
+
+    // relasi dgn tabel detail_produksi
+    public function detailProduksi()
+    {
+        return $this->hasMany(DetailProduksi::class, 'lahan_id', 'lahan_id');
     }
 }

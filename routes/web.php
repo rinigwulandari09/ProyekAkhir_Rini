@@ -10,6 +10,7 @@ use App\Http\Controllers\KeuanganController;
 use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\AuditInternalController;
 use App\Http\Controllers\HargaTbsController;
+use App\Http\Controllers\ProduksiController;
 
 Route::get('/', function () {
     return view('landing');
@@ -89,6 +90,10 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/lahan/{id}', [LahanController::class, 'update'])->name('lahan.update');
     Route::delete('/lahan/{id}', [LahanController::class, 'destroy'])->name('lahan.destroy');
     Route::post('/lahan/import-geojson', [App\Http\Controllers\LahanController::class, 'importGeoJson'])->name('lahan.import_geojson');
+
+    //DATA PRODUKSI (RSPO)
+    Route::get('/produksi', [ProduksiController::class, 'index'])->name('produksi.index');
+    Route::get('/produksi/export', [ProduksiController::class, 'export'])->name('produksi.export');
 
     //KEUANGAN
     Route::get('/keuangan', [KeuanganController::class, 'index'])->name('keuangan.index');
