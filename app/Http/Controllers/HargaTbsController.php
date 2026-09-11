@@ -10,19 +10,19 @@ class HargaTbsController extends Controller
 {
     public function index()
     {
-         = HargaTbs::latest('created_at')->first();
-         = HargaTbs::with('creator')->orderBy('created_at', 'desc')->paginate(15);
+        $hargaTerbaru = HargaTbs::latest('created_at')->first();
+        $riwayatHarga = HargaTbs::with('creator')->orderBy('created_at', 'desc')->paginate(15);
 
-         = (Auth::check() && Auth::user()->user_role === 'admin')
+        $view = (Auth::check() && Auth::user()->user_role === 'admin')
             ? 'admin.harga_tbs.index'
             : 'super_admin.harga_tbs.index';
 
-        return view(, compact('hargaTerbaru', 'riwayatHarga'));
+        return view($view, compact('hargaTerbaru', 'riwayatHarga'));
     }
 
-    public function store(Request )
+    public function store(Request $request)
     {
-        ->validate([
+        $request->validate([
             'harga_dinas' => 'required|numeric|min:0',
             'harga_pt_sar' => 'required|numeric|min:0',
             'tanggal_berlaku' => 'required|date',
@@ -35,9 +35,9 @@ class HargaTbsController extends Controller
         ]);
 
         HargaTbs::create([
-            'harga_dinas' => ->harga_dinas,
-            'harga_pt_sar' => ->harga_pt_sar,
-            'tanggal_berlaku' => ->tanggal_berlaku,
+            'harga_dinas' => $request->harga_dinas,
+            'harga_pt_sar' => $request->harga_pt_sar,
+            'tanggal_berlaku' => $request->tanggal_berlaku,
             'created_by_user_id' => Auth::id(),
         ]);
 
@@ -46,9 +46,9 @@ class HargaTbsController extends Controller
 
     public function getLatestHargaApi()
     {
-         = HargaTbs::latest('created_at')->first();
+        $latest = HargaTbs::latest('created_at')->first();
 
-        if (!) {
+        if (!$latest) {
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -63,32 +63,32 @@ class HargaTbsController extends Controller
         return response()->json([
             'success' => true,
             'data' => [
-                'harga_tbs_id' => ->harga_tbs_id,
-                'harga_dinas' => (double) ->harga_dinas,
-                'harga_pt_sar' => (double) ->harga_pt_sar,
-                'tanggal_berlaku' => ->tanggal_berlaku,
-                'created_at' => ->created_at ? ->created_at->format('Y-m-d H:i:s') : date('Y-m-d H:i:s'),
+                'harga_tbs_id' => $latest->harga_tbs_id,
+                'harga_dinas' => (double) $latest->harga_dinas,
+                'harga_pt_sar' => (double) $latest->harga_pt_sar,
+                'tanggal_berlaku' => $latest->tanggal_berlaku,
+                'created_at' => $latest->created_at ? $latest->created_at->format('Y-m-d H:i:s') : date('Y-m-d H:i:s'),
             ]
         ]);
     }
 
     public function getRiwayatHargaApi()
     {
-         = HargaTbs::orderBy('created_at', 'desc')->take(10)->get();
+        $riwayat = HargaTbs::orderBy('created_at', 'desc')->take(10)->get();
 
-         = ->map(function () {
+        $data = $riwayat->map(function ($item) {
             return [
-                'harga_tbs_id' => ->harga_tbs_id,
-                'harga_dinas' => (double) ->harga_dinas,
-                'harga_pt_sar' => (double) ->harga_pt_sar,
-                'tanggal_berlaku' => ->tanggal_berlaku,
-                'created_at' => ->created_at ? ->created_at->format('Y-m-d H:i:s') : null,
+                'harga_tbs_id' => $item->harga_tbs_id,
+                'harga_dinas' => (double) $item->harga_dinas,
+                'harga_pt_sar' => (double) $item->harga_pt_sar,
+                'tanggal_berlaku' => $item->tanggal_berlaku,
+                'created_at' => $item->created_at ? $item->created_at->format('Y-m-d H:i:s') : null,
             ];
         });
 
         return response()->json([
             'success' => true,
-            'data' => 
+            'data' => $data
         ]);
     }
 }
