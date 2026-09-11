@@ -438,6 +438,18 @@
                 </div>
             </div>
 
+            {{-- Card Kalender Audit & Pengingat --}}
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6">
+                <div class="flex items-center justify-between gap-2 mb-4 pb-3 border-b border-gray-100">
+                    <div class="flex items-center gap-2">
+                        <x-heroicon-o-calendar class="w-5 h-5 text-[#234323]" />
+                        <h3 class="text-xs font-bold text-gray-800 uppercase tracking-wider font-poppins">Kalender Jadwal Audit</h3>
+                    </div>
+                    <span class="text-[10px] font-semibold text-gray-400">Bulan {{ date('F Y') }}</span>
+                </div>
+                <div id="tugasCalendar" class="w-full bg-gray-50/50 rounded-xl border border-gray-100 p-2"></div>
+            </div>
+
         </div>
     </div>
 </div>
@@ -523,6 +535,7 @@
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
 
 <script>
     function openEditModal(id, nama, status, email, hp, alamat, jk, desa) {
@@ -837,6 +850,31 @@
                 }
             }, 300);
         }
+
+        // Inisialisasi FullCalendar
+        var calendarEl = document.getElementById('tugasCalendar');
+        var kalenderEvents = {!! $kalenderEvents ?? '[]' !!};
+
+        if (calendarEl && typeof FullCalendar !== 'undefined') {
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                contentHeight: 'auto',
+                aspectRatio: 1.4,
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,listMonth'
+                },
+                events: kalenderEvents,
+                locale: 'id',
+                buttonText: {
+                    today: 'Hari Ini',
+                    month: 'Bulan',
+                    list: 'Daftar'
+                }
+            });
+            calendar.render();
+        }
     }
 
     if (document.readyState === 'loading') {
@@ -894,6 +932,27 @@
         font-size: 10.5px !important;
         color: #6b7280 !important;
         padding-top: 0 !important;
+    }
+
+    /* FullCalendar Styling */
+    .fc { font-family: inherit !important; font-size: 0.8rem !important; }
+    .fc-theme-standard td, .fc-theme-standard th { border-color: #f3f4f6 !important; }
+    .fc-col-header-cell { background-color: #f9fafb; padding: 4px 0 !important; font-weight: 700; font-size: 0.7rem !important; color: #6b7280; text-transform: uppercase; }
+    .fc-daygrid-day-number { color: #4b5563; font-weight: 600; font-size: 0.75rem !important; }
+    .fc-day-today { background-color: #f0fdf4 !important; }
+    .fc-toolbar-title { font-size: 0.95rem !important; font-weight: 700 !important; color: #1f2937 !important; }
+    .fc-button-primary { 
+        background-color: #ffffff !important; 
+        color: #374151 !important;
+        border: 1px solid #e5e7eb !important; 
+        border-radius: 6px !important; 
+        font-size: 0.75rem !important;
+        padding: 3px 8px !important;
+    }
+    .fc-button-primary:not(:disabled).fc-button-active { 
+        background-color: #234323 !important; 
+        border-color: #234323 !important; 
+        color: #ffffff !important;
     }
 </style>
 @endsection
