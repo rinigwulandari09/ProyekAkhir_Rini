@@ -307,11 +307,26 @@ class ProduksiController extends Controller
     }
 
     /**
-     * Ekspor File Excel Format RSPO (.xlsx)
+     * Ekspor File Excel Format RSPO
      */
     public function export(Request $request)
     {
         $data = $this->getProduksiData($request);
+
+        // Jika library PhpSpreadsheet tersedia di vendor server, gunakan format .xlsx
+        if (class_exists(\PhpOffice\PhpSpreadsheet\Spreadsheet::class)) {
+            return $this->exportWithPhpSpreadsheet($data);
+        }
+
+        // Fallback otomatis tanpa library eksternal (bekerja langsung di hosting/server tanpa perlu composer install)
+        return $this->exportWithNativeExcel($data);
+    }
+
+    /**
+     * Ekspor menggunakan library PhpSpreadsheet (.xlsx)
+     */
+    private function exportWithPhpSpreadsheet(array $data)
+    {
         $tahun = $data['tahun'];
 
         $spreadsheet = new Spreadsheet();
@@ -512,6 +527,137 @@ class ProduksiController extends Controller
             $writer->save('php://output');
         }, $fileName, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Cache-Control' => 'max-age=0',
+        ]);
+    }
+
+    /**
+     * Ekspor Format Excel Native (HTML/XML Spreadsheet) tanpa ketergantungan library eksternal
+     * Menghasilkan file .xls yang dapat dibuka langsung di Microsoft Excel, WPS Office, dan LibreOffice
+     */
+    private function exportWithNativeExcel(array $data)
+    {
+        $tahun = $data['tahun'];
+        $fileName = "Data_Produksi_Petani_RSPO_{$tahun}.xls";
+
+        return response()->streamDownload(function () use ($data, $tahun) {
+            $months = $data['months'];
+            $rows = $data['rows'];
+            $totalAreaSum = $data['totalAreaSum'];
+            $monthlyTotals = $data['monthlyTotals'];
+            $overallTon = $data['overallTon'];
+            $overallYph = $data['overallYph'];
+
+            echo '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">' . "\n";
+            echo '<head>' . "\n";
+            echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />' . "\n";
+            echo '<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>' . "\n";
+            echo '<x:Name>All Petani ' . htmlspecialchars($tahun) . '</x:Name>' . "\n";
+            echo '<x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>' . "\n";
+            echo '</x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->' . "\n";
+            echo '<style>' . "\n";
+            echo 'table { border-collapse: collapse; font-family: Calibri, Arial, sans-serif; font-size: 10pt; }' . "\n";
+            echo 'th, td { border: 0.5pt solid #000000; padding: 4px 6px; vertical-align: middle; }' . "\n";
+            echo '.title { font-size: 14pt; font-weight: bold; text-align: center; border: none; padding: 12px 0; }' . "\n";
+            echo '.header { background-color: #BFBFBF; font-weight: bold; text-align: center; vertical-align: middle; border: 0.5pt solid #000000; }' . "\n";
+            echo '.sub-header { background-color: #E5E5E5; font-weight: bold; text-align: center; vertical-align: middle; font-size: 9pt; border: 0.5pt solid #000000; }' . "\n";
+            echo '.text-center { text-align: center; mso-number-format: "\@"; }' . "\n";
+            echo '.text-left { text-align: left; }' . "\n";
+            echo '.num-int { text-align: right; mso-number-format: "\#\,\#\#0"; }' . "\n";
+            echo '.num-dec { text-align: right; mso-number-format: "\#\,\#\#0\.00"; }' . "\n";
+            echo '.total-row { background-color: #EAEAEA; font-weight: bold; border-top: 1.5pt double #000000; border-bottom: 0.5pt solid #000000; }' . "\n";
+            echo '</style>' . "\n";
+            echo '</head>' . "\n";
+            echo '<body>' . "\n";
+            echo '<table border="1">' . "\n";
+
+            // Baris 1: Padding kosong
+            echo '<tr><td colspan="24" style="border:none; height:10px;"></td></tr>' . "\n";
+
+            // Baris 2: Judul
+            echo '<tr><td colspan="24" class="title">Basic Info dan Produksi Asosiasi PSKS Pelalawan Siak Sertifikasi RSPO Tahun ' . htmlspecialchars($tahun) . '</td></tr>' . "\n";
+
+            // Baris 3 & 4: Header Tabel (2 Baris)
+            echo '<tr>' . "\n";
+            echo '<th rowspan="2" class="header">No</th>' . "\n";
+            echo '<th rowspan="2" class="header">ID Petani</th>' . "\n";
+            echo '<th rowspan="2" class="header">ID Blok</th>' . "\n";
+            echo '<th rowspan="2" class="header">Smallholder Name</th>' . "\n";
+            echo '<th rowspan="2" class="header">Location</th>' . "\n";
+            echo '<th colspan="2" class="header">Coordinate</th>' . "\n";
+            echo '<th colspan="2" class="header">Area (Ha)</th>' . "\n";
+            echo '<th rowspan="2" class="header">Planted Year</th>' . "\n";
+            echo '<th colspan="12" class="header">' . htmlspecialchars($tahun) . '</th>' . "\n";
+            echo '<th rowspan="2" class="header">Total Produksi<br>(Ton)</th>' . "\n";
+            echo '<th rowspan="2" class="header">YPH<br>(Ton/Ha/Thn)</th>' . "\n";
+            echo '</tr>' . "\n";
+
+            // Baris 4 (Sub-header)
+            echo '<tr>' . "\n";
+            echo '<th class="sub-header">Longitude (E)</th>' . "\n";
+            echo '<th class="sub-header">Latitude (N)</th>' . "\n";
+            echo '<th class="sub-header">Total</th>' . "\n";
+            echo '<th class="sub-header">Production</th>' . "\n";
+            foreach ($months as $m) {
+                echo '<th class="sub-header">' . htmlspecialchars($m['label']) . '</th>' . "\n";
+            }
+            echo '</tr>' . "\n";
+
+            // Baris Data
+            $currentRow = 5;
+            foreach ($rows as $r) {
+                echo '<tr>' . "\n";
+                echo '<td class="text-center">' . $r['no'] . '</td>' . "\n";
+                echo '<td class="text-center">' . htmlspecialchars($r['id_petani']) . '</td>' . "\n";
+                echo '<td class="text-center">' . htmlspecialchars($r['id_blok']) . '</td>' . "\n";
+                echo '<td class="text-left">' . htmlspecialchars($r['smallholder_name']) . '</td>' . "\n";
+                echo '<td class="text-center">' . htmlspecialchars($r['location']) . '</td>' . "\n";
+                echo '<td class="text-center">' . htmlspecialchars($r['lng_dms']) . '</td>' . "\n";
+                echo '<td class="text-center">' . htmlspecialchars($r['lat_dms']) . '</td>' . "\n";
+                echo '<td class="num-dec">' . number_format($r['area_total'], 2, '.', '') . '</td>' . "\n";
+                echo '<td class="num-dec">' . number_format($r['area_production'], 2, '.', '') . '</td>' . "\n";
+                echo '<td class="text-center">' . htmlspecialchars($r['planted_year']) . '</td>' . "\n";
+
+                foreach ($months as $m) {
+                    $valKg = $r['monthly'][$m['key']] ?? 0;
+                    echo '<td class="num-int">' . ($valKg > 0 ? number_format($valKg, 0, '.', '') : '0') . '</td>' . "\n";
+                }
+
+                echo '<td class="num-dec" x:fmla="=SUM(K' . $currentRow . ':V' . $currentRow . ')/1000">' . number_format($r['total_ton'], 2, '.', '') . '</td>' . "\n";
+                echo '<td class="num-dec" x:fmla="=IF(I' . $currentRow . '>0, W' . $currentRow . '/I' . $currentRow . ', 0)">' . number_format($r['yph'], 2, '.', '') . '</td>' . "\n";
+                echo '</tr>' . "\n";
+
+                $currentRow++;
+            }
+
+            $lastDataRow = $currentRow - 1;
+
+            // Baris Ringkasan Total
+            if ($lastDataRow >= 5) {
+                echo '<tr class="total-row">' . "\n";
+                echo '<td colspan="7" class="text-center" style="font-weight:bold;">TOTAL</td>' . "\n";
+                echo '<td class="num-dec" x:fmla="=SUM(H5:H' . $lastDataRow . ')">' . number_format($totalAreaSum, 2, '.', '') . '</td>' . "\n";
+                echo '<td class="num-dec" x:fmla="=SUM(I5:I' . $lastDataRow . ')">' . number_format($totalAreaSum, 2, '.', '') . '</td>' . "\n";
+                echo '<td class="text-center">-</td>' . "\n";
+
+                $colLetters = ['K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V'];
+                foreach ($months as $idx => $m) {
+                    $cLet = $colLetters[$idx];
+                    $mVal = $monthlyTotals[$m['key']] ?? 0;
+                    echo '<td class="num-int" x:fmla="=SUM(' . $cLet . '5:' . $cLet . $lastDataRow . ')">' . number_format($mVal, 0, '.', '') . '</td>' . "\n";
+                }
+
+                echo '<td class="num-dec" x:fmla="=SUM(W5:W' . $lastDataRow . ')">' . number_format($overallTon, 2, '.', '') . '</td>' . "\n";
+                echo '<td class="num-dec" x:fmla="=IF(I' . $currentRow . '>0, W' . $currentRow . '/I' . $currentRow . ', 0)">' . number_format($overallYph, 2, '.', '') . '</td>' . "\n";
+                echo '</tr>' . "\n";
+            }
+
+            echo '</table>' . "\n";
+            echo '</body>' . "\n";
+            echo '</html>' . "\n";
+        }, $fileName, [
+            'Content-Type' => 'application/vnd.ms-excel; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
             'Cache-Control' => 'max-age=0',
         ]);
     }
