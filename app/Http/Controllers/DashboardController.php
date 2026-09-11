@@ -173,20 +173,39 @@ class DashboardController extends Controller
         }
         $kalenderEvents = json_encode($events);
 
+        // 2.5 Data Tren Harga TBS (PT. SAR vs Dinas Perkebunan)
+        $riwayatHargaTbs = \App\Models\HargaTbs::orderBy('tanggal_berlaku', 'asc')
+            ->orderBy('harga_tbs_id', 'asc')
+            ->get();
+
+        $tbsLabels = [];
+        $tbsDinas = [];
+        $tbsPtSar = [];
+
+        foreach ($riwayatHargaTbs as $item) {
+            $tbsLabels[] = \Carbon\Carbon::parse($item->tanggal_berlaku)->format('d M Y');
+            $tbsDinas[] = (float) $item->harga_dinas;
+            $tbsPtSar[] = (float) $item->harga_pt_sar;
+        }
+
+        $hargaTbsTerbaru = $riwayatHargaTbs->last() ?? \App\Models\HargaTbs::latest('tanggal_berlaku')->latest('harga_tbs_id')->first();
+
         // 3. Pengalihan Halaman View sesuai Role (Data yang dikirimkan sekarang sudah SAMA)
         if ($user->user_role === 'super_admin') {
             return view('super_admin.dashboard', compact(
                 'jumlahPetani', 'jumlahLahan', 'pendapatanBulanIni', 'petaniPending',
                 'pemasukanGrafik', 'pengeluaranGrafik', 'semuaLahan', 'jumlahProduksiHariIni',
                 'taskNotifications', 'kalenderEvents',
-                'auditLulus', 'auditPerbaikan', 'auditPending'
+                'auditLulus', 'auditPerbaikan', 'auditPending',
+                'tbsLabels', 'tbsDinas', 'tbsPtSar', 'hargaTbsTerbaru'
             ));
         } elseif ($user->user_role === 'admin') {
             return view('admin.dashboard', compact(
                 'jumlahPetani', 'jumlahLahan', 'pendapatanBulanIni', 'petaniPending',
                 'pemasukanGrafik', 'pengeluaranGrafik', 'semuaLahan', 'jumlahProduksiHariIni',
                 'taskNotifications', 'kalenderEvents',
-                'auditLulus', 'auditPerbaikan', 'auditPending'
+                'auditLulus', 'auditPerbaikan', 'auditPending',
+                'tbsLabels', 'tbsDinas', 'tbsPtSar', 'hargaTbsTerbaru'
             ));
         }
 

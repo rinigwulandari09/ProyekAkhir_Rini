@@ -216,6 +216,86 @@
                 <div id="mapSebaran" class="w-full h-80 sm:h-96 rounded-xl bg-gray-100 relative border border-gray-200" style="z-index: 1;"></div>
             </div>
 
+            {{-- Card Grafik Tren Harga TBS (PT. SAR vs Dinas Perkebunan) --}}
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 transition hover:shadow-md">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 pb-3 border-b border-gray-100">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-50 text-[#234323] flex items-center justify-center">
+                            <x-heroicon-o-arrow-trending-up class="w-5 h-5 text-[#234323]" />
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-gray-800 font-poppins">Tren Harga TBS Sawit (PT. SAR vs Dinas)</h3>
+                            <p class="text-[11px] text-gray-400">Fluktuasi harga Tandan Buah Segar (Rp/Kg) pabrik PT. SAR dan ketetapan Dinas Perkebunan</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-full text-[10px] font-bold">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                            <span>Update Berkala</span>
+                        </span>
+                        <a href="{{ route('harga_tbs.index') }}" class="inline-flex items-center gap-1 px-3 py-1 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl text-xs font-semibold text-gray-700 transition">
+                            <x-heroicon-o-pencil-square class="w-3.5 h-3.5 text-emerald-700" />
+                            <span>Kelola Harga</span>
+                        </a>
+                    </div>
+                </div>
+
+                {{-- Mini Summary Pills --}}
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
+                    <div class="p-3 bg-gray-50 border border-gray-100 rounded-xl">
+                        <div class="flex items-center justify-between text-[10px] font-extrabold uppercase tracking-wider text-gray-400 mb-1">
+                            <span>Harga PT. SAR</span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#234323]" title="Indikator PT. SAR"></span>
+                        </div>
+                        <p class="text-base sm:text-lg font-black text-gray-800 font-poppins">
+                            Rp {{ number_format($hargaTbsTerbaru->harga_pt_sar ?? 0, 0, ',', '.') }} <span class="text-[10px] font-medium text-gray-400">/Kg</span>
+                        </p>
+                    </div>
+
+                    <div class="p-3 bg-gray-50 border border-gray-100 rounded-xl">
+                        <div class="flex items-center justify-between text-[10px] font-extrabold uppercase tracking-wider text-gray-400 mb-1">
+                            <span>Harga Dinas</span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#D4AF37]" title="Indikator Dinas Perkebunan"></span>
+                        </div>
+                        <p class="text-base sm:text-lg font-black text-gray-800 font-poppins">
+                            Rp {{ number_format($hargaTbsTerbaru->harga_dinas ?? 0, 0, ',', '.') }} <span class="text-[10px] font-medium text-gray-400">/Kg</span>
+                        </p>
+                    </div>
+
+                    <div class="p-3 bg-gray-50 border border-gray-100 rounded-xl col-span-2 sm:col-span-1">
+                        <div class="flex items-center justify-between text-[10px] font-extrabold uppercase tracking-wider text-gray-400 mb-1">
+                            <span>Selisih Margin</span>
+                            <span class="text-[10px] font-semibold text-gray-400">Per Kg</span>
+                        </div>
+                        @php
+                            $diff = ($hargaTbsTerbaru->harga_pt_sar ?? 0) - ($hargaTbsTerbaru->harga_dinas ?? 0);
+                        @endphp
+                        <p class="text-base sm:text-lg font-black font-poppins {{ $diff >= 0 ? 'text-emerald-700' : 'text-rose-600' }}">
+                            {{ $diff > 0 ? '+' : '' }}Rp {{ number_format($diff, 0, ',', '.') }}
+                        </p>
+                    </div>
+                </div>
+
+                {{-- Chart Canvas / Empty State --}}
+                <div class="relative w-full h-64 sm:h-72">
+                    @if(count($tbsLabels ?? []) > 0)
+                        <canvas id="chartTrendTbs"></canvas>
+                    @else
+                        <div class="w-full h-full flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/50 p-6 text-center">
+                            <div class="w-12 h-12 rounded-full bg-emerald-50 text-[#234323] flex items-center justify-center mb-2">
+                                <x-heroicon-o-currency-dollar class="w-6 h-6 text-[#D4AF37]" />
+                            </div>
+                            <h4 class="text-xs sm:text-sm font-bold text-gray-700 font-poppins">Belum Ada Riwayat Harga TBS</h4>
+                            <p class="text-[11px] text-gray-400 max-w-sm mt-1">Grafik pergerakan harga PT. SAR vs Dinas Perkebunan akan langsung tampil secara otomatis setelah data harga diinput.</p>
+                            <a href="{{ route('harga_tbs.index') }}" class="mt-3 inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#234323] hover:bg-[#184D2E] text-white rounded-xl text-xs font-bold transition shadow-xs">
+                                <x-heroicon-o-plus-circle class="w-4 h-4 text-[#D4AF37]" />
+                                <span>Input Harga Sekarang</span>
+                            </a>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
         </div>
 
         {{-- KOLOM KANAN (5 Kolom): Status Audit, Tugas Perlu Tindakan & Kalender --}}
@@ -449,6 +529,90 @@
                         legend: {
                             position: 'bottom',
                             labels: { boxWidth: 10, font: { size: 9.5 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        const canvasTbs = document.getElementById('chartTrendTbs');
+        if (canvasTbs) {
+            const ctxTbs = canvasTbs.getContext('2d');
+            const labelsTbs = @json($tbsLabels ?? []);
+            const dataPtSar = @json($tbsPtSar ?? []);
+            const dataDinas = @json($tbsDinas ?? []);
+
+            new Chart(ctxTbs, {
+                type: 'line',
+                data: {
+                    labels: labelsTbs,
+                    datasets: [
+                        {
+                            label: 'Harga PT. SAR (Pabrik)',
+                            data: dataPtSar,
+                            borderColor: '#234323',
+                            backgroundColor: 'rgba(35, 67, 35, 0.08)',
+                            borderWidth: 2.5,
+                            fill: true,
+                            tension: 0.35,
+                            pointBackgroundColor: '#234323',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: 'Harga Dinas Perkebunan',
+                            data: dataDinas,
+                            borderColor: '#D4AF37',
+                            backgroundColor: 'rgba(212, 175, 55, 0.08)',
+                            borderWidth: 2.5,
+                            fill: true,
+                            tension: 0.35,
+                            pointBackgroundColor: '#D4AF37',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                boxWidth: 8,
+                                font: { size: 11, weight: '600' }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': Rp ' + Number(context.parsed.y).toLocaleString('id-ID') + ' / Kg';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: { color: '#F3F4F6' },
+                            ticks: {
+                                font: { size: 10 },
+                                callback: value => 'Rp ' + Number(value).toLocaleString('id-ID')
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { size: 10 } }
                         }
                     }
                 }
