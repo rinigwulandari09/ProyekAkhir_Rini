@@ -102,7 +102,7 @@
                 <a href="{{ route('login') }}" class="px-8 py-4 bg-[#EAB308] hover:bg-[#d9a206] text-white font-bold rounded-full text-lg transition-all shadow-[0_0_20px_rgba(234,179,8,0.4)] hover:shadow-[0_0_30px_rgba(234,179,8,0.6)] transform hover:-translate-y-1">
                     Masuk ke Sistem
                 </a>
-                <a href="#" class="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white font-bold rounded-full text-lg transition-all transform hover:-translate-y-1">
+                <a href="https://drive.google.com/file/d/1m4b4jopEiSt42ysh96-syBypN0QYHtAn/view?usp=sharing" class="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white font-bold rounded-full text-lg transition-all transform hover:-translate-y-1">
                     Unduh Aplikasi
                 </a>
             </div>
