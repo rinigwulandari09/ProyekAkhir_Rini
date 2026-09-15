@@ -31,24 +31,25 @@
     {{-- Navbar --}}
     <nav x-data="{ scrolled: false, mobileMenuOpen: false }" 
          @scroll.window="scrolled = (window.pageYOffset > 20)"
-         :class="{'bg-white/95 backdrop-blur-md shadow-sm py-3': scrolled, 'bg-transparent py-5': !scrolled}"
-         class="fixed w-full z-50 transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+         class="fixed w-full z-50 transition-all duration-300 top-0"
+         :class="{'pt-4 px-4 sm:px-6 lg:px-8': scrolled, 'bg-white shadow-sm py-4': !scrolled}">
+        
+        <div :class="{'bg-white/95 backdrop-blur-md shadow-lg rounded-full max-w-5xl mx-auto px-6 py-3 border border-gray-100': scrolled, 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8': !scrolled}" class="transition-all duration-300">
             <div class="flex justify-between items-center">
                 {{-- Logo --}}
                 <div class="flex items-center gap-2 flex-shrink-0 w-1/4">
                     <img src="{{ asset('foto/logo.png') }}" alt="Logo SILAUSA" class="w-10 h-10 object-contain drop-shadow-md">
-                    <span :class="{'text-[#214122]': scrolled, 'text-white': !scrolled}" class="text-2xl font-extrabold tracking-tight transition-colors">
+                    <span class="text-[#214122] text-2xl font-extrabold tracking-tight transition-colors">
                         SILAUSA
                     </span>
                 </div>
 
                 {{-- Desktop Menu (Centered) --}}
                 <div class="hidden md:flex space-x-8 items-center justify-center flex-1">
-                    <a href="#beranda" :class="{'text-gray-600 hover:text-[#214122]': scrolled, 'text-white/90 hover:text-white': !scrolled}" class="text-sm font-semibold transition-colors">Beranda</a>
-                    <a href="#tentang" :class="{'text-gray-600 hover:text-[#214122]': scrolled, 'text-white/90 hover:text-white': !scrolled}" class="text-sm font-semibold transition-colors">Tentang</a>
-                    <a href="#layanan" :class="{'text-gray-600 hover:text-[#214122]': scrolled, 'text-white/90 hover:text-white': !scrolled}" class="text-sm font-semibold transition-colors">Layanan</a>
-                    <a href="#kontak" :class="{'text-gray-600 hover:text-[#214122]': scrolled, 'text-white/90 hover:text-white': !scrolled}" class="text-sm font-semibold transition-colors">Kontak</a>
+                    <a href="#beranda" class="text-gray-600 hover:text-[#214122] text-sm font-semibold transition-colors">Beranda</a>
+                    <a href="#tentang" class="text-gray-600 hover:text-[#214122] text-sm font-semibold transition-colors">Tentang</a>
+                    <a href="#layanan" class="text-gray-600 hover:text-[#214122] text-sm font-semibold transition-colors">Layanan</a>
+                    <a href="#kontak" class="text-gray-600 hover:text-[#214122] text-sm font-semibold transition-colors">Kontak</a>
                 </div>
 
                 {{-- Desktop Login Button --}}
@@ -60,7 +61,7 @@
 
                 {{-- Mobile Menu Button --}}
                 <div class="md:hidden flex items-center">
-                    <button @click="mobileMenuOpen = !mobileMenuOpen" :class="{'text-gray-800': scrolled, 'text-white': !scrolled}" class="focus:outline-none">
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="text-gray-800 focus:outline-none">
                         <svg x-show="!mobileMenuOpen" class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                         <svg x-show="mobileMenuOpen" x-cloak class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
@@ -69,7 +70,9 @@
         </div>
 
         {{-- Mobile Menu --}}
-        <div x-show="mobileMenuOpen" x-collapse class="md:hidden bg-white border-t shadow-xl absolute w-full">
+        <div x-show="mobileMenuOpen" x-collapse 
+             :class="{'mt-4 rounded-3xl mx-4 sm:mx-auto max-w-5xl shadow-xl': scrolled, 'border-t shadow-xl w-full': !scrolled}" 
+             class="md:hidden bg-white absolute left-0 right-0 transition-all duration-300">
             <div class="px-4 pt-2 pb-6 space-y-2">
                 <a href="#beranda" @click="mobileMenuOpen = false" class="block px-3 py-3 text-base font-semibold text-gray-800 hover:bg-gray-50 rounded-lg">Beranda</a>
                 <a href="#tentang" @click="mobileMenuOpen = false" class="block px-3 py-3 text-base font-semibold text-gray-800 hover:bg-gray-50 rounded-lg">Tentang</a>
@@ -92,8 +95,8 @@
                 Asosiasi Pekebun Swadaya Kelapa Sawit Pelalawan-Siak
             </span>
             <h1 class="text-4xl md:text-5xl lg:text-7xl font-extrabold text-white leading-tight mb-8">
-                Manajemen Lahan Sawit <br class="hidden lg:block"/> 
-                <span class="text-[#EAB308]">Terintegrasi & Modern</span>
+                Sistem Informasi Lahan, Audit,  <br class="hidden lg:block"/> 
+                <span class="text-[#EAB308]">dan Keuangan Sawit</span>
             </h1>
             <p class="mt-4 max-w-2xl text-lg md:text-xl text-gray-200 mx-auto mb-10 leading-relaxed font-light">
                 Sistem Informasi Lahan, Audit, dan Keuangan Sawit (SILAUSA) hadir untuk mempermudah pemetaan, pemantauan kualitas, hingga pencatatan hasil panen petani secara transparan.
@@ -267,15 +270,64 @@
         </div>
     </section>
 
-    {{-- Call to Action --}}
+    {{-- Manfaat Section --}}
     <section class="py-20 bg-[#214122] relative overflow-hidden">
         <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
-        <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
-            <h2 class="text-3xl md:text-5xl font-extrabold text-white mb-6">Mulai Kelola Lahan Anda Sekarang</h2>
-            <p class="text-green-100 text-lg mb-10 max-w-2xl mx-auto">Masuk ke dalam sistem SILAUSA untuk memantau data lahan, hasil audit, dan riwayat produksi kelapa sawit Anda.</p>
-            <a href="{{ route('login') }}" class="inline-block px-10 py-4 bg-[#EAB308] hover:bg-[#d9a206] text-white font-bold rounded-full text-lg shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all">
-                Login Sistem SILAUSA
-            </a>
+        
+        {{-- Decorative Elements --}}
+        <div class="absolute top-0 right-0 w-64 h-64 bg-green-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 transform translate-x-1/2 -translate-y-1/2"></div>
+        <div class="absolute bottom-0 left-0 w-80 h-80 bg-yellow-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 transform -translate-x-1/2 translate-y-1/2"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="text-[#EAB308] font-bold tracking-wider uppercase text-sm mb-2 block">Mengapa Menggunakan SILAUSA?</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-6">Nilai Tambah untuk Kesejahteraan Bersama</h2>
+                <p class="text-green-100 text-lg leading-relaxed">
+                    Sistem ini tidak sekadar menjadi alat pencatatan, melainkan pondasi untuk tata kelola lahan kelapa sawit yang transparan, terstandarisasi, dan berkelanjutan.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-12">
+                <!-- Benefit 1: Transparansi Data -->
+                <div class="bg-white/10 backdrop-blur-md border border-white/20 p-8 rounded-3xl hover:bg-white/15 transition-all duration-300 transform hover:-translate-y-2 group">
+                    <div class="w-16 h-16 bg-[#EAB308] rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Transparansi Data</h3>
+                    <p class="text-green-100/80 text-sm leading-relaxed">
+                        Data lahan, jumlah panen Tandan Buah Segar (TBS), serta pencatatan operasional keuangan dapat dipantau secara akurat dan transparan oleh pihak yang berkepentingan.
+                    </p>
+                </div>
+
+                <!-- Benefit 2: Standarisasi RSPO/ISPO -->
+                <div class="bg-white/10 backdrop-blur-md border border-white/20 p-8 rounded-3xl hover:bg-white/15 transition-all duration-300 transform hover:-translate-y-2 group">
+                    <div class="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Standar Berkelanjutan</h3>
+                    <p class="text-green-100/80 text-sm leading-relaxed">
+                        Mendukung pemenuhan standar sertifikasi kelapa sawit seperti RSPO dan ISPO melalui pencatatan audit internal yang ketat dan praktik ramah lingkungan.
+                    </p>
+                </div>
+
+                <!-- Benefit 3: Kesejahteraan Petani -->
+                <div class="bg-white/10 backdrop-blur-md border border-white/20 p-8 rounded-3xl hover:bg-white/15 transition-all duration-300 transform hover:-translate-y-2 group">
+                    <div class="w-16 h-16 bg-green-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Kesejahteraan Petani</h3>
+                    <p class="text-green-100/80 text-sm leading-relaxed">
+                        Dengan manajemen kebun yang efisien dan kelapa sawit yang tersertifikasi, sistem ini membantu memaksimalkan nilai jual dan pendapatan para petani swadaya.
+                    </p>
+                </div>
+            </div>
+
+            <!-- <div class="text-center mt-12">
+                <a href="{{ route('login') }}" class="inline-flex items-center gap-2 px-10 py-4 bg-[#EAB308] hover:bg-[#d9a206] text-white font-bold rounded-full text-lg shadow-[0_0_20px_rgba(234,179,8,0.4)] hover:shadow-[0_0_30px_rgba(234,179,8,0.6)] transform hover:-translate-y-1 transition-all">
+                    Login ke Dalam Sistem
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                </a>
+            </div> -->
         </div>
     </section>
 
@@ -347,8 +399,14 @@
 
             </div>
             
-            <div class="border-t border-gray-800 mt-16 pt-8 text-center md:text-left">
-                <p class="text-sm text-gray-500 font-medium">&copy; {{ date('Y') }} SILAUSA. Hak Cipta Dilindungi.</p>
+            <div class="border-t border-gray-800 mt-16 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-gray-500 font-medium text-center md:text-left">&copy; {{ date('Y') }} SILAUSA. Hak Cipta Dilindungi.</p>
+                <div class="flex items-center gap-3">
+                    <span class="text-xs text-gray-600 font-medium uppercase tracking-wider">Dipersembahkan oleh:</span>
+                    <div class="bg-white p-1.5 rounded-lg shadow-sm border border-gray-200/20">
+                        <img src="{{ asset('foto/logo_pcr.png') }}" alt="Politeknik Caltex Riau" class="h-7 w-auto object-contain">
+                    </div>
+                </div>
             </div>
         </div>
     </footer>

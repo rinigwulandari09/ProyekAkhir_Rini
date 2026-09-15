@@ -400,7 +400,7 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100 text-xs bg-white">
-                                @forelse($petaniPending as $index => $petani)
+                                @foreach($petaniPending as $index => $petani)
                                 <tr class="hover:bg-emerald-50/25 transition-colors group">
                                     <td class="py-2.5 px-2 text-center">
                                         <span class="w-6 h-6 mx-auto rounded-lg bg-gray-100 group-hover:bg-[#234323] group-hover:text-[#D4AF37] text-gray-600 text-[10.5px] font-bold flex items-center justify-center font-mono transition shadow-2xs">{{ $index + 1 }}</span>
@@ -423,15 +423,7 @@
                                         </button>
                                     </td>
                                 </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="4" class="py-8 text-center text-xs text-gray-400">
-                                        <x-heroicon-o-user-plus class="w-7 h-7 text-gray-300 mx-auto mb-1" />
-                                        <p class="font-bold text-gray-500">Tidak ada pengajuan akun baru yang pending.</p>
-                                        <p class="text-[10px] text-gray-400">Semua pendaftaran telah diverifikasi.</p>
-                                    </td>
-                                </tr>
-                                @endforelse
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -579,7 +571,11 @@
                 "pageLength": 5, 
                 "lengthMenu": [[5, 10, 25, -1], [5, 10, 25, "All"]],
                 "language": {
-                    "emptyTable": "Tidak ada pengajuan akun petani baru.",
+                    "emptyTable": `<div class="py-8 text-center text-xs text-gray-400">
+                                    <svg class="w-7 h-7 text-gray-300 mx-auto mb-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z" /></svg>
+                                    <p class="font-bold text-gray-500">Tidak ada pengajuan akun baru yang pending.</p>
+                                    <p class="text-[10px] text-gray-400">Semua pendaftaran telah diverifikasi.</p>
+                                   </div>`,
                     "info": "Menampilkan _START_-_END_ dari _TOTAL_ pengajuan",
                     "infoEmpty": "0 pengajuan",
                     "infoFiltered": "(dari _MAX_ total)",
