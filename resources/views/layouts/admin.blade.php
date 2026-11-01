@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title') - SILAUSA</title>
-    <link rel="icon" href="{{ asset('foto/logo.png') }}" type="image/png">
+    <link rel="icon" type="image/png" href="{{ asset('foto/logo.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('foto/logo.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('foto/logo.png') }}">
     
     @vite('resources/css/app.css')
     
