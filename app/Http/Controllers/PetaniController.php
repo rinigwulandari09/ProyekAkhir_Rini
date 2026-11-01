@@ -151,4 +151,137 @@ class PetaniController extends Controller
             ->route('petani.index')
             ->with('success', 'Data petani berhasil dihapus');
     }
+
+    public function formatImport()
+    {
+        if (auth()->user()->user_role !== 'super_admin') {
+            abort(403);
+        }
+
+        $desas = \App\Models\Desa::pluck('desa_nama')->toArray();
+        $panduanDesa = empty($desas) ? 'Ketik Nama Desa' : 'Pilih/Ketik: ' . implode(', ', $desas);
+
+        $data = [
+            [
+                'Nama Petani', 
+                'Username', 
+                'Email', 
+                'No HP', 
+                'Jenis Kelamin (L/P)', 
+                'Tanggal Lahir (YYYY-MM-DD)', 
+                'Alamat', 
+                'Nama Desa (' . $panduanDesa . ')', 
+                'PIN (Min 6 Karakter)'
+            ]
+        ];
+
+        $contohDesa = !empty($desas) ? $desas[0] : 'Sukamaju';
+        $data[] = [
+            'Budi Santoso',
+            'budi123',
+            'budi@email.com',
+            '08123456789',
+            'L',
+            '1990-01-01',
+            'Jl. Mawar No. 2',
+            $contohDesa,
+            '123456'
+        ];
+
+        $xlsx = \Shuchkin\SimpleXLSXGen::fromArray($data);
+        
+        $headers = [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'attachment; filename="Format_Import_Petani.xlsx"',
+        ];
+
+        $callback = function () use ($xlsx) {
+            echo $xlsx;
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function import(Request $request)
+    {
+        if (auth()->user()->user_role !== 'super_admin') {
+            abort(403);
+        }
+
+        $request->validate([
+            'file_excel' => 'required|file|mimes:xlsx,xls|max:2048'
+        ], [
+            'file_excel.required' => 'File Excel wajib diunggah',
+            'file_excel.mimes' => 'Format file harus berupa Excel (.xlsx atau .xls)',
+            'file_excel.max' => 'Ukuran file maksimal 2MB',
+        ]);
+
+        $file = $request->file('file_excel');
+        
+        if ($xlsx = \Shuchkin\SimpleXLSX::parse($file->getPathname())) {
+            $rows = $xlsx->rows();
+            $header = true;
+            $sukses = 0;
+            $gagal = 0;
+
+            foreach ($rows as $row) {
+                if ($header) {
+                    $header = false;
+                    continue;
+                }
+
+                // Skip jika baris kosong
+                if (empty(array_filter($row))) {
+                    continue;
+                }
+
+                try {
+                    $username = trim($row[1] ?? '');
+                    
+                    // Cek apakah username sudah ada
+                    if (\App\Models\User::where('user_username', $username)->exists() || 
+                        Petani::where('petani_username', $username)->exists()) {
+                        $gagal++;
+                        continue;
+                    }
+
+                    // Cari ID Desa berdasarkan Nama Desa
+                    $nama_desa = trim($row[7] ?? '');
+                    $desa_id = null;
+                    
+                    if (!empty($nama_desa)) {
+                        $desa = \App\Models\Desa::where('desa_nama', $nama_desa)->first();
+                        if ($desa) {
+                            $desa_id = $desa->desa_id;
+                        } else {
+                            // Jika nama desa tidak ditemukan, lewati baris ini
+                            $gagal++;
+                            continue;
+                        }
+                    }
+
+                    Petani::create([
+                        'petani_nama' => trim($row[0] ?? ''),
+                        'petani_username' => $username,
+                        'petani_email' => trim($row[2] ?? ''),
+                        'petani_no_hp' => trim($row[3] ?? ''),
+                        'petani_status' => 'Aktif',
+                        'petani_jenis_kelamin' => trim($row[4] ?? ''),
+                        'petani_tanggal_lahir' => trim($row[5] ?? '') ?: null,
+                        'petani_alamat' => trim($row[6] ?? ''),
+                        'desa_id' => $desa_id,
+                        'petani_pin' => \Illuminate\Support\Facades\Hash::make(trim($row[8] ?? '123456'))
+                    ]);
+                    $sukses++;
+                } catch (\Exception $e) {
+                    $gagal++;
+                }
+            }
+            
+            return redirect()->route('petani.index')
+                ->with('success', "Import selesai: $sukses berhasil, $gagal gagal (cek duplikat username, format salah, atau nama desa tidak valid).");
+        } else {
+            return back()->with('error', 'Gagal membaca file Excel: ' . \Shuchkin\SimpleXLSX::parseError());
+        }
+    }
 }

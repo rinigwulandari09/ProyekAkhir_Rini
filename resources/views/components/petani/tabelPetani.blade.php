@@ -6,10 +6,28 @@
             <p class="text-sm text-gray-500">Daftar seluruh petani sawit yang terdaftar.</p>
         </div>
         
-        <!-- <a href="{{ route('petani.create') }}" class="bg-[#214122] text-white px-4 py-2.5 rounded-lg inline-flex items-center gap-2 hover:bg-green-900 transition shadow-md font-semibold text-sm">
-            <x-heroicon-o-user-plus class="w-5 h-5" />
-            Tambah Petani
-        </a> -->
+        <div class="flex items-center gap-2 flex-wrap justify-end">
+            @if(auth()->user()->user_role === 'super_admin')
+                <a href="{{ route('petani.format_import') }}" class="bg-yellow-50 text-yellow-700 border border-yellow-400 px-4 py-2.5 rounded-lg inline-flex items-center gap-2 hover:bg-yellow-100 transition shadow-sm font-semibold text-sm" title="Unduh Format CSV/Excel untuk Import">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Format Excel
+                </a>
+
+                <form action="{{ route('petani.import') }}" method="POST" enctype="multipart/form-data" class="m-0" id="formImportPetani">
+                    @csrf
+                    <input type="file" name="file_excel" id="fileExcel" class="hidden" accept=".xlsx" onchange="document.getElementById('formImportPetani').submit();">
+                    <button type="button" onclick="document.getElementById('fileExcel').click()" class="bg-blue-50 text-blue-700 border border-blue-400 px-4 py-2.5 rounded-lg inline-flex items-center gap-2 hover:bg-blue-100 transition shadow-sm font-semibold text-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                        Import Data
+                    </button>
+                </form>
+            @endif
+
+            <a href="{{ route('petani.create') }}" class="bg-[#214122] text-white px-4 py-2.5 rounded-lg inline-flex items-center gap-2 hover:bg-green-900 transition shadow-md font-semibold text-sm">
+                <x-heroicon-o-user-plus class="w-5 h-5" />
+                Tambah Petani
+            </a>
+        </div>
     </div>
 
     @if(session('success'))
@@ -19,9 +37,17 @@
         </div>
     @endif
 
-    {{-- Container tempat tombol Export --}}
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-        <div id="exportButtonsContainer" class="flex flex-wrap items-center w-full sm:w-auto gap-2 sm:gap-3"></div>
+    @if(session('error'))
+        <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl relative text-sm flex items-center shadow-sm" role="alert">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span class="block sm:inline">{{ session('error') }}</span>
+        </div>
+    @endif
+
+    {{-- Container tempat tombol Export & Filter --}}
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 w-full">
+        <div id="exportButtonsContainer" class="w-full sm:w-auto"></div>
+        <div id="filterDesaContainer" class="w-full sm:w-auto flex sm:justify-end"></div>
     </div>
     
     {{-- Table Card --}}
@@ -150,7 +176,6 @@
             "buttons": [
                 {
                     extend: 'excelHtml5',
-                    // Dibungkus div flex memastikan SVG dan Teks sejajar sempurna
                     text: '<div class="flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path></svg><span>Export Excel</span></div>',
                     className: 'btn-export-excel',
                     title: 'Data_Petani_SILAUSA',
@@ -167,7 +192,6 @@
                     exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], format: cleanExportFormat }
                 }
             ],
-            // DOM Layout: Length di kiri, Search di kanan (sejajar di semua device)
             "dom": '<"hidden" B> <"flex justify-between items-center w-full mb-4 gap-2" l f> <"overflow-x-auto w-full" tr> <"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4" i p>'
         });
 
@@ -179,6 +203,34 @@
         }).draw();
 
         table.buttons().container().appendTo('#exportButtonsContainer');
+
+        // ==== LOGIKA FILTER DESA ====
+        var filterHtml = `
+            <div class="flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-3 py-1.5 shadow-sm hover:border-[#214122] transition-colors group">
+                <svg class="w-4 h-4 text-gray-400 group-hover:text-[#214122]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                </svg>
+                <span class="text-sm text-gray-500 font-medium whitespace-nowrap">Filter Desa:</span>
+                <select id="desaSelect" class="border-none bg-transparent text-[#214122] text-sm font-bold focus:ring-0 cursor-pointer p-0 m-0 outline-none w-auto pr-6" style="background-position: right center;">
+                    <option value="">Tampilkan Semua</option>
+                </select>
+            </div>
+        `;
+        $('#filterDesaContainer').append(filterHtml);
+
+        var select = $('#desaSelect');
+        select.on('change', function () {
+            var val = $.fn.dataTable.util.escapeRegex($(this).val());
+            // Filter menggunakan Exact Match di kolom 7 (Desa)
+            table.column(7).search(val ? '^' + val + '$' : '', true, false).draw();
+        });
+
+        // Ambil data unik dari kolom Desa (index 7) dan masukkan ke option
+        table.column(7).data().unique().sort().each(function (d, j) {
+            if (d && d.trim() !== '' && d !== '-') {
+                select.append('<option value="' + d + '">' + d + '</option>');
+            }
+        });
     });
 </script>
 

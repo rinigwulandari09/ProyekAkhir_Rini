@@ -327,7 +327,9 @@ class LahanController extends Controller
                 }
                 $luasLahan = (float) $hectareRaw;
 
-                $namaLahan = $propsLower['id_sub_blo'] ?? $propsLower['no_blok'] ?? $namaRaw;
+                $namaLahan = (isset($propsLower['no_blok']) && trim((string)$propsLower['no_blok']) !== '')
+                    ? trim((string)$propsLower['no_blok'])
+                    : ($propsLower['id_sub_blo'] ?? $namaRaw);
 
                 $geometry = $feature['geometry'];
                 $geometryJsonString = json_encode($geometry);
@@ -605,23 +607,21 @@ class LahanController extends Controller
                 |--------------------------------------------------------------------------
                 */
 
+                $propsLower = array_change_key_case($properties, CASE_LOWER);
+
                 $luas =
-                    $properties['Hectare']
-                    ?? $properties['Hectares']
-                    ?? $properties['hectare']
-                    ?? $properties['hectares']
+                    $propsLower['hectare']
+                    ?? $propsLower['hectares']
+                    ?? $propsLower['luas']
                     ?? 0;
 
                 if (is_string($luas)) {
                     $luas = str_replace(',', '.', $luas);
                 }
 
-                $namaLahan =
-                    $properties['Id_Sub_Blo']
-                    ?? $properties['id_sub_blo']
-                    ?? $properties['No_Blok']
-                    ?? $properties['no_blok']
-                    ?? 'Lahan';
+                $namaLahan = (isset($propsLower['no_blok']) && trim((string)$propsLower['no_blok']) !== '')
+                    ? trim((string)$propsLower['no_blok'])
+                    : ($propsLower['id_sub_blo'] ?? 'Lahan');
 
                 $petani = Petani::with('desa')
                     ->find($item['petani_id']);

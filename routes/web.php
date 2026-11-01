@@ -80,6 +80,10 @@ Route::middleware(['auth'])->group(function () {
     // Proses menghapus data petani
     Route::delete('/petani/{id}', [PetaniController::class, 'destroy'])->name('petani.destroy');
 
+    // Import Excel & Download Format Petani (Super Admin)
+    Route::get('/petani/format-import', [PetaniController::class, 'formatImport'])->name('petani.format_import');
+    Route::post('/petani/import', [PetaniController::class, 'import'])->name('petani.import');
+
     
     //DATA LAHAN
     Route::get('/lahan', [LahanController::class, 'index'])->name('lahan.index');

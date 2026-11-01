@@ -26,10 +26,10 @@
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 border-t-4 border-t-[#D4AF37] p-5 sm:p-6 transition hover:shadow-md">
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div class="space-y-2">
-                <div class="inline-flex items-center gap-2 px-3 py-1 bg-amber-50 text-amber-800 border border-amber-200/80 rounded-full text-xs font-semibold">
+                <!-- <div class="inline-flex items-center gap-2 px-3 py-1 bg-amber-50 text-amber-800 border border-amber-200/80 rounded-full text-xs font-semibold">
                     <x-heroicon-s-shield-check class="w-3.5 h-3.5 text-[#D4AF37]" />
                     <span>Asosiasi PSKS Pelalawan Siak • Sertifikasi RSPO & ISPO</span>
-                </div>
+                </div> -->
                 <h2 class="text-xl sm:text-2xl font-black text-gray-800 font-poppins">
                     Selamat Datang, {{ Auth::user()->user_nama }}
                 </h2>
