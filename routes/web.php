@@ -36,7 +36,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // untuk update status petani di dashboard super admin
-    Route::put('/dashboard/petani/{id}/status', [DashboardController::class, 'updateStatus'])->name('petani.updateStatus');
+    Route::put('/dashboard/petani/{id}/status', [DashboardController::class, 'updateStatus'])->name('dashboard.petani.updateStatus');
 
     
     //MANAJEMEN USER (CRUD)
