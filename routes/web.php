@@ -11,6 +11,7 @@ use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\AuditInternalController;
 use App\Http\Controllers\HargaTbsController;
 use App\Http\Controllers\ProduksiController;
+use App\Http\Controllers\KegiatanController;
 
 Route::get('/', function () {
     return view('landing');
@@ -98,6 +99,13 @@ Route::middleware(['auth'])->group(function () {
     //DATA PRODUKSI (RSPO)
     Route::get('/produksi', [ProduksiController::class, 'index'])->name('produksi.index');
     Route::get('/produksi/export', [ProduksiController::class, 'export'])->name('produksi.export');
+
+    //DATA KEGIATAN PETANI (MOBILE SYNC)
+    Route::get('/kegiatan', [KegiatanController::class, 'index'])->name('kegiatan.index');
+    Route::get('/kegiatan/export', [KegiatanController::class, 'export'])->name('kegiatan.export');
+    Route::get('/kegiatan/{id}', [KegiatanController::class, 'show'])->name('kegiatan.show');
+    Route::put('/kegiatan/{id}/status-limbah', [KegiatanController::class, 'updateStatusLimbah'])->name('kegiatan.updateStatusLimbah');
+    Route::delete('/kegiatan/{id}', [KegiatanController::class, 'destroy'])->name('kegiatan.destroy');
 
     //KEUANGAN
     Route::get('/keuangan', [KeuanganController::class, 'index'])->name('keuangan.index');

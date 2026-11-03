@@ -67,6 +67,10 @@
                     <x-heroicon-o-chart-bar class="w-5 h-5 shrink-0" /> 
                     <span x-show="sidebarOpen">Data Produksi</span>
                 </a>
+                <a href="{{ route('kegiatan.index') }}" class="flex items-center gap-3 p-3 rounded-xl transition {{ request()->routeIs('kegiatan.*') ? 'bg-[#D4AF37] text-[#234323] font-bold shadow-sm' : 'text-white/85 hover:text-white hover:bg-white/10' }}" :class="!sidebarOpen && 'justify-center'">
+                    <x-heroicon-o-clipboard-document-list class="w-5 h-5 shrink-0" /> 
+                    <span x-show="sidebarOpen">Data Kegiatan</span>
+                </a>
                 <a href="{{ route('harga_tbs.index') }}" class="flex items-center gap-3 p-3 rounded-xl transition {{ request()->routeIs('harga_tbs.*') ? 'bg-[#D4AF37] text-[#234323] font-bold shadow-sm' : 'text-white/85 hover:text-white hover:bg-white/10' }}" :class="!sidebarOpen && 'justify-center'">
                     <x-heroicon-o-currency-dollar class="w-5 h-5 shrink-0" /> 
                     <span x-show="sidebarOpen">Harga TBS</span>

@@ -166,9 +166,28 @@ class LahanController extends Controller
     public function destroy($id)
     {
         $lahan = Lahan::findOrFail($id);
-        $lahan->delete();
 
-        return redirect()->route('lahan.index')->with('success', 'Data lahan berhasil dihapus!');
+        DB::beginTransaction();
+        try {
+            // Hapus referensi data relasi terlebih dahulu agar tidak melanggar foreign key constraint
+            DB::table('detail_kegiatan')->where('lahan_id', $id)->delete();
+            DB::table('detail_biaya_operasional')->where('lahan_id', $id)->delete();
+            DB::table('detail_produksi')->where('lahan_id', $id)->delete();
+
+            // Lepaskan keterikatan lahan pada produksi dan biaya operasional
+            DB::table('biaya_operasional')->where('lahan_id', $id)->update(['lahan_id' => null]);
+            DB::table('produksi')->where('lahan_id', $id)->update(['lahan_id' => null]);
+
+            // Hapus lahan utama
+            $lahan->delete();
+
+            DB::commit();
+
+            return redirect()->route('lahan.index')->with('success', 'Data lahan berhasil dihapus!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('lahan.index')->with('error', 'Gagal menghapus lahan: ' . $e->getMessage());
+        }
     }
 
 

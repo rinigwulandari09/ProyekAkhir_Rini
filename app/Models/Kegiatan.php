@@ -29,7 +29,12 @@ class Kegiatan extends Model
     // relasi ke tabel jenis kegiatan
     public function jenisKegiatan()
     {
-        return $this->belongsTo(JenisKegiatan::class, 'id_jenis', 'id_jenis');
+        return $this->belongsTo(JenisKegiatan::class, 'jenis_kegiatan_id', 'id_jenis');
+    }
+
+    public function petani()
+    {
+        return $this->belongsTo(Petani::class, 'petani_id', 'petani_id');
     }
 
     public function detailLahan()
@@ -39,7 +44,7 @@ class Kegiatan extends Model
 
     public function jenis()
     {
-        return $this->belongsTo(JenisKegiatan::class, 'jenis_kegiatan_id');
+        return $this->belongsTo(JenisKegiatan::class, 'jenis_kegiatan_id', 'id_jenis');
     }
 }
 

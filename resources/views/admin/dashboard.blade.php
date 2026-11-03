@@ -23,13 +23,13 @@
     </div>
 
     {{-- Welcome Hero Banner Card (Style HARMONITAS: Card Putih dengan Garis Atas Emas) --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 border-t-4 border-t-[#D4AF37] p-5 sm:p-6 transition hover:shadow-md">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 border-t-4 border-t-[#D4AF37] p-5 sm:p-6">
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div class="space-y-2">
-                <div class="inline-flex items-center gap-2 px-3 py-1 bg-amber-50 text-amber-800 border border-amber-200/80 rounded-full text-xs font-semibold">
+                <!-- <div class="inline-flex items-center gap-2 px-3 py-1 bg-amber-50 text-amber-800 border border-amber-200/80 rounded-full text-xs font-semibold">
                     <x-heroicon-s-shield-check class="w-3.5 h-3.5 text-[#D4AF37]" />
                     <span>Asosiasi PSKS Pelalawan Siak • Sertifikasi RSPO & ISPO</span>
-                </div>
+                </div> -->
                 <h2 class="text-xl sm:text-2xl font-black text-gray-800 font-poppins">
                     Selamat Datang, {{ Auth::user()->user_nama }}
                 </h2>
@@ -50,6 +50,10 @@
                     <x-heroicon-o-chart-bar class="w-4 h-4 text-blue-600" />
                     <span>Data Produksi</span>
                 </a>
+                <a href="{{ route('kegiatan.index') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold text-gray-700 transition">
+                    <x-heroicon-o-clipboard-document-list class="w-4 h-4 text-amber-600" />
+                    <span>Data Kegiatan</span>
+                </a>
                 <a href="{{ route('petani.index') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-[#234323] hover:bg-[#184D2E] text-white rounded-xl text-xs font-bold transition shadow-sm hover:shadow-md">
                     <x-heroicon-o-user-group class="w-4 h-4 text-[#D4AF37]" />
                     <span>Semua Petani</span>
@@ -62,7 +66,7 @@
     {{-- 5 Stat Cards Row (Exact HARMONITAS Style) --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {{-- Card 1: TOTAL PETANI --}}
-        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-gray-100 hover:shadow-md hover:border-emerald-200 transition group flex flex-col justify-between relative overflow-hidden">
+        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-gray-100 group flex flex-col justify-between relative overflow-hidden">
             <div class="flex items-center justify-between gap-2 mb-3">
                 <span class="text-[10px] font-extrabold uppercase tracking-wider text-gray-400 font-poppins">Total Petani</span>
                 <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
@@ -81,7 +85,7 @@
         </div>
 
         {{-- Card 2: LUAS LAHAN --}}
-        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-gray-100 hover:shadow-md hover:border-blue-200 transition group flex flex-col justify-between relative overflow-hidden">
+        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-gray-100 group flex flex-col justify-between relative overflow-hidden">
             <div class="flex items-center justify-between gap-2 mb-3">
                 <span class="text-[10px] font-extrabold uppercase tracking-wider text-gray-400 font-poppins">Luas Lahan (Ha)</span>
                 <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center shrink-0">
@@ -100,7 +104,7 @@
         </div>
 
         {{-- Card 3: PRODUKSI HARI INI --}}
-        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-gray-100 hover:shadow-md hover:border-amber-200 transition group flex flex-col justify-between relative overflow-hidden">
+        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-gray-100 group flex flex-col justify-between relative overflow-hidden">
             <div class="flex items-center justify-between gap-2 mb-3">
                 <span class="text-[10px] font-extrabold uppercase tracking-wider text-gray-400 font-poppins">Produksi Hari Ini</span>
                 <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0">
@@ -119,7 +123,7 @@
         </div>
 
         {{-- Card 4: PENDAPATAN BULAN INI --}}
-        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-gray-100 hover:shadow-md hover:border-green-200 transition group flex flex-col justify-between relative overflow-hidden">
+        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-gray-100 group flex flex-col justify-between relative overflow-hidden">
             <div class="flex items-center justify-between gap-2 mb-3">
                 <span class="text-[10px] font-extrabold uppercase tracking-wider text-gray-400 font-poppins">Pendapatan Bln Ini</span>
                 <div class="w-8 h-8 rounded-xl bg-green-50 text-green-700 flex items-center justify-center shrink-0">
@@ -138,7 +142,7 @@
         </div>
 
         {{-- Card 5: AUDIT LULUS --}}
-        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-gray-100 hover:shadow-md hover:border-teal-200 transition group flex flex-col justify-between relative overflow-hidden">
+        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-gray-100 group flex flex-col justify-between relative overflow-hidden">
             <div class="flex items-center justify-between gap-2 mb-3">
                 <span class="text-[10px] font-extrabold uppercase tracking-wider text-gray-400 font-poppins">Audit Lulus</span>
                 <div class="w-8 h-8 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center shrink-0">
@@ -157,67 +161,215 @@
         </div>
     </div>
 
-    {{-- Main Grid Section (2 Kolom Layout Sesuai HARMONITAS) --}}
-    <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+    {{-- 1. CARD GRAFIK KEUANGAN & PRODUKSI (FULL WIDTH) --}}
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 mb-6">
+        <div class="flex items-center justify-between gap-4 mb-5 pb-3 border-b border-gray-100">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-[#234323]/10 text-[#234323] flex items-center justify-center">
+                    <x-heroicon-o-presentation-chart-line class="w-5 h-5" />
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-gray-800 font-poppins">Tren Keuangan & Produksi Bulanan</h3>
+                    <p class="text-[11px] text-gray-400">Pemasukan penjualan TBS dan pengeluaran operasional perkebunan</p>
+                </div>
+            </div>
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-[10px] font-bold">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Live Data</span>
+            </span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+                <p class="text-[10px] font-extrabold uppercase tracking-wider text-gray-400 mb-2 font-poppins">Pemasukan Per Bulan (Rp)</p>
+                <div class="relative w-full h-56">
+                    <canvas id="chartPemasukan"></canvas>
+                </div>
+            </div>
+            <div>
+                <p class="text-[10px] font-extrabold uppercase tracking-wider text-gray-400 mb-2 font-poppins">Biaya Operasional Per Kategori</p>
+                <div class="relative w-full h-56 flex justify-center">
+                    <canvas id="chartPengeluaran"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- 2. HASIL AUDIT & TABEL PENGINGAT TUGAS (DIBUAT SAMPINGAN / BERDAMPINGAN) --}}
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6 items-stretch">
         
-        {{-- KOLOM KIRI (7 Kolom): Grafik & Peta Spasial --}}
-        <div class="xl:col-span-7 space-y-6">
+        {{-- Card Hasil Audit (Kiri - 5 Kolom) --}}
+        <div class="lg:col-span-5 flex flex-col bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6">
+            <div class="flex items-center justify-between gap-3 mb-4 pb-3 border-b border-gray-100">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center">
+                        <x-heroicon-o-clipboard-document-check class="w-5 h-5 text-teal-700" />
+                    </div>
+                    <div>
+                        <h3 class="text-xs font-extrabold uppercase tracking-wider text-gray-800 font-poppins">Hasil Audit Internal</h3>
+                        <p class="text-[10.5px] text-gray-400">Status sertifikasi & temuan lapangan</p>
+                    </div>
+                </div>
+                <a href="{{ route('audit.index') }}" class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 hover:text-emerald-800 transition">
+                    <span>Lihat Semua</span>
+                    <x-heroicon-o-arrow-right class="w-3.5 h-3.5" />
+                </a>
+            </div>
 
-            {{-- Card Grafik Pemasukan & Pengeluaran --}}
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6">
-                <div class="flex items-center justify-between gap-4 mb-5 pb-3 border-b border-gray-100">
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-lg bg-[#234323]/10 text-[#234323] flex items-center justify-center">
-                            <x-heroicon-o-presentation-chart-line class="w-5 h-5" />
+            {{-- Status Audit Summary Items --}}
+            <div class="space-y-3 flex-1 flex flex-col justify-center">
+                <div class="p-3.5 bg-gray-50 hover:bg-emerald-50/50 border border-gray-100 rounded-xl flex items-center justify-between transition">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                            <x-heroicon-s-check-circle class="w-4 h-4" />
                         </div>
                         <div>
-                            <h3 class="text-sm font-bold text-gray-800 font-poppins">Tren Keuangan & Produksi Bulanan</h3>
-                            <p class="text-[11px] text-gray-400">Pemasukan penjualan TBS dan pengeluaran operasional perkebunan</p>
+                            <p class="text-xs font-bold text-gray-800">Audit Lulus (Sesuai)</p>
+                            <p class="text-[10px] text-gray-400">Telah memenuhi kriteria sertifikasi</p>
                         </div>
                     </div>
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-[10px] font-bold">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <span>Live Data</span>
+                    <span class="w-8 h-8 bg-emerald-600 text-white text-xs font-black rounded-lg flex items-center justify-center shadow-xs">
+                        {{ $auditLulus }}
                     </span>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div>
-                        <p class="text-[10px] font-extrabold uppercase tracking-wider text-gray-400 mb-2 font-poppins">Pemasukan Per Bulan (Rp)</p>
-                        <div class="relative w-full h-56">
-                            <canvas id="chartPemasukan"></canvas>
-                        </div>
-                    </div>
-                    <div>
-                        <p class="text-[10px] font-extrabold uppercase tracking-wider text-gray-400 mb-2 font-poppins">Biaya Operasional Per Kategori</p>
-                        <div class="relative w-full h-56 flex justify-center">
-                            <canvas id="chartPengeluaran"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Card Peta Sebaran Lahan Spasial --}}
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6">
-                <div class="flex items-center justify-between gap-4 mb-4 pb-3 border-b border-gray-100">
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-lg bg-[#D4AF37]/20 text-[#214122] flex items-center justify-center">
-                            <x-heroicon-o-map-pin class="w-5 h-5 text-[#214122]" />
+                <div class="p-3.5 bg-gray-50 hover:bg-amber-50/50 border border-gray-100 rounded-xl flex items-center justify-between transition">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+                            <x-heroicon-s-information-circle class="w-4 h-4" />
                         </div>
                         <div>
-                            <h3 class="text-sm font-bold text-gray-800 font-poppins">Sebaran Lahan Anggota (Peta Spasial GIS)</h3>
-                            <p class="text-[11px] text-gray-400">Pemetaan poligon hamparan kebun kelapa sawit bersertifikasi</p>
+                            <p class="text-xs font-bold text-gray-800">Butuh Tindak Lanjut</p>
+                            <p class="text-[10px] text-gray-400">Perlu perbaikan temuan lapangan</p>
                         </div>
                     </div>
-                    <span class="text-xs font-semibold text-gray-500 bg-gray-50 border border-gray-200 px-3 py-1 rounded-lg">
-                        {{ count($semuaLahan ?? []) }} Poligon Terpetakan
+                    <span class="w-8 h-8 bg-amber-500 text-white text-xs font-black rounded-lg flex items-center justify-center shadow-xs">
+                        {{ $auditPerbaikan }}
                     </span>
                 </div>
-                <div id="mapSebaran" class="w-full h-80 sm:h-96 rounded-xl bg-gray-100 relative border border-gray-200" style="z-index: 1;"></div>
+
+                <div class="p-3.5 bg-gray-50 hover:bg-rose-50/50 border border-gray-100 rounded-xl flex items-center justify-between transition">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+                            <x-heroicon-s-clock class="w-4 h-4" />
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-gray-800">Menunggu Verifikasi</p>
+                            <p class="text-[10px] text-gray-400">Belum diputuskan auditor</p>
+                        </div>
+                    </div>
+                    <span class="w-8 h-8 bg-rose-600 text-white text-xs font-black rounded-lg flex items-center justify-center shadow-xs">
+                        {{ $auditPending }}
+                    </span>
+                </div>
             </div>
 
-            {{-- Card Grafik Tren Harga TBS (PT. SAR vs Dinas Perkebunan) --}}
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 transition hover:shadow-md">
+            @php
+                $totalAuditAll = ($auditLulus ?? 0) + ($auditPerbaikan ?? 0) + ($auditPending ?? 0);
+                $persenLulus = $totalAuditAll > 0 ? round(($auditLulus / $totalAuditAll) * 100) : 0;
+            @endphp
+            <div class="mt-4 pt-3 border-t border-gray-100">
+                <div class="flex items-center justify-between text-xs mb-1.5">
+                    <span class="text-gray-500 font-medium">Kepatuhan Audit Selesai</span>
+                    <span class="font-bold text-emerald-700">{{ $persenLulus }}%</span>
+                </div>
+                <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-emerald-600 to-green-500 rounded-full transition-all duration-500" style="width: {{ $persenLulus }}%"></div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Card Tabel Pengingat Tugas (Kanan - 7 Kolom) --}}
+        <div class="lg:col-span-7 flex flex-col bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-gray-100">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-[#234323]/10 text-[#234323] flex items-center justify-center">
+                        <x-heroicon-o-bell-alert class="w-5 h-5 text-[#D4AF37]" />
+                    </div>
+                    <div>
+                        <h3 class="text-xs font-extrabold uppercase tracking-wider text-gray-800 font-poppins">Daftar Tugas Aktif</h3>
+                        <p class="text-[10.5px] text-gray-400">Tenggat waktu & tindak lanjut operasional</p>
+                    </div>
+                </div>
+                <span class="text-[10px] font-bold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200 self-start sm:self-auto">
+                    {{ count($taskNotifications) }} Tugas Terdaftar
+                </span>
+            </div>
+
+            {{-- Custom Modern Search Bar --}}
+            <div class="relative w-full mb-3">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                    <x-heroicon-o-magnifying-glass class="w-4 h-4 text-emerald-700" />
+                </div>
+                <input type="text" id="customSearchTugas" 
+                       class="w-full pl-9 pr-24 py-2 bg-gray-50/80 hover:bg-gray-100/70 focus:bg-white border border-gray-200 focus:border-[#234323] focus:ring-2 focus:ring-[#234323]/15 rounded-xl text-xs text-gray-800 placeholder-gray-400 transition shadow-2xs outline-none"
+                       placeholder="Cari tugas, instruksi, tanggal...">
+                <div class="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none">
+                    <span class="text-[10px] font-bold text-[#234323] bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-md">
+                        {{ count($taskNotifications) }} Tugas
+                    </span>
+                </div>
+            </div>
+
+            {{-- Table Container --}}
+            <div class="w-full overflow-hidden rounded-xl border border-gray-100 shadow-2xs flex-1">
+                <table id="tugasTable" class="w-full text-left border-collapse table-auto">
+                    <thead>
+                        <tr class="bg-gradient-to-r from-[#234323] to-[#1C3B1C] text-white">
+                            <th class="py-2.5 px-3 text-[10px] font-extrabold uppercase tracking-wider text-center w-10 text-[#D4AF37]">#</th>
+                            <th class="py-2.5 px-3 text-[10px] font-extrabold uppercase tracking-wider">Judul & Pesan</th>
+                            <th class="py-2.5 px-3 text-[10px] font-extrabold uppercase tracking-wider text-center w-28">Deadline</th>
+                            <th class="py-2.5 px-3 text-[10px] font-extrabold uppercase tracking-wider text-center w-24">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 text-xs bg-white">
+                        @forelse($taskNotifications as $task)
+                            <tr class="hover:bg-emerald-50/25 transition-colors group">
+                                <td class="py-2.5 px-2 text-center">
+                                    <span class="w-6 h-6 mx-auto rounded-lg bg-gray-100 group-hover:bg-[#234323] group-hover:text-[#D4AF37] text-gray-600 text-[10.5px] font-bold flex items-center justify-center font-mono transition shadow-2xs"></span>
+                                </td>
+                                <td class="py-2.5 px-3">
+                                    <p class="font-bold text-gray-800 group-hover:text-[#234323] transition leading-snug text-xs">{{ $task->judul }}</p>
+                                    <p class="text-[10.5px] text-gray-500 line-clamp-1 mt-0.5 leading-tight">{{ $task->pesan }}</p>
+                                </td>
+                                <td class="py-2.5 px-2 text-center whitespace-nowrap">
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-50 text-amber-800 rounded-md text-[10px] font-bold border border-amber-200/80 shadow-2xs">
+                                        <x-heroicon-o-calendar class="w-3 h-3 text-[#D4AF37]" />
+                                        <span>{{ $task->deadline ? date('d/m/Y', strtotime($task->deadline)) : '-' }}</span>
+                                    </span>
+                                </td>
+                                <td class="py-2.5 px-2 text-center whitespace-nowrap">
+                                    <form action="{{ route('tugas.complete', ['id' => $task->id]) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menandai tugas ini sebagai selesai?')">
+                                        @csrf
+                                        <button type="submit" class="inline-flex items-center gap-1 rounded-lg bg-gradient-to-r from-[#234323] to-[#184D2E] hover:from-[#184D2E] hover:to-[#0F351D] px-2.5 py-1 text-[10.5px] font-bold text-white transition shadow-2xs hover:shadow-xs transform hover:-translate-y-0.5 cursor-pointer">
+                                            <x-heroicon-s-check class="w-3.5 h-3.5 text-[#D4AF37]" />
+                                            <span>Selesai</span>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="py-8 text-center text-xs text-gray-400">
+                                    <x-heroicon-o-clipboard-document-check class="w-7 h-7 text-gray-300 mx-auto mb-1" />
+                                    <p class="font-bold text-gray-600">Tidak ada tugas aktif.</p>
+                                    <p class="text-[10px] text-gray-400">Semua target pekerjaan telah selesai.</p>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    {{-- 3. GRID 2 KOLOM SEIMBANG: TREN HARGA TBS & KALENDER JADWAL AUDIT --}}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch mb-6">
+        
+        {{-- Card Tren Harga TBS (50% Kolom) --}}
+        <div class="w-full flex flex-col justify-between bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6">
+            <div>
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 pb-3 border-b border-gray-100">
                     <div class="flex items-center gap-2.5">
                         <div class="w-8 h-8 rounded-lg bg-emerald-50 text-[#234323] flex items-center justify-center">
@@ -275,184 +427,65 @@
                         </p>
                     </div>
                 </div>
-
-                {{-- Chart Canvas / Empty State --}}
-                <div class="relative w-full h-64 sm:h-72">
-                    @if(count($tbsLabels ?? []) > 0)
-                        <canvas id="chartTrendTbs"></canvas>
-                    @else
-                        <div class="w-full h-full flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/50 p-6 text-center">
-                            <div class="w-12 h-12 rounded-full bg-emerald-50 text-[#234323] flex items-center justify-center mb-2">
-                                <x-heroicon-o-currency-dollar class="w-6 h-6 text-[#D4AF37]" />
-                            </div>
-                            <h4 class="text-xs sm:text-sm font-bold text-gray-700 font-poppins">Belum Ada Riwayat Harga TBS</h4>
-                            <p class="text-[11px] text-gray-400 max-w-sm mt-1">Grafik pergerakan harga PT. SAR vs Dinas Perkebunan akan langsung tampil secara otomatis setelah data harga diinput.</p>
-                            <a href="{{ route('harga_tbs.index') }}" class="mt-3 inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#234323] hover:bg-[#184D2E] text-white rounded-xl text-xs font-bold transition shadow-xs">
-                                <x-heroicon-o-plus-circle class="w-4 h-4 text-[#D4AF37]" />
-                                <span>Input Harga Sekarang</span>
-                            </a>
-                        </div>
-                    @endif
-                </div>
             </div>
 
+            {{-- Chart Canvas / Empty State --}}
+            <div class="relative w-full flex-1 min-h-[280px] sm:min-h-[300px] flex flex-col justify-center">
+                @if(count($tbsLabels ?? []) > 0)
+                    <canvas id="chartTrendTbs"></canvas>
+                @else
+                    <div class="w-full h-full flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/50 p-6 text-center">
+                        <div class="w-12 h-12 rounded-full bg-emerald-50 text-[#234323] flex items-center justify-center mb-2">
+                            <x-heroicon-o-currency-dollar class="w-6 h-6 text-[#D4AF37]" />
+                        </div>
+                        <h4 class="text-xs sm:text-sm font-bold text-gray-700 font-poppins">Belum Ada Riwayat Harga TBS</h4>
+                        <p class="text-[11px] text-gray-400 max-w-sm mt-1">Grafik pergerakan harga PT. SAR vs Dinas Perkebunan akan langsung tampil secara otomatis setelah data harga diinput.</p>
+                        <a href="{{ route('harga_tbs.index') }}" class="mt-3 inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#234323] hover:bg-[#184D2E] text-white rounded-xl text-xs font-bold transition shadow-xs">
+                            <x-heroicon-o-plus-circle class="w-4 h-4 text-[#D4AF37]" />
+                            <span>Input Harga Sekarang</span>
+                        </a>
+                    </div>
+                @endif
+            </div>
         </div>
 
-        {{-- KOLOM KANAN (5 Kolom): Status Audit, Tugas Perlu Tindakan & Kalender --}}
-        <div class="xl:col-span-5 space-y-6">
-
-            {{-- Card Tugas Perlu Tindakan (Sesuai HARMONITAS: Header dengan Tag 'Prioritas Peran') --}}
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6">
-                <div class="flex items-center justify-between gap-3 mb-4 pb-3 border-b border-gray-100">
-                    <div class="flex items-center gap-2 text-gray-800">
-                        <x-heroicon-o-bell-alert class="w-5 h-5 text-[#D4AF37]" />
-                        <h3 class="text-xs font-extrabold uppercase tracking-wider text-gray-800 font-poppins">Tugas Perlu Tindakan</h3>
-                    </div>
-                    <span class="px-2.5 py-0.5 text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 rounded-md uppercase tracking-wider">
-                        Prioritas Peran
-                    </span>
+        {{-- Card Kalender Jadwal Audit (50% Kolom) --}}
+        <div class="w-full flex flex-col justify-between bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6">
+            <div class="flex items-center justify-between gap-2 mb-4 pb-3 border-b border-gray-100">
+                <div class="flex items-center gap-2">
+                    <x-heroicon-o-calendar class="w-5 h-5 text-[#234323]" />
+                    <h3 class="text-xs font-bold text-gray-800 uppercase tracking-wider font-poppins">Kalender Jadwal Audit</h3>
                 </div>
-
-                {{-- Status Audit Internal Summary (Format List Item HARMONITAS) --}}
-                <div class="space-y-2.5 mb-5">
-                    <div class="p-3 bg-gray-50 hover:bg-emerald-50/40 border border-gray-100 rounded-xl flex items-center justify-between transition">
-                        <div class="flex items-center gap-3">
-                            <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                                <x-heroicon-s-check-circle class="w-4 h-4" />
-                            </div>
-                            <div>
-                                <p class="text-xs font-bold text-gray-800">Audit Lulus (Sesuai)</p>
-                                <p class="text-[10px] text-gray-400">Telah memenuhi kriteria sertifikasi</p>
-                            </div>
-                        </div>
-                        <span class="w-7 h-7 bg-emerald-600 text-white text-xs font-black rounded-lg flex items-center justify-center">
-                            {{ $auditLulus }}
-                        </span>
-                    </div>
-
-                    <div class="p-3 bg-gray-50 hover:bg-amber-50/40 border border-gray-100 rounded-xl flex items-center justify-between transition">
-                        <div class="flex items-center gap-3">
-                            <div class="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
-                                <x-heroicon-s-information-circle class="w-4 h-4" />
-                            </div>
-                            <div>
-                                <p class="text-xs font-bold text-gray-800">Butuh Tindak Lanjut</p>
-                                <p class="text-[10px] text-gray-400">Perlu perbaikan temuan lapangan</p>
-                            </div>
-                        </div>
-                        <span class="w-7 h-7 bg-amber-500 text-white text-xs font-black rounded-lg flex items-center justify-center">
-                            {{ $auditPerbaikan }}
-                        </span>
-                    </div>
-
-                    <div class="p-3 bg-gray-50 hover:bg-rose-50/40 border border-gray-100 rounded-xl flex items-center justify-between transition">
-                        <div class="flex items-center gap-3">
-                            <div class="w-7 h-7 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
-                                <x-heroicon-s-clock class="w-4 h-4" />
-                            </div>
-                            <div>
-                                <p class="text-xs font-bold text-gray-800">Menunggu Verifikasi</p>
-                                <p class="text-[10px] text-gray-400">Belum diputuskan auditor</p>
-                            </div>
-                        </div>
-                        <span class="w-7 h-7 bg-rose-600 text-white text-xs font-black rounded-lg flex items-center justify-center">
-                            {{ $auditPending }}
-                        </span>
-                    </div>
-                </div>
-
-                {{-- Tabel Pengingat Tugas --}}
-                <div class="pt-2 border-t border-gray-100">
-                    <div class="flex items-center justify-between mb-3">
-                        <div>
-                            <h4 class="text-xs font-bold text-gray-800 font-poppins">Daftar Tugas Aktif</h4>
-                            <p class="text-[10.5px] text-gray-400">Tenggat waktu & tindak lanjut operasional</p>
-                        </div>
-                        <span class="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-200">
-                            Deadline Terdekat
-                        </span>
-                    </div>
-
-                    {{-- Custom Modern Search Bar --}}
-                    <div class="relative w-full mb-3">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                            <x-heroicon-o-magnifying-glass class="w-4 h-4 text-emerald-700" />
-                        </div>
-                        <input type="text" id="customSearchTugas" 
-                               class="w-full pl-9 pr-24 py-2 bg-gray-50/80 hover:bg-gray-100/70 focus:bg-white border border-gray-200 focus:border-[#234323] focus:ring-2 focus:ring-[#234323]/15 rounded-xl text-xs text-gray-800 placeholder-gray-400 transition shadow-2xs outline-none"
-                               placeholder="Cari tugas, instruksi, tanggal...">
-                        <div class="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none">
-                            <span class="text-[10px] font-bold text-[#234323] bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-md">
-                                {{ count($taskNotifications) }} Tugas
-                            </span>
-                        </div>
-                    </div>
-
-                    {{-- Table Container --}}
-                    <div class="w-full overflow-hidden rounded-xl border border-gray-100 shadow-2xs">
-                        <table id="tugasTable" class="w-full text-left border-collapse table-auto">
-                            <thead>
-                                <tr class="bg-gradient-to-r from-[#234323] to-[#1C3B1C] text-white">
-                                    <th class="py-2.5 px-3 text-[10px] font-extrabold uppercase tracking-wider text-center w-10 text-[#D4AF37]">#</th>
-                                    <th class="py-2.5 px-3 text-[10px] font-extrabold uppercase tracking-wider">Judul & Pesan</th>
-                                    <th class="py-2.5 px-3 text-[10px] font-extrabold uppercase tracking-wider text-center w-28">Deadline</th>
-                                    <th class="py-2.5 px-3 text-[10px] font-extrabold uppercase tracking-wider text-center w-24">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-100 text-xs bg-white">
-                                @forelse($taskNotifications as $task)
-                                    <tr class="hover:bg-emerald-50/25 transition-colors group">
-                                        <td class="py-2.5 px-2 text-center">
-                                            <span class="w-6 h-6 mx-auto rounded-lg bg-gray-100 group-hover:bg-[#234323] group-hover:text-[#D4AF37] text-gray-600 text-[10.5px] font-bold flex items-center justify-center font-mono transition shadow-2xs"></span>
-                                        </td>
-                                        <td class="py-2.5 px-3">
-                                            <p class="font-bold text-gray-800 group-hover:text-[#234323] transition leading-snug text-xs">{{ $task->judul }}</p>
-                                            <p class="text-[10.5px] text-gray-500 line-clamp-1 mt-0.5 leading-tight">{{ $task->pesan }}</p>
-                                        </td>
-                                        <td class="py-2.5 px-2 text-center whitespace-nowrap">
-                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-50 text-amber-800 rounded-md text-[10px] font-bold border border-amber-200/80 shadow-2xs">
-                                                <x-heroicon-o-calendar class="w-3 h-3 text-[#D4AF37]" />
-                                                <span>{{ $task->deadline ? date('d/m/Y', strtotime($task->deadline)) : '-' }}</span>
-                                            </span>
-                                        </td>
-                                        <td class="py-2.5 px-2 text-center whitespace-nowrap">
-                                            <form action="{{ route('tugas.complete', ['id' => $task->id]) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menandai tugas ini sebagai selesai?')">
-                                                @csrf
-                                                <button type="submit" class="inline-flex items-center gap-1 rounded-lg bg-gradient-to-r from-[#234323] to-[#184D2E] hover:from-[#184D2E] hover:to-[#0F351D] px-2.5 py-1 text-[10.5px] font-bold text-white transition shadow-2xs hover:shadow-xs transform hover:-translate-y-0.5 cursor-pointer">
-                                                    <x-heroicon-s-check class="w-3.5 h-3.5 text-[#D4AF37]" />
-                                                    <span>Selesai</span>
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4" class="py-8 text-center text-xs text-gray-400">
-                                            <x-heroicon-o-clipboard-document-check class="w-7 h-7 text-gray-300 mx-auto mb-1" />
-                                            <p class="font-bold text-gray-600">Tidak ada tugas aktif.</p>
-                                            <p class="text-[10px] text-gray-400">Semua target pekerjaan telah selesai.</p>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <span class="text-[10px] font-semibold text-gray-400">Bulan {{ date('F Y') }}</span>
             </div>
-
-            {{-- Card Kalender Audit & Pengingat --}}
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6">
-                <div class="flex items-center justify-between gap-2 mb-4 pb-3 border-b border-gray-100">
-                    <div class="flex items-center gap-2">
-                        <x-heroicon-o-calendar class="w-5 h-5 text-[#234323]" />
-                        <h3 class="text-xs font-bold text-gray-800 uppercase tracking-wider font-poppins">Kalender Jadwal Audit</h3>
-                    </div>
-                    <span class="text-[10px] font-semibold text-gray-400">Bulan {{ date('F Y') }}</span>
-                </div>
-                <div id="tugasCalendar" class="w-full bg-gray-50/50 rounded-xl border border-gray-100 p-2"></div>
-            </div>
-
+            <div id="tugasCalendar" class="w-full flex-1 bg-gray-50/50 rounded-xl border border-gray-100 p-2.5 flex flex-col"></div>
         </div>
+
+    </div>
+
+    {{-- 4. PETA SEBARAN LAHAN SPASIAL (FULL WIDTH - PALING BAWAH) --}}
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 pb-3 border-b border-gray-100">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-[#D4AF37]/20 text-[#214122] flex items-center justify-center">
+                    <x-heroicon-o-map-pin class="w-5 h-5 text-[#214122]" />
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-gray-800 font-poppins">Sebaran Lahan Anggota (Peta Spasial GIS)</h3>
+                    <p class="text-[11px] text-gray-400">Pemetaan poligon hamparan kebun kelapa sawit bersertifikasi</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-xs font-semibold text-gray-600 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-xl shadow-2xs">
+                    {{ count($semuaLahan ?? []) }} Poligon Terpetakan
+                </span>
+                <a href="{{ route('lahan.index') }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#234323] hover:bg-[#184D2E] text-white rounded-xl text-xs font-bold transition shadow-xs">
+                    <x-heroicon-o-map class="w-3.5 h-3.5 text-[#D4AF37]" />
+                    <span>Kelola Data Lahan</span>
+                </a>
+            </div>
+        </div>
+        <div id="mapSebaran" class="w-full h-96 sm:h-[460px] rounded-xl bg-gray-100 relative border border-gray-200" style="z-index: 1;"></div>
     </div>
 </div>
 
@@ -748,8 +781,9 @@
         if(calendarEl && typeof FullCalendar !== 'undefined') {
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
-                contentHeight: 'auto',
-                aspectRatio: 1.4,
+                height: '100%',
+                expandRows: true,
+                aspectRatio: 1.5,
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
@@ -825,12 +859,14 @@
     }
 
     /* FullCalendar Styling */
-    .fc { font-family: inherit !important; font-size: 0.8rem !important; }
+    .fc { font-family: inherit !important; font-size: 0.78rem !important; }
     .fc-theme-standard td, .fc-theme-standard th { border-color: #f3f4f6 !important; }
     .fc-col-header-cell { background-color: #f9fafb; padding: 4px 0 !important; font-weight: 700; font-size: 0.7rem !important; color: #6b7280; text-transform: uppercase; }
-    .fc-daygrid-day-number { color: #4b5563; font-weight: 600; font-size: 0.75rem !important; }
+    .fc-daygrid-day-number { color: #4b5563; font-weight: 600; font-size: 0.75rem !important; padding: 2px 4px !important; }
+    .fc-daygrid-day-frame { min-height: 42px !important; }
     .fc-day-today { background-color: #f0fdf4 !important; }
-    .fc-toolbar-title { font-size: 0.95rem !important; font-weight: 700 !important; color: #1f2937 !important; }
+    .fc-toolbar { margin-bottom: 0.6rem !important; }
+    .fc-toolbar-title { font-size: 0.9rem !important; font-weight: 700 !important; color: #1f2937 !important; }
     .fc-button-primary { 
         background-color: #ffffff !important; 
         color: #374151 !important;

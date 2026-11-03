@@ -132,10 +132,11 @@
                     <td class="p-4 text-xs text-red-500 font-medium text-justify pr-6">
                         Rp {{ number_format($petani->total_keluar ?? 0, 0, ',', '.') }}
                     </td>
-                    <td class="p-4">
-                        <div class="flex justify-start gap-3">
-                            <a href="{{ route('keuangan.show', $petani->petani_id) }}" class="p-1.5 bg-[#184D2E]/10 text-[#184D2E] hover:bg-[#184D2E] hover:text-white rounded-lg transition-colors border border-[#184D2E]/20 inline-block" title="Lihat Detail Transaksi">
-                                <x-heroicon-o-arrow-top-right-on-square class="w-5 h-5" />
+                    <td class="p-4 text-center">
+                        <div class="flex justify-center items-center">
+                            <a href="{{ route('keuangan.show', $petani->petani_id) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#184D2E]/10 text-[#184D2E] hover:bg-[#184D2E] hover:text-white rounded-lg transition-colors border border-[#184D2E]/20 font-semibold text-xs shadow-xs" title="Lihat Detail Transaksi">
+                                <x-heroicon-o-eye class="w-4 h-4" />
+                                <span>Detail</span>
                             </a>
                         </div>
                     </td>

@@ -57,4 +57,10 @@ class Petani extends Model
     {
         return $this->hasMany(BiayaOperasional::class, 'petani_id', 'petani_id');
     }
+
+    // relasi kegiatan
+    public function kegiatan()
+    {
+        return $this->hasMany(Kegiatan::class, 'petani_id', 'petani_id');
+    }
 }
