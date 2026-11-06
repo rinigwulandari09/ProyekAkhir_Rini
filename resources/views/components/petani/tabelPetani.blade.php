@@ -7,7 +7,7 @@
         </div>
         
         <div class="flex items-center gap-2 flex-wrap justify-end">
-            @if(auth()->user()->user_role === 'super_admin')
+            @if(in_array(auth()->user()->user_role, ['super_admin', 'admin']))
                 <a href="{{ route('petani.format_import') }}" class="bg-yellow-50 text-yellow-700 border border-yellow-400 px-4 py-2.5 rounded-lg inline-flex items-center gap-2 hover:bg-yellow-100 transition shadow-sm font-semibold text-sm" title="Unduh Format CSV/Excel untuk Import">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                     Format Excel
@@ -219,6 +219,7 @@
 
         // ==== LOGIKA FILTER DESA & STATUS ====
         var filterHtml = `
+            @if(auth()->user()->user_role === 'super_admin')
             <div class="flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-3 py-1.5 shadow-sm hover:border-[#214122] transition-colors group">
                 <svg class="w-4 h-4 text-gray-400 group-hover:text-[#214122]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
@@ -229,6 +230,7 @@
                     <option value="">Semua Desa</option>
                 </select>
             </div>
+            @endif
 
             <div class="flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-3 py-1.5 shadow-sm hover:border-[#214122] transition-colors group">
                 <svg class="w-4 h-4 text-gray-400 group-hover:text-[#214122]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -246,6 +248,7 @@
         `;
         $('#filterPetaniContainer').append(filterHtml);
 
+        @if(auth()->user()->user_role === 'super_admin')
         var selectDesa = $('#desaSelect');
         selectDesa.on('change', function () {
             var val = $.fn.dataTable.util.escapeRegex($(this).val());
@@ -259,6 +262,7 @@
                 selectDesa.append('<option value="' + d + '">' + d + '</option>');
             }
         });
+        @endif
 
         var selectStatus = $('#statusSelect');
         selectStatus.on('change', function () {

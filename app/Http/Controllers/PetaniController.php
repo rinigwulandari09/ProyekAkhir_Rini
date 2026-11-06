@@ -163,12 +163,21 @@ class PetaniController extends Controller
 
     public function formatImport()
     {
-        if (auth()->user()->user_role !== 'super_admin') {
+        $user = auth()->user();
+        if (!in_array($user->user_role, ['super_admin', 'admin'])) {
             abort(403);
         }
 
-        $desas = \App\Models\Desa::pluck('desa_nama')->toArray();
-        $panduanDesa = empty($desas) ? 'Ketik Nama Desa' : 'Pilih/Ketik: ' . implode(', ', $desas);
+        if ($user->user_role === 'admin' && $user->desa_id) {
+            $desaAdmin = \App\Models\Desa::find($user->desa_id);
+            $desas = $desaAdmin ? [$desaAdmin->desa_nama] : [];
+            $panduanDesa = !empty($desas) ? 'Desa: ' . $desas[0] : 'Ketik Nama Desa';
+            $contohDesa = !empty($desas) ? $desas[0] : 'Sukamaju';
+        } else {
+            $desas = \App\Models\Desa::pluck('desa_nama')->toArray();
+            $panduanDesa = empty($desas) ? 'Ketik Nama Desa' : 'Pilih/Ketik: ' . implode(', ', $desas);
+            $contohDesa = !empty($desas) ? $desas[0] : 'Sukamaju';
+        }
 
         $data = [
             [
@@ -185,7 +194,6 @@ class PetaniController extends Controller
             ]
         ];
 
-        $contohDesa = !empty($desas) ? $desas[0] : 'Sukamaju';
         $data[] = [
             'PSKS-001',
             'Budi Santoso',
@@ -215,7 +223,8 @@ class PetaniController extends Controller
 
     public function import(Request $request)
     {
-        if (auth()->user()->user_role !== 'super_admin') {
+        $user = auth()->user();
+        if (!in_array($user->user_role, ['super_admin', 'admin'])) {
             abort(403);
         }
 
@@ -281,24 +290,32 @@ class PetaniController extends Controller
                     if (!empty($nama_desa)) {
                         $desa = \App\Models\Desa::where('desa_nama', $nama_desa)->first();
                         if ($desa) {
+                            // Jika user adalah admin dengan desa tertentu, pastikan desa sesuai
+                            if ($user->user_role === 'admin' && $user->desa_id && $desa->desa_id != $user->desa_id) {
+                                $gagal++;
+                                continue;
+                            }
                             $desa_id = $desa->desa_id;
                         } else {
                             // Jika nama desa tidak ditemukan, lewati baris ini
                             $gagal++;
                             continue;
                         }
+                    } elseif ($user->user_role === 'admin' && $user->desa_id) {
+                        // Jika admin mengimpor tanpa mengisi nama desa, otomatis tetapkan ke desa admin tersebut
+                        $desa_id = $user->desa_id;
                     }
 
                     Petani::create([
                         'id_petani_asosiasi'   => $idAsosiasi,
                         'petani_nama'          => $nama,
                         'petani_username'      => $username,
-                        'petani_email'         => $email,
+                        'petani_email'         => $email ?: null,
                         'petani_no_hp'         => $noHp,
                         'petani_status'        => 'Aktif',
-                        'petani_jenis_kelamin' => $gender,
+                        'petani_jenis_kelamin' => $gender ?: null,
                         'petani_tanggal_lahir' => $tglLahir,
-                        'petani_alamat'        => $alamat,
+                        'petani_alamat'        => $alamat ?: null,
                         'desa_id'              => $desa_id,
                         'petani_pin'           => \Illuminate\Support\Facades\Hash::make($pin ?: '123456')
                     ]);
