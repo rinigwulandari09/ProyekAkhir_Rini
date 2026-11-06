@@ -199,9 +199,24 @@
                     {{-- Baris 1: Header Utama --}}
                     <tr class="bg-[#D4AF37] text-gray-950 font-extrabold text-xs tracking-wider">
                         <th rowspan="2" class="p-3 border border-[#B8860B] text-center w-12 bg-[#D4AF37]">No</th>
-                        <th rowspan="2" class="p-3 border border-[#B8860B] text-center w-16 bg-[#D4AF37]">ID Petani</th>
-                        <th rowspan="2" class="p-3 border border-[#B8860B] text-center w-20 bg-[#D4AF37]">ID Blok</th>
-                        <th rowspan="2" class="p-3 border border-[#B8860B] text-left min-w-[170px] bg-[#D4AF37]">Smallholder Name</th>
+                        <th rowspan="2" class="p-3 border border-[#B8860B] text-center w-24 bg-[#D4AF37] cursor-pointer hover:bg-[#C59F2D] transition select-none group sortable-th" data-sort="id_petani" title="Klik untuk mengurutkan berdasarkan ID Petani">
+                            <div class="inline-flex items-center justify-center gap-1.5 w-full">
+                                <span>ID Petani</span>
+                                <span class="sort-icon-wrapper transition"></span>
+                            </div>
+                        </th>
+                        <th rowspan="2" class="p-3 border border-[#B8860B] text-center w-24 bg-[#D4AF37] cursor-pointer hover:bg-[#C59F2D] transition select-none group sortable-th" data-sort="blok" title="Klik untuk mengurutkan berdasarkan ID Blok">
+                            <div class="inline-flex items-center justify-center gap-1.5 w-full">
+                                <span>ID Blok</span>
+                                <span class="sort-icon-wrapper transition"></span>
+                            </div>
+                        </th>
+                        <th rowspan="2" class="p-3 border border-[#B8860B] text-left min-w-[170px] bg-[#D4AF37] cursor-pointer hover:bg-[#C59F2D] transition select-none group sortable-th" data-sort="nama" title="Klik untuk mengurutkan berdasarkan Smallholder Name">
+                            <div class="inline-flex items-center gap-1.5 w-full">
+                                <span>Smallholder Name</span>
+                                <span class="sort-icon-wrapper transition"></span>
+                            </div>
+                        </th>
                         <th rowspan="2" class="p-3 border border-[#B8860B] text-center min-w-[120px] bg-[#D4AF37]">Location</th>
                         <th colspan="2" class="p-2 border border-[#B8860B] text-center bg-[#D4AF37]">Coordinate</th>
                         <th colspan="2" class="p-2 border border-[#B8860B] text-center bg-[#D4AF37]">Area (Ha)</th>
@@ -209,11 +224,17 @@
                         <th colspan="12" class="p-2 border border-[#B8860B] text-center bg-[#D4AF37] text-[#214122] font-black uppercase tracking-wider text-xs">
                             {{ $tahun }} (Produksi Kg Bulanan)
                         </th>
-                        <th rowspan="2" class="p-3 border border-[#B8860B] text-right min-w-[95px] bg-[#D4AF37]">
-                            Total Produksi<br><span class="font-normal text-[10px] text-gray-800">(Ton)</span>
+                        <th rowspan="2" class="p-3 border border-[#B8860B] text-right min-w-[105px] bg-[#D4AF37] cursor-pointer hover:bg-[#C59F2D] transition select-none group sortable-th" data-sort="total_ton" title="Klik untuk mengurutkan Total Produksi">
+                            <div class="inline-flex items-center justify-end gap-1.5 w-full">
+                                <span class="text-right leading-tight">Total Produksi<br><span class="font-normal text-[10px] text-gray-800">(Ton)</span></span>
+                                <span class="sort-icon-wrapper transition"></span>
+                            </div>
                         </th>
-                        <th rowspan="2" class="p-3 border border-[#B8860B] text-right min-w-[100px] bg-[#D4AF37]">
-                            YPH<br><span class="font-normal text-[10px] text-gray-800">(Ton/Ha/Thn)</span>
+                        <th rowspan="2" class="p-3 border border-[#B8860B] text-right min-w-[105px] bg-[#D4AF37] cursor-pointer hover:bg-[#C59F2D] transition select-none group sortable-th" data-sort="yph" title="Klik untuk mengurutkan YPH">
+                            <div class="inline-flex items-center justify-end gap-1.5 w-full">
+                                <span class="text-right leading-tight">YPH<br><span class="font-normal text-[10px] text-gray-800">(Ton/Ha/Thn)</span></span>
+                                <span class="sort-icon-wrapper transition"></span>
+                            </div>
                         </th>
                     </tr>
 
@@ -235,9 +256,20 @@
                 {{-- Body Tabel --}}
                 <tbody id="tabelProduksiBody" class="divide-y divide-gray-200 bg-white">
                     @forelse($rows as $r)
-                    <tr class="produksi-row hover:bg-amber-50/50 transition">
+                    <tr class="produksi-row hover:bg-amber-50/50 transition"
+                        data-id-petani="{{ $r['id_petani'] }}"
+                        data-nama="{{ $r['smallholder_name'] }}"
+                        data-blok="{{ $r['id_blok'] }}"
+                        data-total-ton="{{ $r['total_ton'] }}"
+                        data-yph="{{ $r['yph'] }}">
                         <td class="kolom-nomor p-2.5 border border-gray-200 text-center font-mono text-gray-500 font-medium">{{ $r['no'] }}</td>
-                        <td class="p-2.5 border border-gray-200 text-center font-mono text-gray-600">{{ $r['id_petani'] }}</td>
+                        <td class="p-2.5 border border-gray-200 text-center font-mono text-xs">
+                            @if(!empty($r['id_petani']) && $r['id_petani'] !== '-')
+                                <span class="text-[#214122] font-bold">{{ $r['id_petani'] }}</span>
+                            @else
+                                <span class="text-gray-400 font-normal italic">-</span>
+                            @endif
+                        </td>
                         <td class="p-2.5 border border-gray-200 text-center font-bold text-[#214122] bg-emerald-50/40">{{ $r['id_blok'] }}</td>
                         <td class="p-2.5 border border-gray-200 font-semibold text-gray-900">{{ $r['smallholder_name'] }}</td>
                         <td class="p-2.5 border border-gray-200 text-center text-gray-700">{{ $r['location'] }}</td>
@@ -332,9 +364,88 @@
         let currentPage = 1;
         let perPage = 10;
         let searchQuery = '';
+        let currentSortCol = 'id_petani'; // Default urut berdasarkan ID Petani
+        let currentSortDir = 'asc';       // Default menaik (A-Z / 1-9)
 
         const $rows = $('#tabelProduksiBody tr.produksi-row');
         const totalOriginalRows = $rows.length;
+
+        // Kumpulkan data baris ke dalam array untuk sorting dan searching instan
+        let rowsArray = [];
+        $rows.each(function(i) {
+            const $tr = $(this);
+            rowsArray.push({
+                element: $tr,
+                originalIndex: i,
+                id_petani: ($tr.data('id-petani') !== undefined ? $tr.data('id-petani') : '').toString().trim(),
+                nama: ($tr.data('nama') !== undefined ? $tr.data('nama') : '').toString().trim(),
+                blok: ($tr.data('blok') !== undefined ? $tr.data('blok') : '').toString().trim(),
+                total_ton: parseFloat($tr.data('total-ton')) || 0,
+                yph: parseFloat($tr.data('yph')) || 0,
+                text: $tr.text().toLowerCase()
+            });
+        });
+
+        const iconNeutral = '<svg class="w-3.5 h-3.5 opacity-40 inline-block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>';
+        const iconAsc = '<svg class="w-3.5 h-3.5 text-[#214122] inline-block shrink-0 drop-shadow-xs" fill="currentColor" viewBox="0 0 24 24"><path d="M12 4l-6.5 11h13L12 4z"/></svg>';
+        const iconDesc = '<svg class="w-3.5 h-3.5 text-[#214122] inline-block shrink-0 drop-shadow-xs" fill="currentColor" viewBox="0 0 24 24"><path d="M12 20l6.5-11h-13L12 20z"/></svg>';
+
+        function updateSortIcons() {
+            $('.sortable-th').each(function() {
+                const col = $(this).data('sort');
+                const $iconWrapper = $(this).find('.sort-icon-wrapper');
+                if (col === currentSortCol) {
+                    $(this).addClass('bg-[#C59F2D]').removeClass('bg-[#D4AF37]');
+                    if (currentSortDir === 'asc') {
+                        $iconWrapper.html(iconAsc);
+                        $(this).attr('title', 'Diurutkan Menaik (A-Z / 1-9). Klik untuk Menurun (Z-A / 9-1)');
+                    } else {
+                        $iconWrapper.html(iconDesc);
+                        $(this).attr('title', 'Diurutkan Menurun (Z-A / 9-1). Klik untuk Menaik (A-Z / 1-9)');
+                    }
+                } else {
+                    $(this).removeClass('bg-[#C59F2D]').addClass('bg-[#D4AF37]');
+                    $iconWrapper.html(iconNeutral);
+                    $(this).attr('title', 'Klik untuk mengurutkan');
+                }
+            });
+        }
+
+        function sortRows(column, direction) {
+            rowsArray.sort(function(a, b) {
+                if (column === 'id_petani') {
+                    let valA = a.id_petani;
+                    let valB = b.id_petani;
+
+                    // Nilai '-' diletakkan di paling bawah
+                    if (valA === '-' && valB !== '-') return 1;
+                    if (valB === '-' && valA !== '-') return -1;
+                    if (valA === '-' && valB === '-') return a.originalIndex - b.originalIndex;
+
+                    let cmp = valA.localeCompare(valB, undefined, { numeric: true, sensitivity: 'base' });
+                    return direction === 'asc' ? cmp : -cmp;
+                } else if (column === 'nama') {
+                    let cmp = a.nama.localeCompare(b.nama, 'id', { sensitivity: 'base' });
+                    return direction === 'asc' ? cmp : -cmp;
+                } else if (column === 'blok') {
+                    let cmp = a.blok.localeCompare(b.blok, undefined, { numeric: true, sensitivity: 'base' });
+                    return direction === 'asc' ? cmp : -cmp;
+                } else if (column === 'total_ton') {
+                    return direction === 'asc' ? a.total_ton - b.total_ton : b.total_ton - a.total_ton;
+                } else if (column === 'yph') {
+                    return direction === 'asc' ? a.yph - b.yph : b.yph - a.yph;
+                }
+                return a.originalIndex - b.originalIndex;
+            });
+
+            // Re-order elemen DOM di dalam tbody
+            const $tbody = $('#tabelProduksiBody');
+            rowsArray.forEach(function(item) {
+                $tbody.append(item.element);
+            });
+            // Pastikan baris no-match tetap di posisi terbawah
+            $tbody.append($('#noProduksiMatchRow'));
+        }
 
         function renderTable() {
             if (totalOriginalRows === 0) {
@@ -345,12 +456,11 @@
 
             // 1. Saring baris berdasarkan pencarian
             let matchedRows = [];
-            $rows.each(function() {
-                const rowText = $(this).text().toLowerCase();
-                if (!searchQuery || rowText.indexOf(searchQuery) > -1) {
-                    matchedRows.push($(this));
+            rowsArray.forEach(function(item) {
+                if (!searchQuery || item.text.indexOf(searchQuery) > -1) {
+                    matchedRows.push(item.element);
                 } else {
-                    $(this).hide();
+                    item.element.hide();
                 }
             });
 
@@ -462,6 +572,21 @@
             $pag.append($next);
         }
 
+        // Event: Klik Header Kolom untuk Sorting
+        $('.sortable-th').on('click', function() {
+            const col = $(this).data('sort');
+            if (currentSortCol === col) {
+                currentSortDir = (currentSortDir === 'asc') ? 'desc' : 'asc';
+            } else {
+                currentSortCol = col;
+                currentSortDir = 'asc';
+            }
+            sortRows(currentSortCol, currentSortDir);
+            updateSortIcons();
+            currentPage = 1;
+            renderTable();
+        });
+
         // Event: Dropdown Tampilkan X data (per page)
         $('#produksiPerPage').on('change', function() {
             perPage = parseInt($(this).val(), 10);
@@ -481,7 +606,9 @@
             }, 150);
         });
 
-        // Render awal
+        // Inisialisasi awal (Urutkan otomatis berdasarkan ID Petani ASC)
+        sortRows(currentSortCol, currentSortDir);
+        updateSortIcons();
         renderTable();
     });
 </script>

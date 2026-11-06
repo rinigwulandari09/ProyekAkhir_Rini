@@ -47,6 +47,7 @@ class PetaniController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'id_petani_asosiasi' => 'nullable|string|max:100|unique:petani,id_petani_asosiasi',
             'petani_nama' => 'required|string|max:255',
             'petani_username' => 'required|string|max:100|unique:petani,petani_username',
             'petani_email' => 'nullable|email|max:255',
@@ -57,6 +58,9 @@ class PetaniController extends Controller
             'petani_alamat' => 'nullable|string',
             'desa_id' => 'nullable|integer|exists:desa,desa_id',
             'petani_pin' => 'required|string|min:6'
+        ], [
+            'id_petani_asosiasi.unique' => 'ID Petani Asosiasi ini sudah terdaftar!',
+            'petani_username.unique' => 'Username ini sudah digunakan!'
         ]);
 
         $username = $request->petani_username;
@@ -65,6 +69,7 @@ class PetaniController extends Controller
         }
 
         Petani::create([
+            'id_petani_asosiasi' => $request->id_petani_asosiasi ?: null,
             'petani_nama' => $request->petani_nama,
             'petani_username' => $request->petani_username,
             'petani_email' => $request->petani_email,
@@ -103,6 +108,7 @@ class PetaniController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
+            'id_petani_asosiasi' => 'nullable|string|max:100|unique:petani,id_petani_asosiasi,' . $id . ',petani_id',
             'petani_nama' => 'required|string|max:255',
             'petani_username' => 'required|string|max:100',
             'petani_email' => 'nullable|email|max:255',
@@ -112,6 +118,8 @@ class PetaniController extends Controller
             'petani_tanggal_lahir' => 'nullable|date',
             'petani_alamat' => 'nullable|string',
             'desa_id' => 'nullable|integer|exists:desa,desa_id'
+        ], [
+            'id_petani_asosiasi.unique' => 'ID Petani Asosiasi ini sudah digunakan oleh petani lain!'
         ]);
 
         $petani = Petani::findOrFail($id);
@@ -125,6 +133,7 @@ class PetaniController extends Controller
         }
 
         $petani->update([
+            'id_petani_asosiasi' => $request->id_petani_asosiasi ?: null,
             'petani_nama' => $request->petani_nama,
             'petani_username' => $request->petani_username,
             'petani_email' => $request->petani_email,
@@ -163,6 +172,7 @@ class PetaniController extends Controller
 
         $data = [
             [
+                'ID Petani Asosiasi',
                 'Nama Petani', 
                 'Username', 
                 'Email', 
@@ -177,6 +187,7 @@ class PetaniController extends Controller
 
         $contohDesa = !empty($desas) ? $desas[0] : 'Sukamaju';
         $data[] = [
+            'PSKS-001',
             'Budi Santoso',
             'budi123',
             'budi@email.com',
@@ -236,7 +247,21 @@ class PetaniController extends Controller
                 }
 
                 try {
-                    $username = trim($row[1] ?? '');
+                    $idAsosiasi = trim((string)($row[0] ?? '')) ?: null;
+                    $nama       = trim($row[1] ?? '');
+                    $username   = trim((string)($row[2] ?? ''));
+                    $email      = trim($row[3] ?? '');
+                    $noHp       = trim((string)($row[4] ?? ''));
+                    $gender     = trim($row[5] ?? '');
+                    $tglLahir   = trim($row[6] ?? '') ?: null;
+                    $alamat     = trim($row[7] ?? '');
+                    $nama_desa  = trim($row[8] ?? '');
+                    $pin        = trim((string)($row[9] ?? '123456'));
+
+                    if (empty($nama) || empty($username)) {
+                        $gagal++;
+                        continue;
+                    }
                     
                     // Cek apakah username sudah ada
                     if (\App\Models\User::where('user_username', $username)->exists() || 
@@ -245,10 +270,14 @@ class PetaniController extends Controller
                         continue;
                     }
 
+                    // Cek jika ID Petani Asosiasi sudah terdaftar
+                    if (!empty($idAsosiasi) && Petani::where('id_petani_asosiasi', $idAsosiasi)->exists()) {
+                        $gagal++;
+                        continue;
+                    }
+
                     // Cari ID Desa berdasarkan Nama Desa
-                    $nama_desa = trim($row[7] ?? '');
                     $desa_id = null;
-                    
                     if (!empty($nama_desa)) {
                         $desa = \App\Models\Desa::where('desa_nama', $nama_desa)->first();
                         if ($desa) {
@@ -261,16 +290,17 @@ class PetaniController extends Controller
                     }
 
                     Petani::create([
-                        'petani_nama' => trim($row[0] ?? ''),
-                        'petani_username' => $username,
-                        'petani_email' => trim($row[2] ?? ''),
-                        'petani_no_hp' => trim($row[3] ?? ''),
-                        'petani_status' => 'Aktif',
-                        'petani_jenis_kelamin' => trim($row[4] ?? ''),
-                        'petani_tanggal_lahir' => trim($row[5] ?? '') ?: null,
-                        'petani_alamat' => trim($row[6] ?? ''),
-                        'desa_id' => $desa_id,
-                        'petani_pin' => \Illuminate\Support\Facades\Hash::make(trim($row[8] ?? '123456'))
+                        'id_petani_asosiasi'   => $idAsosiasi,
+                        'petani_nama'          => $nama,
+                        'petani_username'      => $username,
+                        'petani_email'         => $email,
+                        'petani_no_hp'         => $noHp,
+                        'petani_status'        => 'Aktif',
+                        'petani_jenis_kelamin' => $gender,
+                        'petani_tanggal_lahir' => $tglLahir,
+                        'petani_alamat'        => $alamat,
+                        'desa_id'              => $desa_id,
+                        'petani_pin'           => \Illuminate\Support\Facades\Hash::make($pin ?: '123456')
                     ]);
                     $sukses++;
                 } catch (\Exception $e) {
@@ -279,7 +309,7 @@ class PetaniController extends Controller
             }
             
             return redirect()->route('petani.index')
-                ->with('success', "Import selesai: $sukses berhasil, $gagal gagal (cek duplikat username, format salah, atau nama desa tidak valid).");
+                ->with('success', "Import selesai: $sukses berhasil, $gagal gagal (cek duplikat ID Asosiasi/username, format salah, atau nama desa tidak valid).");
         } else {
             return back()->with('error', 'Gagal membaca file Excel: ' . \Shuchkin\SimpleXLSX::parseError());
         }

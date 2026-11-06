@@ -121,4 +121,160 @@ class UserController extends Controller
 
         return redirect()->route('user.index')->with('success', 'User berhasil dihapus.');
     }
+
+    // Download Format Excel untuk Import User
+    public function formatImport()
+    {
+        if (auth()->user()->user_role !== 'super_admin') {
+            abort(403);
+        }
+
+        $desas = Desa::pluck('desa_nama')->toArray();
+        $panduanDesa = empty($desas) ? 'Ketik Nama Desa' : 'Pilih/Ketik: ' . implode(', ', $desas);
+
+        $data = [
+            [
+                'Nama Lengkap',
+                'Username',
+                'Email',
+                'Password (6 Angka)',
+                'Role (admin / super_admin)',
+                'Nama Desa Tugas (' . $panduanDesa . ')'
+            ]
+        ];
+
+        $contohDesa = !empty($desas) ? $desas[0] : 'Beringin Indah';
+        $data[] = [
+            'Budi Santoso',
+            'budi_admin',
+            'budi.admin@example.com',
+            '123456',
+            'admin',
+            $contohDesa
+        ];
+        $data[] = [
+            'Siti Rahma',
+            'siti_super',
+            'siti.super@example.com',
+            '654321',
+            'super_admin',
+            ''
+        ];
+
+        $xlsx = \Shuchkin\SimpleXLSXGen::fromArray($data);
+
+        $headers = [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'attachment; filename="Format_Import_User.xlsx"',
+        ];
+
+        $callback = function () use ($xlsx) {
+            echo $xlsx;
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    // Proses Import File Excel User
+    public function import(Request $request)
+    {
+        if (auth()->user()->user_role !== 'super_admin') {
+            abort(403);
+        }
+
+        $request->validate([
+            'file_excel' => 'required|file|mimes:xlsx,xls|max:2048'
+        ], [
+            'file_excel.required' => 'File Excel wajib diunggah',
+            'file_excel.mimes' => 'Format file harus berupa Excel (.xlsx atau .xls)',
+            'file_excel.max' => 'Ukuran file maksimal 2MB',
+        ]);
+
+        $file = $request->file('file_excel');
+
+        if ($xlsx = \Shuchkin\SimpleXLSX::parse($file->getPathname())) {
+            $rows = $xlsx->rows();
+            $header = true;
+            $sukses = 0;
+            $gagal = 0;
+
+            foreach ($rows as $row) {
+                if ($header) {
+                    $header = false;
+                    continue;
+                }
+
+                // Skip jika baris kosong
+                if (empty(array_filter($row))) {
+                    continue;
+                }
+
+                try {
+                    $nama     = trim($row[0] ?? '');
+                    $username = trim((string)($row[1] ?? ''));
+                    $email    = trim($row[2] ?? '');
+                    $password = trim((string)($row[3] ?? ''));
+                    $role     = strtolower(trim($row[4] ?? 'admin'));
+                    $namaDesa = trim($row[5] ?? '');
+
+                    if (empty($nama) || empty($username) || empty($email)) {
+                        $gagal++;
+                        continue;
+                    }
+
+                    // Cek username duplikat di user dan petani
+                    if (User::where('user_username', $username)->exists() || Petani::where('petani_username', $username)->exists()) {
+                        $gagal++;
+                        continue;
+                    }
+
+                    // Cek email duplikat di user
+                    if (User::where('user_email', $email)->exists()) {
+                        $gagal++;
+                        continue;
+                    }
+
+                    // Validasi role
+                    if (!in_array($role, ['super_admin', 'admin'])) {
+                        $role = 'admin';
+                    }
+
+                    // Validasi password (harus 6 angka)
+                    if (empty($password) || strlen($password) !== 6 || !is_numeric($password)) {
+                        $password = '123456';
+                    }
+
+                    // Cari ID Desa jika role admin dan nama desa diisi
+                    $desa_id = null;
+                    if (!empty($namaDesa)) {
+                        $desa = Desa::where('desa_nama', $namaDesa)->first();
+                        if ($desa) {
+                            $desa_id = $desa->desa_id;
+                        } else if ($role === 'admin') {
+                            $gagal++;
+                            continue;
+                        }
+                    }
+
+                    User::create([
+                        'user_nama' => $nama,
+                        'user_username' => $username,
+                        'user_email' => $email,
+                        'user_password' => Hash::make($password),
+                        'user_role' => $role,
+                        'desa_id' => $desa_id,
+                    ]);
+
+                    $sukses++;
+                } catch (\Exception $e) {
+                    $gagal++;
+                }
+            }
+
+            return redirect()->route('user.index')
+                ->with('success', "Import selesai: $sukses berhasil, $gagal gagal (cek duplikat username/email, format password 6 digit, atau nama desa tidak valid).");
+        } else {
+            return back()->with('error', 'Gagal membaca file Excel: ' . \Shuchkin\SimpleXLSX::parseError());
+        }
+    }
 }

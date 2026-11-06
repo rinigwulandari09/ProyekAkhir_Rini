@@ -39,6 +39,10 @@
                         <h3 class="text-xs font-bold text-[#214122] uppercase tracking-wider mb-4 pb-2 border-b border-gray-100">Informasi Akun</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
                             <div class="space-y-1">
+                                <label class="text-xs font-semibold text-gray-500 uppercase">ID Petani Asosiasi <span class="text-[11px] font-normal text-gray-400 lowercase">(opsional)</span></label>
+                                <input type="text" name="id_petani_asosiasi" value="{{ old('id_petani_asosiasi') }}" placeholder="Contoh: PSKS-001" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#214122] focus:border-[#214122] text-sm font-mono text-gray-700 shadow-sm transition">
+                            </div>
+                            <div class="space-y-1">
                                 <label class="text-xs font-semibold text-gray-400 uppercase">Nama Lengkap <span class="text-red-500">*</span></label>
                                 <input type="text" name="petani_nama" value="{{ old('petani_nama') }}" class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#214122] focus:border-[#214122] text-sm text-gray-700 shadow-sm transition" required>
                             </div>

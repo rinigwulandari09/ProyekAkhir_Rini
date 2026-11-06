@@ -47,7 +47,7 @@
     {{-- Container tempat tombol Export & Filter --}}
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 w-full">
         <div id="exportButtonsContainer" class="w-full sm:w-auto"></div>
-        <div id="filterDesaContainer" class="w-full sm:w-auto flex sm:justify-end"></div>
+        <div id="filterPetaniContainer" class="w-full sm:w-auto flex flex-wrap items-center gap-2.5 sm:justify-end"></div>
     </div>
     
     {{-- Table Card --}}
@@ -56,6 +56,7 @@
             <thead>
                 <tr class="bg-[#D4AF37] border-b border-[#B8860B] shadow-sm text-black">
                     <th class="p-4 text-xs font-extrabold uppercase text-center w-12 rounded-tl-lg tracking-wider">No</th>
+                    <th class="p-4 text-xs font-extrabold uppercase text-left tracking-wider">ID Petani Asosiasi</th>
                     <th class="p-4 text-xs font-extrabold uppercase text-left tracking-wider">Nama</th>
                     <th class="p-4 text-xs font-extrabold uppercase text-left tracking-wider">Username</th>
                     <th class="p-4 text-xs font-extrabold uppercase text-left tracking-wider">No. HP</th>
@@ -72,6 +73,15 @@
                     @foreach($petani as $p)
                     <tr class="hover:bg-gray-50 transition">
                         <td class="p-4 text-xs text-center text-gray-500 font-mono"></td>
+                        <td class="p-4 text-xs font-mono font-bold text-[#214122]">
+                            @if($p->id_petani_asosiasi)
+                                <span class="inline-block bg-[#E8F0E6] text-[#214122] px-2.5 py-1 rounded-md font-bold text-xs border border-[#214122]/20">
+                                    {{ $p->id_petani_asosiasi }}
+                                </span>
+                            @else
+                                <span class="text-gray-400 font-normal italic">-</span>
+                            @endif
+                        </td>
                         <td class="p-4 text-xs text-gray-800 font-medium">{{ $p->petani_nama }}</td>
                         <td class="p-4 text-xs text-gray-600 font-mono">{{ $p->petani_username ?? '-' }}</td>
                         <td class="p-4 text-xs text-gray-800">{{ $p->petani_no_hp ?? '-' }}</td>
@@ -82,12 +92,15 @@
                         </td>
                         <td class="p-4 text-xs text-gray-800 font-medium">{{ $p->desa->desa_nama ?? '-' }}</td>
                         <td class="p-4 text-xs text-gray-500 max-w-xs truncate">{{ $p->petani_alamat ?? '-' }}</td>
-                        <td class="p-4 text-center">
-                            @if($p->petani_status == 'Aktif')
+                        @php
+                            $statusText = $p->petani_status ?: 'Pending';
+                        @endphp
+                        <td data-filter="{{ $statusText }}" data-search="{{ $statusText }}" class="p-4 text-center">
+                            @if($statusText == 'Aktif')
                                 <span class="bg-[#DCFCE7] text-[#166534] px-3 py-1 rounded-full text-[10px] font-bold">Aktif</span>
-                            @elseif($p->petani_status == 'Ditolak')
+                            @elseif($statusText == 'Ditolak')
                                 <span class="bg-[#FEE2E2] text-[#991B1B] px-3 py-1 rounded-full text-[10px] font-bold">Ditolak</span>
-                            @elseif($p->petani_status == 'Nonaktif')
+                            @elseif($statusText == 'Nonaktif')
                                 <span class="bg-[#FEE2E2] text-[#991B1B] px-3 py-1 rounded-full text-[10px] font-bold">Nonaktif</span>
                             @else
                                 <span class="bg-[#FEF3C7] text-[#92400E] px-3 py-1 rounded-full text-[10px] font-bold">Pending</span>
@@ -168,10 +181,10 @@
             },
             "order": [[ 1, "asc" ]],
             "columnDefs": [ 
-                { "orderable": false, "searchable": false, "targets": [0, 10] },
+                { "orderable": false, "searchable": false, "targets": [0, 11] },
                 { "className": "text-center all", "targets": 0 }, 
-                { "className": "all", "targets": 1 }, 
-                { "className": "min-tablet", "targets": [2, 3, 4, 5, 6, 7, 8, 9, 10] } 
+                { "className": "all", "targets": [1, 2] }, 
+                { "className": "min-tablet", "targets": [3, 4, 5, 6, 7, 8, 9, 10, 11] } 
             ],
             "buttons": [
                 {
@@ -179,7 +192,7 @@
                     text: '<div class="flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"></path></svg><span>Export Excel</span></div>',
                     className: 'btn-export-excel',
                     title: 'Data_Petani_SILAUSA',
-                    exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], format: cleanExportFormat }
+                    exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], format: cleanExportFormat }
                 },
                 {
                     extend: 'pdfHtml5',
@@ -189,7 +202,7 @@
                     filename: 'Data_Petani_SILAUSA',
                     orientation: 'landscape',
                     pageSize: 'A4',
-                    exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], format: cleanExportFormat }
+                    exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], format: cleanExportFormat }
                 }
             ],
             "dom": '<"hidden" B> <"flex justify-between items-center w-full mb-4 gap-2" l f> <"overflow-x-auto w-full" tr> <"flex flex-col sm:flex-row justify-between items-center gap-4 mt-4" i p>'
@@ -204,32 +217,54 @@
 
         table.buttons().container().appendTo('#exportButtonsContainer');
 
-        // ==== LOGIKA FILTER DESA ====
+        // ==== LOGIKA FILTER DESA & STATUS ====
         var filterHtml = `
             <div class="flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-3 py-1.5 shadow-sm hover:border-[#214122] transition-colors group">
                 <svg class="w-4 h-4 text-gray-400 group-hover:text-[#214122]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                 </svg>
                 <span class="text-sm text-gray-500 font-medium whitespace-nowrap">Filter Desa:</span>
                 <select id="desaSelect" class="border-none bg-transparent text-[#214122] text-sm font-bold focus:ring-0 cursor-pointer p-0 m-0 outline-none w-auto pr-6" style="background-position: right center;">
-                    <option value="">Tampilkan Semua</option>
+                    <option value="">Semua Desa</option>
+                </select>
+            </div>
+
+            <div class="flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-3 py-1.5 shadow-sm hover:border-[#214122] transition-colors group">
+                <svg class="w-4 h-4 text-gray-400 group-hover:text-[#214122]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span class="text-sm text-gray-500 font-medium whitespace-nowrap">Filter Status:</span>
+                <select id="statusSelect" class="border-none bg-transparent text-[#214122] text-sm font-bold focus:ring-0 cursor-pointer p-0 m-0 outline-none w-auto pr-6" style="background-position: right center;">
+                    <option value="">Semua Status</option>
+                    <option value="Aktif">Aktif</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Nonaktif">Nonaktif</option>
+                    <option value="Ditolak">Ditolak</option>
                 </select>
             </div>
         `;
-        $('#filterDesaContainer').append(filterHtml);
+        $('#filterPetaniContainer').append(filterHtml);
 
-        var select = $('#desaSelect');
-        select.on('change', function () {
+        var selectDesa = $('#desaSelect');
+        selectDesa.on('change', function () {
             var val = $.fn.dataTable.util.escapeRegex($(this).val());
-            // Filter menggunakan Exact Match di kolom 7 (Desa)
-            table.column(7).search(val ? '^' + val + '$' : '', true, false).draw();
+            // Filter menggunakan Exact Match di kolom 8 (Desa)
+            table.column(8).search(val ? '^' + val + '$' : '', true, false).draw();
         });
 
-        // Ambil data unik dari kolom Desa (index 7) dan masukkan ke option
-        table.column(7).data().unique().sort().each(function (d, j) {
+        // Ambil data unik dari kolom Desa (index 8) dan masukkan ke option
+        table.column(8).data().unique().sort().each(function (d, j) {
             if (d && d.trim() !== '' && d !== '-') {
-                select.append('<option value="' + d + '">' + d + '</option>');
+                selectDesa.append('<option value="' + d + '">' + d + '</option>');
             }
+        });
+
+        var selectStatus = $('#statusSelect');
+        selectStatus.on('change', function () {
+            var val = $.fn.dataTable.util.escapeRegex($(this).val());
+            // Filter menggunakan Exact Match di kolom 10 (Status)
+            table.column(10).search(val ? '^' + val + '$' : '', true, false).draw();
         });
     });
 </script>

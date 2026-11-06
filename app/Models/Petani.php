@@ -14,6 +14,7 @@ class Petani extends Model
 
     # 
     protected $fillable = [
+        'id_petani_asosiasi',
         'petani_nama',
         'petani_alamat',
         'petani_no_hp',
@@ -25,7 +26,6 @@ class Petani extends Model
         'petani_username',
         'petani_profil',
         'desa_id'
-
     ];
 
     // relasi ke tabel lahan (satu lahan)

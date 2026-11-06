@@ -168,7 +168,7 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
-                @forelse($kegiatans as $k)
+                @foreach($kegiatans as $k)
                     @php
                         $jenisNama = $k->jenis->nama_jenis ?? ($k->nama_kegiatan ?? 'Kegiatan');
                         $isPanen = str_contains(strtolower($jenisNama), 'panen');
@@ -283,13 +283,7 @@
                             </div>
                         </td>
                     </tr>
-                @empty
-                    <tr>
-                        <td colspan="10" class="p-10 text-center text-gray-400 italic text-xs">
-                            Belum ada data kegiatan perkebunan di database.
-                        </td>
-                    </tr>
-                @endforelse
+                @endforeach
             </tbody>
         </table>
     </div>
@@ -412,6 +406,9 @@
 
 <script>
     let kegiatanTable = null;
+    if (typeof $.fn.dataTable !== 'undefined') {
+        $.fn.dataTable.ext.errMode = 'none';
+    }
 
     function initKegiatanTable() {
         if ($.fn.DataTable.isDataTable('#tabelKegiatan')) {
@@ -450,6 +447,7 @@
                 infoEmpty: "Tidak ada data kegiatan",
                 infoFiltered: "(disaring dari <b>_MAX_</b> total data)",
                 zeroRecords: "Tidak ditemukan data kegiatan yang cocok",
+                emptyTable: "Belum ada data kegiatan perkebunan yang ditemukan",
                 paginate: {
                     previous: "‹",
                     next: "›"

@@ -475,7 +475,19 @@
                     <p class="text-[11px] text-gray-400">Pemetaan poligon hamparan kebun kelapa sawit bersertifikasi</p>
                 </div>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex flex-wrap items-center gap-2">
+                {{-- Toggle Mode Peta: Satelit vs Biasa --}}
+                <div class="inline-flex items-center bg-gray-100 p-1 rounded-xl border border-gray-200 shadow-2xs">
+                    <button type="button" id="btnMapSatelit" onclick="setDashboardMapMode('satelit')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-xs bg-[#214122] text-white" title="Ganti ke Citra Satelit Google">
+                        <svg class="w-3.5 h-3.5 text-[#D4AF37]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span>Mode Satelit</span>
+                    </button>
+                    <button type="button" id="btnMapBiasa" onclick="setDashboardMapMode('biasa')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-600 hover:text-gray-900 transition" title="Ganti ke Peta Standar OpenStreetMap">
+                        <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                        <span>Mode Biasa</span>
+                    </button>
+                </div>
+
                 <span class="text-xs font-semibold text-gray-600 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-xl shadow-2xs">
                     {{ count($semuaLahan ?? []) }} Poligon Terpetakan
                 </span>
@@ -704,11 +716,76 @@
 
         const mapEl = document.getElementById('mapSebaran');
         if (mapEl && typeof L !== 'undefined') {
-            const mapSebaran = L.map('mapSebaran', { minZoom: 3, maxZoom: 19 }).setView([0.65, 101.85], 13);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            const mapSebaran = L.map('mapSebaran', { minZoom: 3, maxZoom: 20 }).setView([0.65, 101.85], 13);
+
+            // Layer 1: Peta Biasa (OpenStreetMap)
+            const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors',
                 maxZoom: 19
-            }).addTo(mapSebaran);
+            });
+
+            // Layer 2: Mode Satelit (Google Hybrid: Citra Satelit + Label Jalan & Batas)
+            const satelliteLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+                attribution: '&copy; Google Maps',
+                maxZoom: 20
+            });
+
+            // Baca preferensi mode peta dari localStorage atau default ke satelit
+            const savedMode = localStorage.getItem('dashboard_map_mode') || 'satelit';
+            if (savedMode === 'biasa') {
+                osmLayer.addTo(mapSebaran);
+            } else {
+                satelliteLayer.addTo(mapSebaran);
+            }
+
+            // Tambahkan kontrol pilihan layer Leaflet di pojok kanan atas
+            const baseMaps = {
+                "🛰️ Mode Satelit (Google)": satelliteLayer,
+                "🗺️ Mode Biasa (OSM)": osmLayer
+            };
+            L.control.layers(baseMaps, null, { position: 'topright' }).addTo(mapSebaran);
+
+            // Handler global untuk switch layer dari tombol toolbar
+            window.setDashboardMapMode = function(mode) {
+                const btnSatelit = document.getElementById('btnMapSatelit');
+                const btnBiasa = document.getElementById('btnMapBiasa');
+
+                if (mode === 'satelit') {
+                    if (mapSebaran.hasLayer(osmLayer)) mapSebaran.removeLayer(osmLayer);
+                    if (!mapSebaran.hasLayer(satelliteLayer)) satelliteLayer.addTo(mapSebaran);
+
+                    if (btnSatelit) {
+                        btnSatelit.className = "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-xs bg-[#214122] text-white";
+                    }
+                    if (btnBiasa) {
+                        btnBiasa.className = "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-600 hover:text-gray-900 transition";
+                    }
+                    localStorage.setItem('dashboard_map_mode', 'satelit');
+                } else {
+                    if (mapSebaran.hasLayer(satelliteLayer)) mapSebaran.removeLayer(satelliteLayer);
+                    if (!mapSebaran.hasLayer(osmLayer)) osmLayer.addTo(mapSebaran);
+
+                    if (btnBiasa) {
+                        btnBiasa.className = "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-xs bg-[#214122] text-white";
+                    }
+                    if (btnSatelit) {
+                        btnSatelit.className = "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-600 hover:text-gray-900 transition";
+                    }
+                    localStorage.setItem('dashboard_map_mode', 'biasa');
+                }
+            };
+
+            // Sinkronisasi tombol jika layer diubah via kontrol pojok kanan atas Leaflet
+            mapSebaran.on('baselayerchange', function(e) {
+                if (e.name.indexOf('Satelit') !== -1) {
+                    window.setDashboardMapMode('satelit');
+                } else {
+                    window.setDashboardMapMode('biasa');
+                }
+            });
+
+            // Set state tombol aktif sesuai saved mode
+            window.setDashboardMapMode(savedMode);
 
             const polygonGroup = L.featureGroup().addTo(mapSebaran);
             const listLahan = @json($semuaLahan ?? []);
@@ -741,10 +818,10 @@
 
                             if (polyCoords.length > 0) {
                                 const polygon = L.polygon(polyCoords, {
-                                    color: '#234323',
-                                    fillColor: '#D4AF37',
+                                    color: '#D4AF37',
+                                    fillColor: '#22c55e',
                                     fillOpacity: 0.35,
-                                    weight: 2
+                                    weight: 2.5
                                 });
 
                                 polygon.bindPopup(`

@@ -5,22 +5,45 @@
 @section('content')
 <div class="p-2">
     {{-- Header Section --}}
-    <div class="flex justify-between items-start mb-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
             <h1 class="text-2xl font-bold text-[#214122]">Manajemen User</h1>
             <p class="text-sm text-gray-500">Daftar Pengguna yang Terdaftar</p>
         </div>
         
-        <a href="{{ route('user.create') }}" class="bg-[#214122] text-white px-4 py-2.5 rounded-lg inline-flex items-center gap-2 hover:bg-green-900 transition shadow-md font-semibold text-sm">
-            <x-heroicon-o-user-plus class="w-5 h-5" />
-            Tambah User
-        </a>
+        <div class="flex items-center gap-2 flex-wrap justify-end">
+            <a href="{{ route('user.format_import') }}" class="bg-yellow-50 text-yellow-700 border border-yellow-400 px-4 py-2.5 rounded-lg inline-flex items-center gap-2 hover:bg-yellow-100 transition shadow-sm font-semibold text-sm" title="Unduh Format Excel untuk Import">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Format Excel
+            </a>
+
+            <form action="{{ route('user.import') }}" method="POST" enctype="multipart/form-data" class="m-0" id="formImportUser">
+                @csrf
+                <input type="file" name="file_excel" id="fileExcelUser" class="hidden" accept=".xlsx,.xls" onchange="document.getElementById('formImportUser').submit();">
+                <button type="button" onclick="document.getElementById('fileExcelUser').click()" class="bg-blue-50 text-blue-700 border border-blue-400 px-4 py-2.5 rounded-lg inline-flex items-center gap-2 hover:bg-blue-100 transition shadow-sm font-semibold text-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    Import Data
+                </button>
+            </form>
+
+            <a href="{{ route('user.create') }}" class="bg-[#214122] text-white px-4 py-2.5 rounded-lg inline-flex items-center gap-2 hover:bg-green-900 transition shadow-md font-semibold text-sm">
+                <x-heroicon-o-user-plus class="w-5 h-5" />
+                Tambah User
+            </a>
+        </div>
     </div>
 
     @if(session('success'))
         <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl relative text-sm flex items-center shadow-sm" role="alert">
             <x-heroicon-o-check-circle class="w-5 h-5 mr-2" />
             <span class="block sm:inline">{{ session('success') }}</span>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl relative text-sm flex items-center shadow-sm" role="alert">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span class="block sm:inline">{{ session('error') }}</span>
         </div>
     @endif
 
@@ -44,7 +67,7 @@
                 </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
-                    @forelse($users as $user)
+                    @foreach($users as $user)
                     <tr class="hover:bg-gray-50 transition">
                         {{-- 1. No --}}
                         <td class="p-4 text-xs text-center text-gray-500 font-mono"></td>
@@ -84,13 +107,7 @@
                             </div>
                         </td>
                     </tr>
-                    @empty
-                    <tr>
-                        <td colspan="7" class="p-10 text-center text-gray-400 italic text-xs">
-                            Belum ada data user di database.
-                        </td>
-                    </tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
     </div>

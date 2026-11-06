@@ -44,6 +44,10 @@ Route::middleware(['auth'])->group(function () {
     // Menampilkan Tabel User
     Route::get('/data-user', [UserController::class, 'index'])->name('user.index');
     
+    // Import Excel & Download Format User (Super Admin)
+    Route::get('/data-user/format-import', [UserController::class, 'formatImport'])->name('user.format_import');
+    Route::post('/data-user/import', [UserController::class, 'import'])->name('user.import');
+
     // Form Tambah User
     Route::get('/data-user/create', [UserController::class, 'create'])->name('user.create');
     

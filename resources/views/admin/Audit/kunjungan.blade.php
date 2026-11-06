@@ -43,7 +43,7 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
-                    @forelse($kunjungan as $nama_petani => $history)
+                    @foreach($kunjungan as $nama_petani => $history)
                     @php $item = $history->first(); @endphp
                     <tr class="hover:bg-gray-50 transition">
                         {{-- 1. No --}}
@@ -94,13 +94,7 @@
                             </button>
                         </td>
                     </tr>
-                    @empty
-                    <tr>
-                        <td colspan="10" class="p-10 text-center text-gray-400 italic text-xs">
-                            Belum ada data kunjungan lapangan di database.
-                        </td>
-                    </tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
         </div>

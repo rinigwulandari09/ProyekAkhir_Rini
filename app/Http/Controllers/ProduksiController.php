@@ -177,7 +177,8 @@ class ProduksiController extends Controller
                 $q->where('lahan_nama', 'like', "%{$search}%")
                   ->orWhere('lahan_lokasi', 'like', "%{$search}%")
                   ->orWhereHas('petani', function ($qp) use ($search) {
-                      $qp->where('petani_nama', 'like', "%{$search}%");
+                      $qp->where('petani_nama', 'like', "%{$search}%")
+                        ->orWhere('id_petani_asosiasi', 'like', "%{$search}%");
                   });
             });
         }
@@ -252,7 +253,7 @@ class ProduksiController extends Controller
 
             $rows[] = [
                 'no'               => $idx + 1,
-                'id_petani'        => $lahan->petani_id ?? '-',
+                'id_petani'        => (!empty($lahan->petani?->id_petani_asosiasi)) ? $lahan->petani->id_petani_asosiasi : '-',
                 'id_blok'          => $lahan->lahan_nama ?? '-',
                 'smallholder_name' => $lahan->petani->petani_nama ?? '-',
                 'location'         => $lahan->petani->desa->desa_nama ?? $lahan->lahan_lokasi ?? '-',
