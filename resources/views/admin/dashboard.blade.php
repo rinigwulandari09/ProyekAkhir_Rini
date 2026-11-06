@@ -323,7 +323,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 text-xs bg-white">
-                        @forelse($taskNotifications as $task)
+                        @foreach($taskNotifications as $task)
                             <tr class="hover:bg-emerald-50/25 transition-colors group">
                                 <td class="py-2.5 px-2 text-center">
                                     <span class="w-6 h-6 mx-auto rounded-lg bg-gray-100 group-hover:bg-[#234323] group-hover:text-[#D4AF37] text-gray-600 text-[10.5px] font-bold flex items-center justify-center font-mono transition shadow-2xs"></span>
@@ -348,15 +348,7 @@
                                     </form>
                                 </td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="py-8 text-center text-xs text-gray-400">
-                                    <x-heroicon-o-clipboard-document-check class="w-7 h-7 text-gray-300 mx-auto mb-1" />
-                                    <p class="font-bold text-gray-600">Tidak ada tugas aktif.</p>
-                                    <p class="text-[10px] text-gray-400">Semua target pekerjaan telah selesai.</p>
-                                </td>
-                            </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -509,12 +501,16 @@
 <script>
     function initAdminDashboard() {
         if (typeof $ !== 'undefined' && $('#tugasTable').length) {
+            if (typeof $.fn.dataTable !== 'undefined') {
+                $.fn.dataTable.ext.errMode = 'none';
+            }
             if ($.fn.DataTable.isDataTable('#tugasTable')) { $('#tugasTable').DataTable().destroy(); }
             var tableTugas = $('#tugasTable').DataTable({
                 "pageLength": 5, 
                 "lengthMenu": [[5, 10, 25, -1], [5, 10, 25, "All"]],
                 "language": {
                     "emptyTable": "Tidak ada tugas aktif untuk ditampilkan.",
+                    "zeroRecords": "Tidak ditemukan tugas yang sesuai",
                     "info": "Menampilkan _START_-_END_ dari _TOTAL_ tugas",
                     "infoEmpty": "0 tugas",
                     "infoFiltered": "(dari _MAX_ total)",
@@ -542,7 +538,7 @@
                 tableTugas.search(this.value).draw();
             });
 
-            tableTugas.on('order.dt search.dt draw.dt', function () {
+            tableTugas.on('order.dt search.dt', function () {
                 let start = tableTugas.page.info().start;
                 tableTugas.column(0, { search: 'applied', order: 'applied' }).nodes().each(function(cell, i) {
                     let badge = cell.querySelector('span');
@@ -552,7 +548,7 @@
                         cell.innerHTML = start + i + 1;
                     }
                 });
-            }).draw();
+            });
         }
 
         const canvasPemasukan = document.getElementById('chartPemasukan');

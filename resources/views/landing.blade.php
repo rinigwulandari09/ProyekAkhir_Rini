@@ -52,6 +52,10 @@
                     <a href="#beranda" class="text-gray-600 hover:text-[#214122] text-sm font-semibold transition-colors">Beranda</a>
                     <a href="#tentang" class="text-gray-600 hover:text-[#214122] text-sm font-semibold transition-colors">Tentang</a>
                     <a href="#layanan" class="text-gray-600 hover:text-[#214122] text-sm font-semibold transition-colors">Layanan</a>
+                    <a href="https://drive.google.com/drive/folders/1bqesmajAKN1DOQU7EdF6Jfv-Br04Vggv?usp=sharing" target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-[#214122] text-sm font-semibold transition-colors inline-flex items-center gap-1">
+                        <span>User Guide</span>
+                        <svg class="w-3.5 h-3.5 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                    </a>
                     <a href="#kontak" class="text-gray-600 hover:text-[#214122] text-sm font-semibold transition-colors">Kontak</a>
                 </div>
 
@@ -80,6 +84,10 @@
                 <a href="#beranda" @click="mobileMenuOpen = false" class="block px-3 py-3 text-base font-semibold text-gray-800 hover:bg-gray-50 rounded-lg">Beranda</a>
                 <a href="#tentang" @click="mobileMenuOpen = false" class="block px-3 py-3 text-base font-semibold text-gray-800 hover:bg-gray-50 rounded-lg">Tentang</a>
                 <a href="#layanan" @click="mobileMenuOpen = false" class="block px-3 py-3 text-base font-semibold text-gray-800 hover:bg-gray-50 rounded-lg">Layanan</a>
+                <a href="https://drive.google.com/drive/folders/1bqesmajAKN1DOQU7EdF6Jfv-Br04Vggv?usp=sharing" target="_blank" rel="noopener noreferrer" class="block px-3 py-3 text-base font-semibold text-gray-800 hover:bg-gray-50 rounded-lg flex items-center justify-between">
+                    <span>Panduan Pengguna (User Guide)</span>
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                </a>
                 <a href="#kontak" @click="mobileMenuOpen = false" class="block px-3 py-3 text-base font-semibold text-gray-800 hover:bg-gray-50 rounded-lg">Kontak</a>
                 <div class="pt-4">
                     <a href="{{ route('login') }}" class="block w-full text-center px-5 py-3 bg-[#214122] text-white font-bold rounded-xl">Login Sistem</a>
@@ -104,12 +112,18 @@
             <p class="mt-4 max-w-2xl text-lg md:text-xl text-gray-200 mx-auto mb-10 leading-relaxed font-light">
                 Sistem Informasi Lahan, Audit, dan Keuangan Sawit (SILAUSA) hadir untuk mempermudah pemetaan, pemantauan kualitas, hingga pencatatan hasil panen petani secara transparan.
             </p>
-            <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="{{ route('login') }}" class="px-8 py-4 bg-[#EAB308] hover:bg-[#d9a206] text-white font-bold rounded-full text-lg transition-all shadow-[0_0_20px_rgba(234,179,8,0.4)] hover:shadow-[0_0_30px_rgba(234,179,8,0.6)] transform hover:-translate-y-1">
-                    Masuk ke Sistem
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4 flex-wrap">
+                <a href="{{ route('login') }}" class="w-full sm:w-auto px-8 py-4 bg-[#EAB308] hover:bg-[#d9a206] text-white font-bold rounded-full text-lg transition-all shadow-[0_0_20px_rgba(234,179,8,0.4)] hover:shadow-[0_0_30px_rgba(234,179,8,0.6)] transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                    <span>Masuk ke Sistem</span>
                 </a>
-                <a href="https://drive.google.com/file/d/1m4b4jopEiSt42ysh96-syBypN0QYHtAn/view?usp=sharing" class="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white font-bold rounded-full text-lg transition-all transform hover:-translate-y-1">
-                    Unduh Aplikasi
+                <a href="https://drive.google.com/drive/folders/1bqesmajAKN1DOQU7EdF6Jfv-Br04Vggv?usp=sharing" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-8 py-4 bg-white/15 hover:bg-white/25 backdrop-blur-md border border-white/30 text-white font-bold rounded-full text-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 shadow-sm" title="Buka Panduan Pengguna (User Guide) SILAUSA">
+                    <svg class="w-5 h-5 text-[#EAB308]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    <span>Panduan Pengguna</span>
+                </a>
+                <a href="https://drive.google.com/file/d/1m4b4jopEiSt42ysh96-syBypN0QYHtAn/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white font-bold rounded-full text-lg transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5 text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    <span>Unduh Aplikasi</span>
                 </a>
             </div>
         </div>
@@ -366,6 +380,7 @@
                         <li><a href="#beranda" class="text-sm text-gray-400 hover:text-[#EAB308] transition-colors">Beranda</a></li>
                         <li><a href="#tentang" class="text-sm text-gray-400 hover:text-[#EAB308] transition-colors">Tentang Kami</a></li>
                         <li><a href="#layanan" class="text-sm text-gray-400 hover:text-[#EAB308] transition-colors">Layanan Sistem</a></li>
+                        <li><a href="https://drive.google.com/drive/folders/1bqesmajAKN1DOQU7EdF6Jfv-Br04Vggv?usp=sharing" target="_blank" rel="noopener noreferrer" class="text-sm text-gray-400 hover:text-[#EAB308] transition-colors inline-flex items-center gap-1">User Guide</a></li>
                         <li><a href="{{ route('login') }}" class="text-sm text-gray-400 hover:text-[#EAB308] transition-colors">Login Admin</a></li>
                     </ul>
                 </div>
